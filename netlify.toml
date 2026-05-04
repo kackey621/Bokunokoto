@@ -1,5 +1,4 @@
 [build]
-  base = "dd"
   publish = "site"
   command = "pip install mkdocs-material && mkdocs build"
 
