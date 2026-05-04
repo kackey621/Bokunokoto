@@ -1,6 +1,6 @@
 # MyProfile-Webpages-Kusama
 
-For person who knows about me first time or some times, I would like to tell them my self-introductions.
+A personal profile and self-introduction site for people who want to learn more about me.
 
 ## About
 
