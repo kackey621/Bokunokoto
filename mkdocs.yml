@@ -1,0 +1,80 @@
+site_name: "Bokunokoto (BK) — Design Document"
+site_description: "Design Document for Bokunokoto — A Digital Identity Shield for Progressive Self-Disclosure"
+site_author: "Akira Kusama"
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+  - attr_list
+  - md_in_html
+  - def_list
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - System Overview: architecture/overview.md
+      - Tech Stack: architecture/tech-stack.md
+      - Data Model: architecture/data-model.md
+      - API Design: architecture/api-design.md
+  - Security:
+      - Trust Levels (L0–L9): security/trust-levels.md
+      - ABC Shield: security/abc-shield.md
+      - Authentication & Face Validation: security/authentication.md
+      - Audit & Forensics: security/audit-forensics.md
+      - NTP Time Sync: security/ntp-sync.md
+  - Features:
+      - Smart Handshake (QR / NFC): features/smart-handshake.md
+      - Greeting Engine: features/greeting-engine.md
+      - Symbolic Disclosure: features/symbolic-disclosure.md
+      - Notification & Message Box: features/notification.md
+      - Burn-After-Reading: features/burn-after-reading.md
+      - Bank Account Display: features/bank-account.md
+      - Dynamic Access Links: features/dynamic-access-links.md
+  - Accessibility:
+      - Secure Audio (TTS): accessibility/secure-audio.md
+      - Inclusive Design: accessibility/inclusive-design.md
+  - BKC Admin:
+      - Command Center Overview: bkc/overview.md
+      - Content Editor: bkc/content-editor.md
+      - User & Trust Controller: bkc/user-trust-controller.md
+      - Analytics Dashboard: bkc/analytics.md
+  - Roadmap:
+      - Beta Phase: roadmap/beta.md
+      - Release Phase: roadmap/release.md
+
+extra:
+  social: []

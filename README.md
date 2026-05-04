@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/15896a7e-a561-4889-b619-89c454317dcf/deploy-status)](https://app.netlify.com/projects/my-profile-pj-docs/deploys)
+
 # MyProfile-Webpages-Kusama
 
 A personal profile and self-introduction site for people who want to learn more about me.
