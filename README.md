@@ -1,24 +1,38 @@
-# README
+# MyProfile-Webpages-Kusama
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+For person who knows about me first time or some times, I would like to tell them my self-introductions.
 
-Things you may want to cover:
+## About
 
-* Ruby version
+This is a personal profile webpage application built with Ruby on Rails 8.1.3.
 
-* System dependencies
+## Getting Started
 
-* Configuration
+### Requirements
 
-* Database creation
+* Ruby 3.2.3
+* SQLite3
 
-* Database initialization
+### Setup
 
-* How to run the test suite
+```bash
+bundle install
+bin/rails db:setup
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+### Running the application
 
-* Deployment instructions
+```bash
+bin/dev
+```
 
-* ...
+### Running tests
+
+```bash
+bin/rails test
+bin/rails test:system
+```
+
+## Deployment
+
+This application uses [Kamal](https://kamal-deploy.org/) for deployment. See `config/deploy.yml` for configuration.
