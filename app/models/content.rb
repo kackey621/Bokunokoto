@@ -12,21 +12,20 @@ class Content < ApplicationRecord
     return where(vault: vault) if user.vault == vault # Owner sees everything in their vault
 
     user_level = user.trust_level_for(vault)
-    
+
     # Cap trust level to L4 for web platform
-    user_level = [user_level, 4].min if platform == "web"
-    
+    user_level = [ user_level, 4 ].min if platform == "web"
+
     # If no permission exists and user is not owner, they see nothing
     permission = user.permissions.find_by(vault: vault)
     return none unless permission
 
     if ActiveRecord::Base.connection.adapter_name == "SQLite"
       where(vault: vault).where(
-        "required_level <= :level",
-        level: user_level
+        "required_level <= :level OR EXISTS (SELECT 1 FROM json_each(permitted_user_ids) WHERE value = :user_id)",
+        level: user_level,
+        user_id: user.id
       )
-      # Whitelist check for SQLite is omitted for simplicity in tests, 
-      # or could be implemented with LIKE if needed.
     else
       where(vault: vault).where(
         "required_level <= :level OR JSON_CONTAINS(permitted_user_ids, :user_id)",

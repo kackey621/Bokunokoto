@@ -39,7 +39,7 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
   test "should create vault" do
     FirebaseIdToken::Signature.stub :verify, @payload do
       assert_difference "Vault.count", 1 do
-        post api_v1_my_vault_path, 
+        post api_v1_my_vault_path,
              params: { vault: { display_name: "New Vault", bio: "New bio" } },
              headers: { "Authorization" => "Bearer #{@token}" }
       end
@@ -55,7 +55,7 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
 
     FirebaseIdToken::Signature.stub :verify, @payload do
       assert_no_difference "Vault.count" do
-        post api_v1_my_vault_path, 
+        post api_v1_my_vault_path,
              params: { vault: { display_name: "Another Vault" } },
              headers: { "Authorization" => "Bearer #{@token}" }
       end
@@ -70,7 +70,7 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
 
     FirebaseIdToken::Signature.stub :verify, @payload do
       assert_no_difference "Vault.count" do
-        post api_v1_my_vault_path, 
+        post api_v1_my_vault_path,
              params: { vault: { display_name: "Forbidden Vault" } },
              headers: { "Authorization" => "Bearer #{@token}" }
       end
@@ -83,7 +83,7 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
     vault = @user.create_vault!(display_name: "Old Name")
 
     FirebaseIdToken::Signature.stub :verify, @payload do
-      patch api_v1_my_vault_path, 
+      patch api_v1_my_vault_path,
             params: { vault: { display_name: "New Name" } },
             headers: { "Authorization" => "Bearer #{@token}" }
     end

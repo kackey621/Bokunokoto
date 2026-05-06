@@ -11,7 +11,7 @@ class Bkc::ViewersControllerTest < ActionDispatch::IntegrationTest
       can_create_vault: true
     )
     @vault = @owner.create_vault!(display_name: "Owner Vault")
-    
+
     @viewer = User.create!(
       email: "viewer@example.com",
       display_name: "Viewer",
@@ -33,10 +33,10 @@ class Bkc::ViewersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update trust level" do
-    patch bkc_viewer_path(@permission), 
+    patch bkc_viewer_path(@permission),
           params: { permission: { granted_level: 5, status: "suspended" } },
           headers: { "X-Test-User-Id" => @owner.id }
-    
+
     assert_redirected_to bkc_viewer_path(@permission)
     @permission.reload
     assert_equal 5, @permission.granted_level

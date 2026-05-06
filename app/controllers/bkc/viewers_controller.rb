@@ -11,7 +11,7 @@ module Bkc
 
     def update
       @permission = current_vault.permissions.find(params[:id])
-      
+
       if @permission.update(permission_params)
         redirect_to bkc_viewer_path(@permission), notice: "Trust level updated for #{@permission.user.display_name}."
       else

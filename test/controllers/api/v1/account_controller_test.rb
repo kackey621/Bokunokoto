@@ -18,7 +18,7 @@ class Api::V1::AccountControllerTest < ActionDispatch::IntegrationTest
 
   test "should return full account context" do
     @user.create_vault!(display_name: "My Vault")
-    
+
     other_owner = User.create!(email: "other@example.com", display_name: "Other")
     other_vault = other_owner.create_vault!(display_name: "Other Vault")
     @user.permissions.create!(vault: other_vault, granted_level: 3)

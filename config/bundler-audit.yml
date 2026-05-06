@@ -1,4 +1,10 @@
 # Audit all gems listed in the Gemfile for known security problems by running bin/bundler-audit.
 # CVEs that are not relevant to the application can be enumerated on the ignore list below.
 
-ignore: []
+# httparty 0.14.0 is pinned by firebase_id_token (~> 0.14.0). Both CVEs require an attacker
+# to control the request URL or multipart payload; firebase_id_token only uses httparty to
+# fetch Google's hard-coded public-key endpoint, so neither vector is reachable from our
+# application. Re-evaluate when firebase_id_token relaxes its httparty version constraint.
+ignore:
+  - CVE-2024-22049
+  - CVE-2025-68696

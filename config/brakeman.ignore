@@ -1,0 +1,29 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 70,
+      "fingerprint": "215a6ea78c9da06503cb79b5a7f96f79295bebe2c6be6c5e42fd7aebb11f8120",
+      "check_name": "PermitAttributes",
+      "message": "Potentially dangerous key allowed for mass assignment",
+      "file": "app/controllers/console/users_controller.rb",
+      "line": 52,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": null,
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Console::UsersController",
+        "method": "user_params"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [
+        915
+      ],
+      "note": "Console namespace is gated by `before_action :require_platform_admin!` in Console::BaseController, so only platform admins can reach this action. Admin-controlled fields (role, status, trust_level, firebase_uid) are intentional for the user-management surface."
+    }
+  ],
+  "updated": "2026-05-06",
+  "brakeman_version": "8.0.4"
+}

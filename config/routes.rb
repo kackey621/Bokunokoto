@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       post "auth/verify", to: "auth#verify"
 
       namespace :my do
-        resource :vault, only: [:show, :create, :update]
+        resource :vault, only: [ :show, :create, :update ]
       end
 
       get "account/context", to: "account#context"
@@ -16,8 +16,8 @@ Rails.application.routes.draw do
 
   namespace :bkc do
     root to: "dashboard#show", as: :dashboard
-    resource :vault, only: [:create, :update]
-    resources :viewers, only: [:index, :show, :update]
+    resource :vault, only: [ :create, :update ]
+    resources :viewers, only: [ :index, :show, :update ]
   end
 
   get "console", to: "console/dashboard#show"
