@@ -2,7 +2,7 @@
 
 ## Overview
 
-**BKC** (Bokunokoto Command Center) is the admin backbone of the BK platform. Every registered user gets their own BKC instance for managing their personal vault — content, trust levels, viewer permissions, security settings, and analytics. BKC is where vault owners maintain full control over who sees what and under what conditions.
+**BKC** (Bokunokoto Command Center) is the admin backbone of the BK platform. Every registered user can eventually manage a personal vault from the same account they use to receive other people's disclosures. BKC is where vault owners maintain full control over who sees what and under what conditions.
 
 ---
 
@@ -14,7 +14,7 @@
 | **Frontend** | Hotwire (Turbo + Stimulus) | SPA-like experience without heavy JS frameworks |
 | **Components** | ViewComponent | Reusable, testable UI components |
 | **Real-time** | Turbo Streams + ActionCable | Live updates for audit logs, notifications |
-| **Mobile Admin** | Flutter (Admin mode) | On-the-go management mirroring BKC functionality |
+| **Mobile Own Vault** | Flutter own-vault context | On-the-go management mirroring BKC functionality |
 
 !!! info "Why Hotwire?"
     BKC prioritizes server-rendered HTML with progressive enhancement. Hotwire provides fast, interactive admin UIs without the complexity of a separate SPA frontend. ViewComponent keeps the admin UI modular and testable.
@@ -56,7 +56,7 @@ The content and link management hub:
 
 ### 2. User & Trust Controller
 
-Viewer and permission management:
+Viewer and permission management for the current user's owned vault:
 
 - **User Directory** — Browse all users who have accessed the vault
 - **Level Management** — Adjust trust levels (L0-L9) per user with one action
@@ -96,11 +96,11 @@ Track engagement, security events, and trust progression. See [Analytics Dashboa
 
 ---
 
-## Mobile Admin: Flutter Admin Mode
+## Mobile Own Vault: Flutter Context
 
-The BK Flutter app includes an **Admin mode** that mirrors BKC functionality for on-the-go management.
+The BK Flutter app includes an **Own Vault context** that mirrors BKC functionality for on-the-go management.
 
-| Feature | Web BKC | Mobile Admin |
+| Feature | Web BKC | Mobile Own Vault |
 |---|---|---|
 | Content editing | Full editor (Markdown/HTML/Builder) | Simplified editor for quick edits |
 | User management | Complete directory and controls | Quick level-up via QR scan |
@@ -108,8 +108,8 @@ The BK Flutter app includes an **Admin mode** that mirrors BKC functionality for
 | Audit logs | Full searchable log | Recent activity feed |
 | Greeting management | Full builder and scheduler | Quick send and status check |
 
-!!! tip "QR-to-Admin Shortcut"
-    In mobile Admin mode, scanning a viewer's QR code immediately opens their profile with a quick level-up button — useful for in-person trust upgrades at events or meetings.
+!!! tip "QR-to-Profile Shortcut"
+    In the mobile own-vault context, scanning a viewer's QR code immediately opens their profile with a quick level-up button — useful for in-person trust upgrades at events or meetings.
 
 ---
 
@@ -119,28 +119,24 @@ The BK Flutter app includes an **Admin mode** that mirrors BKC functionality for
 
 | Action | Minimum Requirement |
 |---|---|
-| View BKC dashboard | L9 (vault owner) |
+| View BKC dashboard | Owns target vault + BKC capability |
 | Edit content | L9 + active session |
 | Change trust levels | L9 + FIDO2 or 2FA confirmation |
 | View audit logs | L9 + FIDO2 or 2FA confirmation |
 | Delete content | L9 + FIDO2 re-authentication |
 
-### Firebase Custom Claims
+### Ownership and Capabilities
 
-Admin access is enforced via Firebase Custom Claims:
+Personal BKC access is enforced from database relationships:
 
-```json
-{
-  "uid": "user-abc-123",
-  "isAdmin": true,
-  "vaultId": "vault-xyz-789"
-}
+```ruby
+current_user.owns?(target_vault) && current_user.capability_enabled?("bkc_access")
 ```
 
-The `isAdmin: true` claim is set during vault creation and verified on every BKC request. Rails middleware validates the Firebase ID token and checks for the admin claim before processing any BKC route.
+Firebase custom claims may still identify platform operators, but personal vault ownership must be checked in Rails against the `Vault` and account capability records.
 
-!!! danger "No Shared Admin Access"
-    BKC is strictly single-owner. There is no shared admin, delegate, or team access. The vault owner is the sole administrator. This is a deliberate design decision — BK content is too personal for delegated control.
+!!! danger "No Shared Personal Admin Access"
+    Personal BKC is single-owner by default. Delegate or team access is out of scope for the personal product and belongs to a future business tier.
 
 ---
 
@@ -151,13 +147,13 @@ Users can access BKC through two paths:
 ```mermaid
 flowchart LR
     A["Dedicated Admin URL<br/>/bkc/*"] --> C["BKC Dashboard"]
-    B["In-App Admin Toggle<br/>Flutter / PWA"] --> C
-    C --> D{Firebase Token<br/>+ isAdmin claim?}
+    B["In-App Own Vault Context<br/>Flutter / PWA"] --> C
+    C --> D{Owns vault<br/>+ BKC capability?}
     D -->|Valid| E["Full BKC Access"]
     D -->|Invalid| F["Access Denied"]
 ```
 
 1. **Dedicated admin routes** — Direct URL access at `/bkc/*` paths (web browser)
-2. **In-app Admin mode toggle** — Switch from viewer mode to admin mode within the Flutter app or PWA
+2. **In-app own-vault context** — Switch between received-vault browsing and own-vault management within the Flutter app or PWA
 
 Both entry points share the same authentication and authorization pipeline.

@@ -1,0 +1,11 @@
+<% content_for :title, "New User" %>
+<% content_for :console_title, "New User" %>
+
+<div class="d-flex flex-column gap-4">
+  <div>
+    <h1 class="h3 mb-1">New User</h1>
+    <p class="text-body-secondary mb-0">Create a controllable account record for the API and future Firebase identity link.</p>
+  </div>
+
+  <%= render "form", user: @user %>
+</div>

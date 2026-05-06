@@ -4,10 +4,11 @@
 
 ```mermaid
 erDiagram
-    User ||--o| Vault : "has one"
-    User ||--o{ Permission : "has many (as viewer)"
+    User ||--o| Vault : "owns initially"
+    User ||--o{ AccountCapability : "has many"
+    User ||--o{ Permission : "receives access through"
     Vault ||--o{ Content : "has many"
-    Vault ||--o{ Permission : "has many"
+    Vault ||--o{ Permission : "grants access through"
     Vault ||--o{ AccessLink : "has many"
     Vault ||--o{ GreetingCard : "has many"
     Vault ||--o{ QaContent : "has many"
@@ -23,20 +24,24 @@ erDiagram
 
 ### User
 
+`User` is the identity anchor for a real person. It is not the permanent source of truth for whether someone is a discloser or a receiver. The same user may own a vault and receive access to other vaults.
+
 | Column | Type | Notes |
 |---|---|---|
 | `id` | bigint | Primary key |
 | `firebase_uid` | string | Unique, from Firebase Auth |
 | `email` | string | Encrypted |
 | `real_name` | string | Encrypted; required for L2+ |
-| `organization` | string | Relationship context (e.g., "high school friend") |
-| `purpose` | text | Reason for access (e.g., "want to stay in touch") |
+| `organization` | string | Optional profile attribute; relationship-specific context belongs on Permission |
+| `purpose` | text | Optional profile attribute; relationship-specific purpose belongs on Permission |
 | `photo_url` | string | Profile image URL from IdP |
 | `face_verified_at` | datetime | Timestamp when OpenCV face validation passed |
-| `is_admin` | boolean | Master admin flag (for L9) |
+| `is_admin` | boolean | Platform/operator flag only; personal BKC access comes from vault ownership and capability |
 | `created_at` | datetime | |
 
 ### Vault
+
+`Vault` is the disclosure space owned by a user. Initial scope is 0 or 1 active vault per user, but naming and authorization should not block future multi-vault support.
 
 | Column | Type | Notes |
 |---|---|---|
@@ -67,6 +72,8 @@ erDiagram
 
 ### Permission
 
+`Permission` is the relationship between a viewer and a vault. Trust is per relationship, so one user can be L5 for one vault and L1 for another.
+
 | Column | Type | Notes |
 |---|---|---|
 | `id` | bigint | Primary key |
@@ -74,8 +81,22 @@ erDiagram
 | `user_id` | bigint | FK → User (the viewer) |
 | `granted_level` | integer | 0–9, manually set by vault owner |
 | `relationship_context` | string | "colleague", "friend", "business partner" |
+| `status` | enum | `pending` / `active` / `blocked` / `revoked` |
+| `purpose` | text | Viewer's stated reason for access to this vault |
 | `admin_note` | text | Owner's private note about this viewer |
 | `source_access_link_id` | bigint | FK → AccessLink (how they connected) |
+| `created_at` | datetime | |
+
+### AccountCapability
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | bigint | Primary key |
+| `user_id` | bigint | FK → User |
+| `name` | string | e.g., `create_vault`, `bkc_access`, `receive_only`, `beta_access` |
+| `enabled` | boolean | Whether the capability is active |
+| `source` | string | `system`, `billing`, `operator`, `beta`, `migration` |
+| `expires_at` | datetime | Nullable |
 | `created_at` | datetime | |
 
 ### AccessLink

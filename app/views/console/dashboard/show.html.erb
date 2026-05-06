@@ -1,0 +1,129 @@
+<% content_for :title, "System Console" %>
+<% content_for :console_title, "Dashboard" %>
+
+<div class="d-flex flex-column gap-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <h1 class="h3 mb-1">System Console</h1>
+      <p class="text-body-secondary mb-0">Operate the Rails API, users, jobs, mail, database, and service health from one CoreUI control plane.</p>
+    </div>
+    <div class="btn-group">
+      <%= link_to "API Health", api_v1_health_path, class: "btn btn-outline-primary" %>
+      <%= link_to "Users", console_users_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <section class="row g-4" aria-label="Service checks">
+    <% @checks.each do |name, check| %>
+      <div class="col-sm-6 col-xl">
+        <article class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <div class="text-body-secondary small text-uppercase fw-semibold"><%= name.to_s.humanize %></div>
+                <div class="fs-5 fw-semibold mt-1"><%= check[:ok] ? "Operational" : "Attention" %></div>
+              </div>
+              <span class="badge <%= check[:ok] ? "text-bg-success" : "text-bg-danger" %>"><%= check[:ok] ? "OK" : "Error" %></span>
+            </div>
+            <p class="text-body-secondary small mb-0 mt-3"><%= check[:message] %></p>
+          </div>
+        </article>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="row g-4" aria-label="System control modules">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header">
+          <div class="fw-semibold">System Control Modules</div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Scope</th>
+                  <th>Status</th>
+                  <th class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-semibold">User Management</td>
+                  <td class="text-body-secondary">Accounts, roles, status, trust level</td>
+                  <td><span class="badge text-bg-success">Ready</span></td>
+                  <td class="text-end"><%= link_to "Open", console_users_path, class: "btn btn-sm btn-primary" %></td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">API Gateway</td>
+                  <td class="text-body-secondary">SPA/Flutter Web JSON API checks</td>
+                  <td><span class="badge text-bg-success">Ready</span></td>
+                  <td class="text-end"><%= link_to "Health", api_v1_health_path, class: "btn btn-sm btn-outline-primary" %></td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">Job Orchestration</td>
+                  <td class="text-body-secondary">Sidekiq-backed Active Job execution</td>
+                  <td><span class="badge text-bg-success">Ready</span></td>
+                  <td class="text-end"><%= button_to "Enqueue", console_sample_job_path, method: :post, class: "btn btn-sm btn-outline-primary" %></td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">Mail Delivery</td>
+                  <td class="text-body-secondary">SMTP delivery through Mailpit in development</td>
+                  <td><span class="badge text-bg-success">Ready</span></td>
+                  <td class="text-end"><%= button_to "Send test", console_sample_mail_path, method: :post, class: "btn btn-sm btn-outline-primary" %></td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">Infrastructure</td>
+                  <td class="text-body-secondary">MySQL, Redis, Rails health checks</td>
+                  <td><span class="badge text-bg-success">Ready</span></td>
+                  <td class="text-end"><%= link_to "Refresh", console_path, class: "btn btn-sm btn-outline-secondary" %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header">
+          <div class="fw-semibold">User Overview</div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <div class="text-body-secondary small">Total</div>
+                <div class="fs-3 fw-semibold"><%= @user_summary[:total] %></div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <div class="text-body-secondary small">Active</div>
+                <div class="fs-3 fw-semibold text-success"><%= @user_summary[:active] %></div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <div class="text-body-secondary small">Suspended</div>
+                <div class="fs-3 fw-semibold text-warning"><%= @user_summary[:suspended] %></div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <div class="text-body-secondary small">Admins</div>
+                <div class="fs-3 fw-semibold text-primary"><%= @user_summary[:admins] %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent">
+          <%= link_to "Manage user directory", console_users_path, class: "btn btn-outline-primary w-100" %>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

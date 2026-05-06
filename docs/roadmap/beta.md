@@ -21,7 +21,7 @@ The beta phase operates as a **free, invitation-only preview** targeting close p
 | Rails | AuditLog model (immutable, write-only) |
 | Flutter | Project setup (single codebase: Web + iOS + Android) |
 | Flutter | Firebase Auth login flow |
-| Flutter | Admin / Viewer mode toggle |
+| Flutter | Own-vault / received-vault context switching |
 | Flutter | Basic content viewing with level-based filtering |
 | Flutter | QR code generation and scanning |
 | Infra | PostgreSQL + Redis deployment |

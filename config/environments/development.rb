@@ -33,6 +33,11 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV.fetch("SMTP_HOST", "localhost"),
+    port: ENV.fetch("SMTP_PORT", 1025)
+  }
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
@@ -54,6 +59,7 @@ Rails.application.configure do
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
+  config.active_job.queue_adapter = :sidekiq
 
   # Highlight code that triggered redirect in logs.
   config.action_dispatch.verbose_redirect_logs = true

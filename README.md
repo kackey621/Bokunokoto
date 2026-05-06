@@ -2,37 +2,86 @@
 
 # MyProfile-Webpages-Kusama
 
-A personal profile and self-introduction site for people who want to learn more about me.
+A personal profile and self-introduction backend for people who want to learn more about me.
 
 ## About
 
-This is a personal profile webpage application built with Ruby on Rails 8.1.3.
+This is a Ruby on Rails 8.1.3 backend. The SPA/Flutter Web client is hosted separately, while Rails serves the JSON API, system console, Sidekiq workers, MySQL-backed data, Redis-backed jobs, and development email capture.
 
 ## Getting Started
 
 ### Requirements
 
-* Ruby 3.2.3
-* SQLite3
+* Ruby 3.3.7
+* Docker Desktop
+* MySQL 8.4
+* Redis 7
 
-### Setup
+### Docker setup
 
 ```bash
-bundle install
-bin/rails db:setup
+docker compose up --build
 ```
 
-### Running the application
+Rails starts on:
+
+```text
+http://localhost:3000
+```
+
+If port 3000 is already in use:
 
 ```bash
-bin/dev
+RAILS_PORT=3002 docker compose up --build
+```
+
+Useful local endpoints:
+
+```text
+http://localhost:3000/up
+http://localhost:3000/api/v1/health
+http://localhost:3000/console
+http://localhost:3000/console/users
+http://localhost:8025
+```
+
+The Rails system console uses the MIT-licensed CoreUI Free Bootstrap Admin Template structure and locally vendored CoreUI assets for the sidebar, header, cards, tables, forms, and operational control layout. CoreUI is installed through npm and served by Rails from `vendor/assets/coreui`, so the console does not depend on a CDN.
+
+### Local services
+
+The Docker stack runs:
+
+* `web` — Rails API and system console
+* `sidekiq` — Active Job worker
+* `mysql` — MySQL 8.4
+* `redis` — Sidekiq and Rails infrastructure
+* `mailpit` — local email capture
+
+The SPA/Flutter Web client is not served by this repository. Configure it to call:
+
+```text
+http://localhost:3000/api/v1
+```
+
+Allowed browser origins are controlled with:
+
+```bash
+FRONTEND_ORIGINS=http://localhost:5173,http://localhost:3001
+```
+
+### Rails commands
+
+```bash
+docker compose exec web bin/rails db:prepare
+docker compose exec web bin/rails test
+docker compose exec web bin/rails console
 ```
 
 ### Running tests
 
 ```bash
-bin/rails test
-bin/rails test:system
+docker compose exec web bin/rails test
+docker compose exec web bin/rails test:system
 ```
 
 ## Deployment

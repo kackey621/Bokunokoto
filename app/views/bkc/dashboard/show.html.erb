@@ -1,0 +1,45 @@
+<% content_for :bkc_title, "Dashboard" %>
+
+<div class="row">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card mb-4 text-white bg-primary">
+      <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fs-4 fw-semibold"><%= @viewers_count %></div>
+          <div>Total Viewers</div>
+        </div>
+      </div>
+      <div class="c-chart-wrapper mt-3 mx-3" style="height:70px;">
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-sm-6 col-lg-3">
+    <div class="card mb-4 text-white bg-info">
+      <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fs-4 fw-semibold"><%= @contents_count %></div>
+          <div>Total Contents</div>
+        </div>
+      </div>
+      <div class="c-chart-wrapper mt-3 mx-3" style="height:70px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">Vault Summary</div>
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-sm-3">Display Name</dt>
+      <dd class="col-sm-9"><%= current_vault.display_name %></dd>
+      
+      <dt class="col-sm-3">Bio</dt>
+      <dd class="col-sm-9"><%= current_vault.bio.presence || "No bio set" %></dd>
+      
+      <dt class="col-sm-3">Initialized</dt>
+      <dd class="col-sm-9"><%= current_vault.created_at.strftime("%Y-%m-%d") %></dd>
+    </dl>
+  </div>
+</div>

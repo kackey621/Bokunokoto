@@ -1,0 +1,54 @@
+<section class="card border-0 shadow-sm">
+  <% if user.errors.any? %>
+    <div class="alert alert-danger m-3 mb-0">
+      <strong><%= pluralize(user.errors.count, "error") %> stopped this user from being saved.</strong>
+      <ul>
+        <% user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: [:console, user], class: "card-body row g-3" do |form| %>
+    <div class="col-md-6">
+      <%= form.label :display_name, class: "form-label" %>
+      <%= form.text_field :display_name, required: true, class: "form-control" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= form.label :email, class: "form-label" %>
+      <%= form.email_field :email, required: true, class: "form-control" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= form.label :firebase_uid, "Firebase UID", class: "form-label" %>
+      <%= form.text_field :firebase_uid, class: "form-control" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= form.label :role, class: "form-label" %>
+      <%= form.select :role, User::ROLES.map { |role| [role.humanize, role] }, {}, class: "form-select" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= form.label :status, class: "form-label" %>
+      <%= form.select :status, User::STATUSES.map { |status| [status.humanize, status] }, {}, class: "form-select" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= form.label :trust_level, class: "form-label" %>
+      <%= form.number_field :trust_level, min: 0, max: 9, step: 1, class: "form-control" %>
+    </div>
+
+    <div class="col-12">
+      <%= form.label :notes, class: "form-label" %>
+      <%= form.text_area :notes, rows: 5, class: "form-control" %>
+    </div>
+
+    <div class="col-12 d-flex flex-wrap gap-2">
+      <%= form.submit class: "btn btn-primary" %>
+      <%= link_to "Cancel", user.persisted? ? console_user_path(user) : console_users_path, class: "btn btn-outline-secondary" %>
+    </div>
+  <% end %>
+</section>

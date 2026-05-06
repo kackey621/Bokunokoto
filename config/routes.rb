@@ -1,5 +1,32 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root "console/dashboard#show"
+
+  namespace :api do
+    namespace :v1 do
+      get "health", to: "health#show"
+      post "auth/verify", to: "auth#verify"
+
+      namespace :my do
+        resource :vault, only: [:show, :create, :update]
+      end
+
+      get "account/context", to: "account#context"
+    end
+  end
+
+  namespace :bkc do
+    root to: "dashboard#show", as: :dashboard
+    resource :vault, only: [:create, :update]
+    resources :viewers, only: [:index, :show, :update]
+  end
+
+  get "console", to: "console/dashboard#show"
+
+  namespace :console, path: "console" do
+    resources :users
+    post "sample_job", to: "dashboard#enqueue_sample_job"
+    post "sample_mail", to: "dashboard#send_sample_mail"
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

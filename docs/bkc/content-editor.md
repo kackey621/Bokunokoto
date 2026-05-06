@@ -147,7 +147,7 @@ BK ships with pre-built content templates for common disclosure scenarios:
 
 ## Mobile Editor
 
-The Flutter Admin mode includes a simplified content editor for quick edits on the go.
+The Flutter own-vault context includes a simplified content editor for quick edits on the go.
 
 ### Mobile vs. Web Editor
 

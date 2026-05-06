@@ -1,0 +1,49 @@
+<% content_for :bkc_title, "Manage Viewer: #{@user.display_name}" %>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body text-center">
+        <div class="mb-3">
+          <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+            <span class="fs-1 text-secondary"><%= @user.display_name[0] %></span>
+          </div>
+        </div>
+        <h4><%= @user.display_name %></h4>
+        <p class="text-body-secondary"><%= @user.email %></p>
+        <span class="badge text-bg-info mb-2">Current Trust: L<%= @permission.granted_level %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">Trust Level & Permissions</div>
+      <div class="card-body">
+        <%= form_with model: @permission, url: bkc_viewer_path(@permission), method: :patch do |f| %>
+          <div class="mb-4">
+            <%= f.label :granted_level, "Trust Level (0-9)", class: "form-label" %>
+            <%= f.range_field :granted_level, in: 0..9, step: 1, class: "form-range", oninput: "levelValue.innerText = this.value" %>
+            <div class="text-center">
+              <span class="display-4 fw-bold text-primary">L<span id="levelValue"><%= @permission.granted_level %></span></span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :status, class: "form-label" %>
+            <%= f.select :status, Permission::STATUSES.map { |s| [s.humanize, s] }, {}, class: "form-select" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :owner_notes, class: "form-label" %>
+            <%= f.text_area :owner_notes, class: "form-control", rows: 3, placeholder: "Private notes about this relationship..." %>
+          </div>
+
+          <div class="d-grid">
+            <%= f.submit "Update Permission", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

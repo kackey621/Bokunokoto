@@ -4,10 +4,14 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.3"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
+# Use MySQL as the database for Active Record
+gem "mysql2", ">= 0.5.6"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
+# Allow the separated SPA/Flutter Web client to call the Rails API
+gem "rack-cors"
+# Use Redis for Sidekiq and Rails infrastructure integrations
+gem "redis", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
@@ -23,10 +27,15 @@ gem "jbuilder"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+# Use database-backed adapters where they are explicitly configured.
 gem "solid_cache"
-gem "solid_queue"
 gem "solid_cable"
+
+# Process Active Job workloads with Redis-backed workers.
+gem "sidekiq"
+
+# Firebase ID Token verification
+gem "firebase_id_token"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -63,4 +72,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "sqlite3"
+  gem "minitest"
+  gem "minitest-mock"
 end

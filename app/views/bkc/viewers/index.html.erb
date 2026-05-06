@@ -1,0 +1,39 @@
+<% content_for :bkc_title, "User Directory" %>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Viewers</span>
+    <button class="btn btn-sm btn-primary">Invite Viewer</button>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Trust Level</th>
+          <th>Status</th>
+          <th>Last Access</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @permissions.each do |permission| %>
+          <tr>
+            <td><%= permission.user.display_name %></td>
+            <td><span class="badge text-bg-info">L<%= permission.granted_level %></span></td>
+            <td><span class="badge text-bg-success"><%= permission.status %></span></td>
+            <td><%= permission.updated_at.strftime("%Y-%m-%d %H:%M") %></td>
+            <td class="text-end">
+              <%= link_to "Manage", bkc_viewer_path(permission), class: "btn btn-sm btn-outline-primary" %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @permissions.empty? %>
+          <tr>
+            <td colspan="5" class="text-center py-4 text-body-secondary">No viewers found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

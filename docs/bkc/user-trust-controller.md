@@ -2,13 +2,13 @@
 
 ## Overview
 
-The User & Trust Controller is the permission management hub within BKC. It provides vault owners with a complete view of every person who has accessed their vault and gives them fine-grained control over trust levels, content access, and invitations.
+The User & Trust Controller is the permission management hub within BKC. It provides vault owners with a complete view of every person who has accessed their vault and gives them fine-grained control over trust levels, content access, and invitations. These controls operate on the relationship between the current user's vault and each viewer, not on a permanent global user role.
 
 ---
 
 ## User Directory
 
-The directory lists every viewer who has interacted with the vault, sorted by last access time.
+The directory lists every viewer who has interacted with the current user's owned vault, sorted by last access time.
 
 ### Directory Columns
 
@@ -16,8 +16,8 @@ The directory lists every viewer who has interacted with the vault, sorted by la
 |---|---|
 | **Avatar** | Face photo captured during L2 verification (or profile photo) |
 | **Name** | Real name or alias (depending on what the viewer provided) |
-| **Trust Level** | Current level (L0-L9) displayed as a badge |
-| **Relationship** | Context provided during onboarding ("colleague", "friend", "counselor") |
+| **Trust Level** | Current level (L0-L9) for this vault relationship |
+| **Relationship** | Context provided for this vault relationship ("colleague", "friend", "counselor") |
 | **Last Access** | Timestamp and approximate location of most recent access |
 | **Status** | Active, Blocked, or Pending invitation |
 
@@ -55,8 +55,8 @@ flowchart TD
 | Field | Description |
 |---|---|
 | **Face photo** | Photo captured during L2 face validation |
-| **Trust level** | Current level with upgrade/downgrade history |
-| **Relationship context** | Self-reported relationship to the vault owner |
+| **Trust level** | Current level for this vault relationship with upgrade/downgrade history |
+| **Relationship context** | Self-reported relationship to the current vault owner |
 | **First access** | When the user first visited the vault |
 | **Last access** | Most recent visit — timestamp, device type, and approximate location |
 | **Total views** | Number of content views across all levels |
@@ -66,7 +66,7 @@ flowchart TD
 
 ## Level Slider
 
-The level slider allows vault owners to change a user's trust level with a single action.
+The level slider allows vault owners to change a viewer's trust level for the current vault with a single action. The same viewer may have a different level in another user's vault.
 
 ### How It Works
 
@@ -142,7 +142,7 @@ flowchart LR
 
 ## Invitation Management
 
-Vault owners can invite new viewers by creating and sending email invitations.
+Vault owners can invite new viewers by creating and sending email invitations. Invited users may be receive-only at first and can create their own vault later without creating a second account.
 
 ### Invitation Flow
 
@@ -176,13 +176,13 @@ sequenceDiagram
 
 ## QR Scan Integration
 
-In mobile Admin mode, vault owners can scan a viewer's QR code for instant profile lookup and quick level management.
+In the mobile Own Vault context, vault owners can scan a viewer's QR code for instant profile lookup and quick level management.
 
 ### QR-to-Profile Flow
 
 ```mermaid
 flowchart TD
-    A["Scan viewer's QR code<br/>(mobile Admin mode)"] --> B["Viewer's profile<br/>loads instantly"]
+    A["Scan viewer's QR code<br/>(mobile own-vault context)"] --> B["Viewer's profile<br/>loads instantly"]
     B --> C["Quick actions:<br/>- Level-up button<br/>- View access history<br/>- Send notification"]
     C --> D["One-tap level-up<br/>with haptic confirmation"]
 ```

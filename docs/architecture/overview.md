@@ -45,7 +45,7 @@ graph TB
 
 ## Deployment Model
 
-BK operates as a **rental-base SaaS** (multi-tenant monolith). A single Rails application serves multiple "Disclosers" (vault owners), each with fully isolated data.
+BK operates as a **rental-base SaaS** (multi-tenant monolith). A single Rails application serves many personal vaults. A registered user can own a vault as a discloser and can also receive access to other users' vaults from the same account.
 
 | Component | Hosting | Notes |
 |---|---|---|
@@ -57,21 +57,27 @@ BK operates as a **rental-base SaaS** (multi-tenant monolith). A single Rails ap
 
 ## Multi-Tenant Isolation
 
-Every piece of data is scoped to a **Vault** (one per user). Rails controllers enforce vault-level scoping via `current_user.my_vault`, preventing cross-tenant data leakage.
+Every disclosure record is scoped to a **Vault**. Initial product scope is one active vault per user, but the account model treats vault ownership as a relationship instead of a permanent user role. Rails controllers enforce vault-level scoping through ownership and permission checks, preventing cross-tenant data leakage.
 
 ```ruby
-# All queries go through the user's vault
-@contents = current_user.my_vault.contents.accessible_for(viewer, platform)
+# Owner queries go through the user's owned vault.
+@contents = current_user.owned_vault.contents
+
+# Viewer queries go through the target vault and the viewer relationship.
+@contents = target_vault.contents.accessible_for(current_user, platform)
 ```
 
-## Dual-Mode Client
+## Context-Aware Client
 
-The Flutter app operates in two modes, switchable within a single binary:
+The Flutter app may present admin and viewer experiences as modes, but these are **runtime contexts**, not permanent account roles:
 
-| Mode | Role | Capabilities |
+| Context | Source of truth | Capabilities |
 |---|---|---|
-| **Admin** | Manage your own Vault | Edit content, issue QR codes, monitor audit logs, send greetings |
-| **Viewer** | View someone else's Vault | Browse permitted content, submit questions, receive notifications |
+| **Own Vault** | Current user owns the selected vault and has BKC capability | Edit content, issue QR codes, monitor audit logs, send greetings |
+| **Received Vault** | Current user has a permission relationship with another vault | Browse permitted content, submit questions, receive notifications |
+| **Operator** | Platform-level operator grant | Support, compliance, abuse response, and system administration |
+
+See [Account & Role Model](account-role-model.md) for the canonical account model.
 
 ## Feature Flags
 

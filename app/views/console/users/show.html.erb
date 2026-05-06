@@ -1,0 +1,46 @@
+<% content_for :title, @user.display_name %>
+<% content_for :console_title, "User Detail" %>
+
+<div class="d-flex flex-column gap-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <h1 class="h3 mb-1"><%= @user.display_name %></h1>
+      <p class="text-body-secondary mb-0"><%= @user.email %></p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <%= link_to "Edit", edit_console_user_path(@user), class: "btn btn-primary" %>
+      <%= button_to "Archive", console_user_path(@user), method: :delete, class: "btn btn-outline-danger" %>
+    </div>
+  </div>
+
+  <section class="row g-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-body-secondary small text-uppercase fw-semibold">Access Profile</div>
+          <div class="display-6 fw-semibold mt-2">L<%= @user.trust_level %></div>
+          <div class="d-flex gap-2 mt-3">
+            <span class="badge text-bg-primary"><%= @user.role %></span>
+            <span class="badge <%= @user.status == "active" ? "text-bg-success" : "text-bg-secondary" %>"><%= @user.status %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header fw-semibold">User Record</div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Email</dt><dd class="col-sm-8"><%= @user.email %></dd>
+            <dt class="col-sm-4">Firebase UID</dt><dd class="col-sm-8"><%= @user.firebase_uid.presence || "Not linked" %></dd>
+            <dt class="col-sm-4">Role</dt><dd class="col-sm-8"><%= @user.role %></dd>
+            <dt class="col-sm-4">Status</dt><dd class="col-sm-8"><%= @user.status %></dd>
+            <dt class="col-sm-4">Trust level</dt><dd class="col-sm-8">L<%= @user.trust_level %></dd>
+            <dt class="col-sm-4">Last seen</dt><dd class="col-sm-8"><%= @user.last_seen_at || "Never" %></dd>
+            <dt class="col-sm-4">Notes</dt><dd class="col-sm-8"><%= simple_format(@user.notes.presence || "No notes") %></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

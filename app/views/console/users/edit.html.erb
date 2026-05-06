@@ -1,0 +1,11 @@
+<% content_for :title, "Edit #{@user.display_name}" %>
+<% content_for :console_title, "Edit User" %>
+
+<div class="d-flex flex-column gap-4">
+  <div>
+    <h1 class="h3 mb-1">Edit User</h1>
+    <p class="text-body-secondary mb-0">Update role, status, trust level, and identity metadata.</p>
+  </div>
+
+  <%= render "form", user: @user %>
+</div>

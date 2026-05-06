@@ -19,7 +19,7 @@
 | Layer | Technology | Purpose |
 |---|---|---|
 | Framework | Flutter (single codebase) | Web + iOS + Android |
-| State Management | Riverpod / Provider | Admin/Viewer mode switching, feature flags |
+| State Management | Riverpod / Provider | Own-vault / received-vault context switching, feature flags |
 | Auth | `firebase_auth` package | Firebase Auth integration |
 | Secure Storage | `flutter_secure_storage` | Keychain (iOS) / KeyStore (Android) for tokens |
 | Audio Detection | MethodChannel (platform-specific) | Earphone/earpiece connection detection |

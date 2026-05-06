@@ -8,6 +8,8 @@
 
 All endpoints require a valid Firebase ID Token in the `Authorization: Bearer <token>` header, except L0 public endpoints.
 
+Authorization is relationship-based. A `User` is a person-first account; owner actions are allowed through vault ownership and account capability, while viewer actions are allowed through permission records for the target vault.
+
 ## Platform Header
 
 ```
@@ -34,9 +36,9 @@ The API uses this header to enforce platform-level restrictions. Web clients are
 | `GET` | `/vaults/:vault_id` | Get vault public info (L0) | Optional |
 | `GET` | `/vaults/:vault_id/contents` | List contents filtered by viewer's level | Required |
 | `GET` | `/contents/:id` | Get single content (with camera/GPS/NTP checks) | Required |
-| `POST` | `/my/contents` | Create content (Admin mode) | Owner |
-| `PATCH` | `/my/contents/:id` | Update content | Owner |
-| `DELETE` | `/my/contents/:id` | Delete content | Owner |
+| `POST` | `/my/contents` | Create content in current user's owned vault | Owner |
+| `PATCH` | `/my/contents/:id` | Update content in current user's owned vault | Owner |
+| `DELETE` | `/my/contents/:id` | Delete content in current user's owned vault | Owner |
 
 ### Access Links & Handshake
 
@@ -44,7 +46,7 @@ The API uses this header to enforce platform-level restrictions. Web clients are
 |---|---|---|---|
 | `GET` | `/p/:slug` | Resolve access link, return vault + preset info | Optional → Required for L1+ |
 | `POST` | `/handshake` | QR/NFC handshake — exchange trust levels | Required |
-| `POST` | `/my/access_links` | Create preset QR/access link (Admin mode) | Owner |
+| `POST` | `/my/access_links` | Create preset QR/access link for current user's owned vault | Owner |
 | `GET` | `/my/access_links` | List all access links with usage stats | Owner |
 
 ### Q&A
@@ -100,16 +102,40 @@ The API uses this header to enforce platform-level restrictions. Web clients are
 | `PATCH` | `/my/permissions/:id` | Update a viewer's trust level | Owner |
 | `POST` | `/my/invitations` | Send email invitation with preset access | Owner |
 
+### Account Context
+
+| Method | Path | Description | Auth |
+|---|---|---|---|
+| `GET` | `/account/context` | Return current user's capabilities, owned vault summary, and received vault list | Required |
+| `POST` | `/my/vault` | Create the current user's first vault when `create_vault` capability is active | Required |
+
+`/my/*` endpoints always refer to resources owned by the current user. `/vaults/:vault_id/*` endpoints refer to a target vault viewed through a permission relationship.
+
 ## Content Filtering Logic
 
 ```ruby
 # app/models/content.rb
-scope :accessible_for, ->(viewer, owner_vault, platform) {
-  max_level = (platform == 'web') ? 4 : 9
-  user_level = viewer.trust_level_for(owner_vault)
+scope :accessible_for, ->(user, vault, platform: nil) {
+  return where(vault: vault) if user.vault == vault # Owner sees everything in their vault
 
-  where("required_level <= ?", [user_level, max_level].min)
-    .or(where("? = ANY(permitted_user_ids)", viewer.id))
+  user_level = user.trust_level_for(vault)
+  
+  # Cap trust level to L4 for web platform
+  user_level = [user_level, 4].min if platform == "web"
+  
+  # If no permission exists and user is not owner, they see nothing
+  permission = user.permissions.find_by(vault: vault)
+  return none unless permission
+
+  if ActiveRecord::Base.connection.adapter_name == "SQLite"
+    where(vault: vault).where("required_level <= :level", level: user_level)
+  else
+    where(vault: vault).where(
+      "required_level <= :level OR JSON_CONTAINS(permitted_user_ids, :user_id)",
+      level: user_level,
+      user_id: user.id.to_s
+    )
+  end
 }
 ```
 

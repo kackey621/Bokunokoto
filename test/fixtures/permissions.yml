@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  vault: one
+  user: one
+  granted_level: 1
+  status: MyString
+  relationship_context: MyText
+  source_access_link_id: MyString
+  owner_notes: MyText
+
+two:
+  vault: two
+  user: two
+  granted_level: 1
+  status: MyString
+  relationship_context: MyText
+  source_access_link_id: MyString
+  owner_notes: MyText

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "BKC Command Center" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Bokunokoto BKC">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="<%= asset_path("css/coreui.min.css") %>">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bkc-body">
+    <div class="sidebar sidebar-dark sidebar-fixed border-end" id="sidebar">
+      <div class="sidebar-header border-bottom">
+        <%= link_to bkc_dashboard_path, class: "sidebar-brand text-decoration-none" do %>
+          <span class="sidebar-brand-full fw-semibold">BK Command Center</span>
+          <span class="sidebar-brand-narrow fw-semibold">BKC</span>
+        <% end %>
+      </div>
+
+      <ul class="sidebar-nav" data-coreui="navigation">
+        <li class="nav-title">Management</li>
+        <li class="nav-item">
+          <%= link_to bkc_dashboard_path, class: "nav-link #{current_page?(bkc_dashboard_path) ? "active" : ""}" do %>
+            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Dashboard
+          <% end %>
+        </li>
+        <% if current_vault %>
+          <li class="nav-item">
+            <%= link_to "#", class: "nav-link" do %>
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> BK Studio
+            <% end %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "#", class: "nav-link" do %>
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Trust Controller
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="wrapper d-flex flex-column min-vh-100">
+      <header class="header header-sticky p-0 border-bottom">
+        <div class="container-fluid">
+          <button class="header-toggler px-md-0 me-md-3" type="button" data-coreui-toggle="sidebar" data-coreui-target="#sidebar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb my-0">
+              <li class="breadcrumb-item"><%= link_to "BKC", bkc_dashboard_path %></li>
+              <li class="breadcrumb-item active"><%= content_for(:bkc_title) || "Dashboard" %></li>
+            </ol>
+          </nav>
+          <div class="ms-auto d-flex align-items-center gap-3 small text-body-secondary">
+            <span>Logged in as: <strong><%= current_user.display_name %></strong></span>
+          </div>
+        </div>
+      </header>
+
+      <main class="body flex-grow-1">
+        <div class="container-lg px-4 py-4">
+          <% if notice.present? %>
+            <div class="alert alert-success" role="alert"><%= notice %></div>
+          <% end %>
+          <% if alert.present? %>
+            <div class="alert alert-danger" role="alert"><%= alert %></div>
+          <% end %>
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+
+    <script src="<%= asset_path("js/coreui.bundle.min.js") %>"></script>
+  </body>
+</html>

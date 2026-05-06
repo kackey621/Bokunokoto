@@ -1,0 +1,2147 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Design Document for Bokunokoto — A Digital Identity Shield for Progressive Self-Disclosure">
+      
+      
+        <meta name="author" content="Akira Kusama">
+      
+      
+      
+        <link rel="prev" href="../secure-audio/">
+      
+      
+        <link rel="next" href="../../bkc/overview/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Inclusive Design - Bokunokoto (BK) — Design Document</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#inclusive-design" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Bokunokoto (BK) — Design Document" class="md-header__button md-logo" aria-label="Bokunokoto (BK) — Design Document" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Bokunokoto (BK) — Design Document
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Inclusive Design
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/trust-levels/" class="md-tabs__link">
+          
+  
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/smart-handshake/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../secure-audio/" class="md-tabs__link">
+          
+  
+  
+  Accessibility
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../bkc/overview/" class="md-tabs__link">
+          
+  
+  
+  BKC Admin
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../roadmap/account-role-replan/" class="md-tabs__link">
+          
+  
+  
+  Roadmap
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Bokunokoto (BK) — Design Document" class="md-nav__button md-logo" aria-label="Bokunokoto (BK) — Design Document" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Bokunokoto (BK) — Design Document
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/tech-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Stack
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/account-role-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account & Role Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/users-role-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Role Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/api-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/trust-levels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trust Levels (L0–L9)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/abc-shield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ABC Shield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication & Face Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/audit-forensics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Forensics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/ntp-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NTP Time Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/smart-handshake/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart Handshake (QR / NFC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/greeting-engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Greeting Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/symbolic-disclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symbolic Disclosure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/notification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notification & Message Box
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/burn-after-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burn-After-Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/bank-account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bank Account Display
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/dynamic-access-links/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamic Access Links
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessibility
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Accessibility
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secure-audio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure Audio (TTS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inclusive Design
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inclusive Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#high-contrast-and-dynamic-text-sizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High Contrast and Dynamic Text Sizing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#haptic-feedback-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Haptic Feedback Patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#symbol-alt-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symbol Alt Text
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#form-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form Accessibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Form Accessibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#audio-guidance-for-profile-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audio Guidance for Profile Input
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-assistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Assistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qr-display-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR Display Accessibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conversational-onboarding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conversational Onboarding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conversational Onboarding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tone-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tone Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#progressive-disclosure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Progressive Disclosure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-contrast-and-wcag-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Color Contrast and WCAG Compliance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#large-tap-targets-and-keyboard-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Large Tap Targets and Keyboard Navigation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Large Tap Targets and Keyboard Navigation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mobile-tap-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mobile: Tap Targets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-keyboard-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web: Keyboard Navigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BKC Admin
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    BKC Admin
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bkc/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command Center Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bkc/content-editor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bkc/user-trust-controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User & Trust Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bkc/analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/account-role-replan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account & Role Replan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/beta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beta Phase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Phase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="inclusive-design">Inclusive Design</h1>
+<h2 id="overview">Overview</h2>
+<p>BK is built for users who share deeply personal information — disability, identity, health conditions. The interface must be usable by everyone, including those who rely on assistive technologies, have low vision, or face motor or cognitive challenges. This page documents BK's inclusive design principles and their implementation.</p>
+<hr />
+<h2 id="high-contrast-and-dynamic-text-sizing">High Contrast and Dynamic Text Sizing</h2>
+<p>BK follows OS-level accessibility settings rather than forcing its own font sizes or contrast modes.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>iOS</th>
+<th>Android</th>
+<th>BK Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dynamic Type</strong></td>
+<td>Settings &gt; Display &gt; Text Size</td>
+<td>Settings &gt; Display &gt; Font Size</td>
+<td>All text scales proportionally using relative units</td>
+</tr>
+<tr>
+<td><strong>Bold Text</strong></td>
+<td>Settings &gt; Display &gt; Bold Text</td>
+<td>Settings &gt; Accessibility &gt; Bold Text</td>
+<td>Font weight increases across the app</td>
+</tr>
+<tr>
+<td><strong>High Contrast</strong></td>
+<td>Settings &gt; Accessibility &gt; Increase Contrast</td>
+<td>Settings &gt; Accessibility &gt; High Contrast</td>
+<td>BK switches to a high-contrast color palette</td>
+</tr>
+<tr>
+<td><strong>Reduce Motion</strong></td>
+<td>Settings &gt; Accessibility &gt; Reduce Motion</td>
+<td>Settings &gt; Accessibility &gt; Remove Animations</td>
+<td>Transitions and animations are disabled</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Implementation</p>
+<p>Flutter's <code>MediaQuery</code> provides <code>textScaleFactor</code> and <code>boldText</code>. BK respects these values throughout the widget tree — no hardcoded font sizes.</p>
+</div>
+<hr />
+<h2 id="haptic-feedback-patterns">Haptic Feedback Patterns</h2>
+<p>BK uses distinct vibration patterns to communicate events through touch, supporting users who may not see or hear notifications.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Pattern</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Level-up</strong></td>
+<td>Two short pulses</td>
+<td>Confirms trust level has been upgraded</td>
+</tr>
+<tr>
+<td><strong>NFC Handshake</strong></td>
+<td>Single long vibration</td>
+<td>Smart Handshake NFC tap acknowledged</td>
+</tr>
+<tr>
+<td><strong>Urgent Notification</strong></td>
+<td>Three rapid pulses</td>
+<td>Time-sensitive alert (e.g., burn-after-reading countdown)</td>
+</tr>
+<tr>
+<td><strong>QR Scan Success</strong></td>
+<td>Short-long-short</td>
+<td>QR code successfully scanned and processed</td>
+</tr>
+<tr>
+<td><strong>Error / Denial</strong></td>
+<td>Two long pulses</td>
+<td>Permission denied or action failed</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Custom Haptics</p>
+<p>On iOS, BK uses <code>UIImpactFeedbackGenerator</code> with <code>.heavy</code>, <code>.medium</code>, and <code>.light</code> styles. On Android, it uses <code>VibrationEffect.createWaveform()</code> for pattern control.</p>
+</div>
+<hr />
+<h2 id="symbol-alt-text">Symbol Alt Text</h2>
+<p>BK's symbol system conveys identity and accommodation needs visually. Every symbol includes descriptive alt text for screen readers.</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Alt Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>:material-rainbow: Rainbow Symbol</td>
+<td>"Rainbow Symbol: indicates LGBTQ+ identity"</td>
+</tr>
+<tr>
+<td>:material-help-circle: Help Mark</td>
+<td>"Help Mark: this person may need assistance or accommodations"</td>
+</tr>
+<tr>
+<td>:material-ear-hearing: Ear Mark</td>
+<td>"Ear Mark: indicates hearing-related accommodation needs"</td>
+</tr>
+<tr>
+<td>:material-hand-wave: Sign Language Mark</td>
+<td>"Sign Language Mark: this person uses sign language"</td>
+</tr>
+<tr>
+<td>:material-baby-carriage: Maternity Mark</td>
+<td>"Maternity Mark: indicates expecting or new parent"</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Contextual Alt Text</p>
+<p>When symbols appear in greeting cards or content sections, the alt text is extended with context: "Help Mark displayed on: [content title]."</p>
+</div>
+<hr />
+<h2 id="form-accessibility">Form Accessibility</h2>
+<h3 id="audio-guidance-for-profile-input">Audio Guidance for Profile Input</h3>
+<p>Profile forms provide audio guidance for every input field:</p>
+<ul>
+<li><strong>Field purpose:</strong> Screen reader announces what the field is for ("Your real name — this will be shared with users at L2 and above")</li>
+<li><strong>Required indicator:</strong> Required fields are announced as "Required field" before the field label</li>
+<li><strong>Validation feedback:</strong> Errors are announced immediately ("Error: email address is not valid")</li>
+<li><strong>Progress tracking:</strong> "Step 2 of 4: Tell us about your relationship to this person"</li>
+</ul>
+<h3 id="input-assistance">Input Assistance</h3>
+<div class="highlight"><pre><span></span><code><span class="n">TextFormField</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">decoration:</span><span class="w"> </span><span class="n">InputDecoration</span><span class="p">(</span>
+<span class="w">    </span><span class="nl">labelText:</span><span class="w"> </span><span class="s1">&#39;Real Name&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nl">hintText:</span><span class="w"> </span><span class="s1">&#39;Enter your full name&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">),</span>
+<span class="w">  </span><span class="nl">validator:</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">value</span><span class="o">!</span><span class="p">.</span><span class="n">isEmpty</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">&#39;Name is required&#39;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">autofillHints:</span><span class="w"> </span><span class="p">[</span><span class="n">AutofillHints</span><span class="p">.</span><span class="n">name</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Semantic Annotations</p>
+<p>Every form field is wrapped in a <code>Semantics</code> widget with <code>label</code>, <code>hint</code>, and <code>onTapHint</code> properties to ensure screen readers provide complete context.</p>
+</div>
+<hr />
+<h2 id="qr-display-accessibility">QR Display Accessibility</h2>
+<p>When BK displays a QR code on screen, the screen reader announces its purpose so visually impaired users know what is being shown:</p>
+<ul>
+<li><strong>Standard QR:</strong> "Currently displaying QR code for: sharing your profile link"</li>
+<li><strong>Smart Handshake QR:</strong> "Currently displaying QR code for: Smart Handshake — hold your device near the other person's phone"</li>
+<li><strong>Greeting QR:</strong> "Currently displaying QR code for: greeting card invitation"</li>
+<li><strong>Access Link QR:</strong> "Currently displaying QR code for: access link to [content title]"</li>
+</ul>
+<p>The announcement includes a prompt: "Ask the other person to scan this code, or tap to copy the link to clipboard."</p>
+<hr />
+<h2 id="conversational-onboarding">Conversational Onboarding</h2>
+<p>BK replaces cold, form-heavy onboarding with a dialogue-style experience that feels like a conversation rather than a bureaucratic process.</p>
+<h3 id="tone-examples">Tone Examples</h3>
+<table>
+<thead>
+<tr>
+<th>Traditional Form</th>
+<th>BK Conversational Prompt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Enter your name"</td>
+<td>"Nice to meet you! What should I call you?"</td>
+</tr>
+<tr>
+<td>"Select relationship type"</td>
+<td>"How do you know the person who shared this with you?"</td>
+</tr>
+<tr>
+<td>"Upload a photo"</td>
+<td>"Here, I'm sharing something personal. Could you tell me a bit about yourself? A photo helps build trust."</td>
+</tr>
+<tr>
+<td>"Agree to terms"</td>
+<td>"Before we continue, here's how your information will be protected. Take a moment to review."</td>
+</tr>
+</tbody>
+</table>
+<h3 id="progressive-disclosure">Progressive Disclosure</h3>
+<pre class="mermaid"><code>flowchart TD
+    A["Welcome! What should I call you?"] --&gt; B["Thanks, [name]. How do you know [owner]?"]
+    B --&gt; C["Got it. Could you share a photo?&lt;br/&gt;It helps build mutual trust."]
+    C --&gt; D{Photo provided?}
+    D --&gt;|Yes| E["Great — you now have L2 access."]
+    D --&gt;|Skip| F["No problem. You can add one later&lt;br/&gt;from your profile settings."]
+    F --&gt; G["You have L1 access for now."]</code></pre>
+<div class="admonition tip">
+<p class="admonition-title">Why Conversational?</p>
+<p>Users sharing or receiving sensitive personal information may feel vulnerable. A warm, human tone reduces friction and builds the psychological safety that BK's trust model depends on.</p>
+</div>
+<hr />
+<h2 id="color-contrast-and-wcag-compliance">Color Contrast and WCAG Compliance</h2>
+<p>All BK symbols and UI elements meet <strong>WCAG 2.1 AA</strong> contrast standards (minimum 4.5:1 for normal text, 3:1 for large text).</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Foreground</th>
+<th>Background</th>
+<th>Contrast Ratio</th>
+<th>WCAG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Help Mark (red)</td>
+<td><code>#D32F2F</code></td>
+<td><code>#FFFFFF</code></td>
+<td>5.6:1</td>
+<td>:material-check: AA</td>
+</tr>
+<tr>
+<td>Rainbow Symbol (multi)</td>
+<td>Darkest band <code>#7B1FA2</code></td>
+<td><code>#FFFFFF</code></td>
+<td>7.8:1</td>
+<td>:material-check: AAA</td>
+</tr>
+<tr>
+<td>Body text</td>
+<td><code>#212121</code></td>
+<td><code>#FFFFFF</code></td>
+<td>16.1:1</td>
+<td>:material-check: AAA</td>
+</tr>
+<tr>
+<td>Secondary text</td>
+<td><code>#616161</code></td>
+<td><code>#FFFFFF</code></td>
+<td>5.9:1</td>
+<td>:material-check: AA</td>
+</tr>
+<tr>
+<td>Error text</td>
+<td><code>#C62828</code></td>
+<td><code>#FFFFFF</code></td>
+<td>6.5:1</td>
+<td>:material-check: AA</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Dark Mode</p>
+<p>BK supports dark mode. All contrast ratios are verified for both light and dark themes. Dark mode uses lightened variants of symbol colors to maintain compliance.</p>
+</div>
+<hr />
+<h2 id="large-tap-targets-and-keyboard-navigation">Large Tap Targets and Keyboard Navigation</h2>
+<h3 id="mobile-tap-targets">Mobile: Tap Targets</h3>
+<p>All interactive elements meet the <strong>48x48 dp minimum</strong> tap target size recommended by Material Design and WCAG 2.5.5:</p>
+<ul>
+<li>Buttons, toggles, and checkboxes: minimum 48x48 dp</li>
+<li>List items and card actions: full-width tap area</li>
+<li>Close/dismiss targets: 48x48 dp with adequate spacing from adjacent elements</li>
+</ul>
+<h3 id="web-keyboard-navigation">Web: Keyboard Navigation</h3>
+<p>The BK web client (PWA) supports full keyboard navigation:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tab</code> / <code>Shift+Tab</code></td>
+<td>Move focus forward / backward</td>
+</tr>
+<tr>
+<td><code>Enter</code> / <code>Space</code></td>
+<td>Activate focused element</td>
+</tr>
+<tr>
+<td><code>Escape</code></td>
+<td>Close modals, dismiss overlays</td>
+</tr>
+<tr>
+<td><code>Arrow keys</code></td>
+<td>Navigate within lists, sliders, and menus</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>Open keyboard shortcut help overlay</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Focus Indicators</p>
+<p>All focusable elements display a visible focus ring (2px solid outline) that meets WCAG 2.4.7. The focus ring color adapts to the current theme for sufficient contrast.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

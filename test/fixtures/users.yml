@@ -1,0 +1,13 @@
+one:
+  email: one@example.com
+  display_name: User One
+  role: viewer
+  status: active
+  trust_level: 0
+
+two:
+  email: two@example.com
+  display_name: User Two
+  role: viewer
+  status: active
+  trust_level: 0
