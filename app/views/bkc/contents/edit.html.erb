@@ -1,0 +1,8 @@
+<% content_for :bkc_title, "Edit: #{@content.title}" %>
+
+<div class="card">
+  <div class="card-header">Edit Content</div>
+  <div class="card-body">
+    <%= render "form", form_url: bkc_content_path(@content), form_method: :patch, submit_label: "Save" %>
+  </div>
+</div>

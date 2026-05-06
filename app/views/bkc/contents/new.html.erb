@@ -1,0 +1,8 @@
+<% content_for :bkc_title, "New Content" %>
+
+<div class="card">
+  <div class="card-header">Create New Content</div>
+  <div class="card-body">
+    <%= render "form", form_url: bkc_contents_path, form_method: :post, submit_label: "Create" %>
+  </div>
+</div>
