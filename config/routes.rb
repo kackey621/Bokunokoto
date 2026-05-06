@@ -6,8 +6,14 @@ Rails.application.routes.draw do
       get "health", to: "health#show"
       post "auth/verify", to: "auth#verify"
 
+      resources :vaults, only: [] do
+        resources :contents, only: [ :index ]
+      end
+      resources :contents, only: [ :show ]
+
       namespace :my do
         resource :vault, only: [ :show, :create, :update ]
+        resources :contents, only: [ :index, :create, :update, :destroy ]
       end
 
       get "account/context", to: "account#context"
@@ -18,6 +24,7 @@ Rails.application.routes.draw do
     root to: "dashboard#show", as: :dashboard
     resource :vault, only: [ :create, :update ]
     resources :viewers, only: [ :index, :show, :update ]
+    resources :contents, except: [ :show ]
   end
 
   get "console", to: "console/dashboard#show"

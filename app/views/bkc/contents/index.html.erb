@@ -1,0 +1,40 @@
+<% content_for :bkc_title, "Contents" %>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Vault Contents</span>
+    <%= link_to "New Content", new_bkc_content_path, class: "btn btn-sm btn-primary" %>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Required Level</th>
+          <th>Format</th>
+          <th>Updated</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @contents.each do |content| %>
+          <tr>
+            <td><%= content.title %></td>
+            <td><span class="badge text-bg-info">L<%= content.required_level %></span></td>
+            <td><code><%= content.format %></code></td>
+            <td><%= content.updated_at.strftime("%Y-%m-%d %H:%M") %></td>
+            <td class="text-end">
+              <%= link_to "Edit", edit_bkc_content_path(content), class: "btn btn-sm btn-outline-primary" %>
+              <%= button_to "Delete", bkc_content_path(content), method: :delete, class: "btn btn-sm btn-outline-danger", form: { class: "d-inline", data: { turbo_confirm: "Delete this content?" } } %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @contents.empty? %>
+          <tr>
+            <td colspan="5" class="text-center py-4 text-body-secondary">No content yet. <%= link_to "Create your first one", new_bkc_content_path %>.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
