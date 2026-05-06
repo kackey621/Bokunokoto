@@ -2,6 +2,8 @@ module Api
   module V1
     module My
       class ContentsController < BaseController
+        include AuditLoggable
+
         before_action :require_vault!
 
         def index
@@ -15,6 +17,7 @@ module Api
         def create
           content = current_vault.contents.build(content_params)
           if content.save
+            log_audit!(action: "create", vault: current_vault, content: content)
             render json: { status: "success", content: serialize(content, include_body: true) }, status: :created
           else
             render json: { status: "error", message: content.errors.full_messages.join(", ") }, status: :unprocessable_entity
@@ -26,6 +29,7 @@ module Api
           return render json: { status: "error", message: "not_found" }, status: :not_found unless content
 
           if content.update(content_params)
+            log_audit!(action: "update", vault: current_vault, content: content)
             render json: { status: "success", content: serialize(content, include_body: true) }
           else
             render json: { status: "error", message: content.errors.full_messages.join(", ") }, status: :unprocessable_entity
@@ -36,6 +40,7 @@ module Api
           content = current_vault.contents.find_by(id: params[:id])
           return render json: { status: "error", message: "not_found" }, status: :not_found unless content
 
+          log_audit!(action: "delete", vault: current_vault, content: content)
           content.destroy!
           render json: { status: "success" }
         end

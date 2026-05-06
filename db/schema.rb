@@ -10,7 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_06_000104) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_06_081126) do
+  create_table "audit_logs", force: :cascade do |t|
+    t.string "action", null: false
+    t.integer "content_id"
+    t.datetime "created_at", null: false
+    t.string "face_snapshot_url"
+    t.string "ip_address"
+    t.decimal "lat", precision: 9, scale: 6
+    t.decimal "lng", precision: 9, scale: 6
+    t.datetime "occurred_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id", null: false
+    t.integer "vault_id", null: false
+    t.index [ "action" ], name: "index_audit_logs_on_action"
+    t.index [ "content_id" ], name: "index_audit_logs_on_content_id"
+    t.index [ "user_id", "occurred_at" ], name: "index_audit_logs_on_user_id_and_occurred_at"
+    t.index [ "user_id" ], name: "index_audit_logs_on_user_id"
+    t.index [ "vault_id", "occurred_at" ], name: "index_audit_logs_on_vault_id_and_occurred_at"
+    t.index [ "vault_id" ], name: "index_audit_logs_on_vault_id"
+  end
+
   create_table "contents", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
@@ -68,6 +89,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_000104) do
     t.index [ "user_id" ], name: "index_vaults_on_user_id", unique: true
   end
 
+  add_foreign_key "audit_logs", "users"
+  add_foreign_key "audit_logs", "vaults"
   add_foreign_key "contents", "vaults"
   add_foreign_key "permissions", "users"
   add_foreign_key "permissions", "vaults"
