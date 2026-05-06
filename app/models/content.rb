@@ -11,14 +11,13 @@ class Content < ApplicationRecord
   scope :accessible_for, ->(user, vault, platform: nil) {
     return where(vault: vault) if user.vault == vault # Owner sees everything in their vault
 
-    user_level = user.trust_level_for(vault)
+    permission = user.permissions.find_by(vault: vault)
+    return none unless permission
+
+    user_level = permission.granted_level
 
     # Cap trust level to L4 for web platform
     user_level = [ user_level, 4 ].min if platform == "web"
-
-    # If no permission exists and user is not owner, they see nothing
-    permission = user.permissions.find_by(vault: vault)
-    return none unless permission
 
     if ActiveRecord::Base.connection.adapter_name == "SQLite"
       where(vault: vault).where(
