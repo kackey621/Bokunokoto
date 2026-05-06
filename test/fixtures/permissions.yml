@@ -3,17 +3,15 @@
 one:
   vault: one
   user: one
-  granted_level: 1
-  status: MyString
-  relationship_context: MyText
-  source_access_link_id: MyString
-  owner_notes: MyText
+  granted_level: 3
+  status: active
+  relationship_context: Friend
+  owner_notes: Test fixture
 
 two:
   vault: two
   user: two
-  granted_level: 1
-  status: MyString
-  relationship_context: MyText
-  source_access_link_id: MyString
-  owner_notes: MyText
+  granted_level: 5
+  status: active
+  relationship_context: Family
+  owner_notes: Test fixture

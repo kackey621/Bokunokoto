@@ -1,7 +1,7 @@
 module Api
   module V1
     class AuthController < BaseController
-      skip_before_action :authenticate_user!, only: [:verify]
+      skip_before_action :authenticate_user!, only: [ :verify ]
 
       def verify
         token = params[:token]
@@ -11,7 +11,7 @@ module Api
           user = User.find_or_initialize_by(firebase_uid: payload["sub"])
           user.email = payload["email"]
           user.display_name = payload["name"] || payload["email"].split("@").first
-          
+
           # Initialize capabilities for new users
           if user.new_record?
             user.role = "viewer"

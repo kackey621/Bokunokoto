@@ -13,7 +13,7 @@ module Bkc
       user_id ||= request.headers["X-Test-User-Id"] if Rails.env.test?
 
       @current_user = User.find_by(id: user_id)
-      
+
       if Rails.env.development? && !@current_user
         @current_user = User.first
       end

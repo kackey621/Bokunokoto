@@ -2,18 +2,14 @@
 
 one:
   vault: one
-  title: MyString
-  body: MyText
+  title: Sample L1 Content
+  body: Sample body for L1 access
   required_level: 1
-  symbol_type: MyString
-  format: MyString
-  permitted_user_ids: 
+  format: markdown
 
 two:
   vault: two
-  title: MyString
-  body: MyText
+  title: Sample L1 Content (Two)
+  body: Another sample body
   required_level: 1
-  symbol_type: MyString
-  format: MyString
-  permitted_user_ids: 
+  format: markdown
