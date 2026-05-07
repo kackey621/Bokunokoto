@@ -14,16 +14,28 @@ class ContentCard extends StatelessWidget {
     required this.isProfileRequired,
   }) : super(key: key);
 
+  String _accessibilitySummary() {
+    if (content.requiresLogin && !content.requiresProfile) return 'Login required';
+    if (content.requiresProfile && isProfileRequired) return 'Profile required';
+    if (content.requiresProfile) return 'Accessible after profile';
+    return 'Accessible';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: content.requiresProfile && isProfileRequired ? null : onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(Spacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+    final tappable = !(content.requiresProfile && isProfileRequired);
+    return Semantics(
+      label: '${content.title}, ${content.levelDisplay}, ${_accessibilitySummary()}',
+      button: tappable,
+      enabled: tappable,
+      child: Card(
+        child: InkWell(
+          onTap: tappable ? onTap : null,
+          child: Padding(
+            padding: const EdgeInsets.all(Spacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -116,7 +128,8 @@ class ContentCard extends StatelessWidget {
                     ),
                   ],
                 ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

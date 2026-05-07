@@ -40,19 +40,24 @@ class LoginScreen extends ConsumerWidget {
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
               // Email login form (TODO)
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
+                  labelText: 'Email',
                   hintText: 'Email',
-                  prefixIcon: const Icon(Icons.email_outlined),
+                  prefixIcon: Icon(Icons.email_outlined),
                 ),
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email, AutofillHints.username],
                 enabled: !authState.isLoading,
               ),
               const SizedBox(height: Spacing.md),
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
+                  labelText: 'Password',
                   hintText: 'Password',
-                  prefixIcon: const Icon(Icons.lock_outlined),
+                  prefixIcon: Icon(Icons.lock_outlined),
                 ),
                 obscureText: true,
+                autofillHints: const [AutofillHints.password],
                 enabled: !authState.isLoading,
               ),
               const SizedBox(height: Spacing.lg),
