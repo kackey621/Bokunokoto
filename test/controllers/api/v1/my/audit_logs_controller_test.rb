@@ -48,14 +48,16 @@ class Api::V1::My::AuditLogsControllerTest < ActionDispatch::IntegrationTest
   test "logs are scoped to the caller's vault only" do
     other_vault = User.create!(email: "x@y.com", display_name: "Other", role: "owner").create_vault!(display_name: "Other")
     AuditLog.create!(vault: other_vault, user: @owner, action: "view", occurred_at: Time.current)
-    AuditLog.create!(vault: @vault, user: @viewer, action: "view", occurred_at: Time.current)
+    own_log = AuditLog.create!(vault: @vault, user: @viewer, action: "view", occurred_at: Time.current)
 
     FirebaseIdToken::Signature.stub :verify, { "sub" => @owner.firebase_uid } do
       get api_v1_my_audit_logs_path, headers: auth_headers
     end
 
     assert_response :success
-    assert_equal [], response.parsed_body["audit_logs"]
+    logs = response.parsed_body["audit_logs"]
+    assert_equal 1, logs.length, "should return only the @vault log, not the other_vault log"
+    assert_equal own_log.id, logs.first["id"]
   end
 
   test "returns 404 for user without vault" do

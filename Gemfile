@@ -40,6 +40,9 @@ gem "sidekiq"
 # Firebase ID Token verification
 gem "firebase_id_token"
 
+# Rate limiting / brute-force protection
+gem "rack-attack"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
