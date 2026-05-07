@@ -69,4 +69,27 @@ class Bkc::ForensicsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to bkc_dashboard_path
   end
+
+  test "index paginates face snapshots at FACE_ARCHIVE_PER_PAGE" do
+    per_page = Bkc::ForensicsController::FACE_ARCHIVE_PER_PAGE
+    total = per_page + 6
+
+    total.times do |i|
+      AuditLog.create!(
+        vault: @vault,
+        user: @viewer,
+        action: "view",
+        face_snapshot_url: "https://example.test/face_#{i}.jpg",
+        occurred_at: i.minutes.ago
+      )
+    end
+
+    get bkc_forensics_path, headers: { "X-Test-User-Id" => @owner.id }
+    assert_response :success
+    assert_select "#face-archive-grid .face-card", count: per_page
+
+    get bkc_forensics_path(page: 2), headers: { "X-Test-User-Id" => @owner.id }
+    assert_response :success
+    assert_select "#face-archive-grid .face-card", count: total - per_page
+  end
 end

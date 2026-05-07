@@ -77,24 +77,36 @@
   <div class="row mt-4">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <h3>Face Snapshot Archive</h3>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Face Snapshot Archive</h3>
+          <span class="text-muted small"><%= @face_logs.total_count %> total</span>
         </div>
         <div class="card-body">
-          <div id="face-archive-grid" class="row">
-            <% @audit_logs.where.not(face_snapshot_url: nil).each do |log| %>
-              <div class="col-md-3 mb-3">
-                <div class="face-card">
-                  <img src="<%= log.face_snapshot_url %>" alt="Face snapshot" class="img-fluid" />
-                  <div class="face-meta">
-                    <p><strong><%= log.user.display_name %></strong></p>
-                    <p><%= link_to log.content.title, bkc_content_path(log.content) %></p>
-                    <small class="text-muted"><%= log.occurred_at.strftime("%Y-%m-%d %H:%M") %></small>
+          <% if @face_logs.any? %>
+            <div id="face-archive-grid" class="row">
+              <% @face_logs.each do |log| %>
+                <div class="col-md-3 mb-3">
+                  <div class="face-card">
+                    <img src="<%= log.face_snapshot_url %>" alt="Face snapshot" class="img-fluid" />
+                    <div class="face-meta">
+                      <p><strong><%= log.user.display_name %></strong></p>
+                      <% if log.content %>
+                        <p><%= link_to log.content.title, bkc_content_path(log.content) %></p>
+                      <% else %>
+                        <p class="text-muted small">(content removed)</p>
+                      <% end %>
+                      <small class="text-muted"><%= log.occurred_at.strftime("%Y-%m-%d %H:%M") %></small>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <% end %>
-          </div>
+              <% end %>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+              <%= paginate @face_logs %>
+            </div>
+          <% else %>
+            <p class="text-muted mb-0">No face snapshots captured yet.</p>
+          <% end %>
         </div>
       </div>
     </div>

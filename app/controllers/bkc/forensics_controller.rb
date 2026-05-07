@@ -3,11 +3,17 @@ module Bkc
     before_action :require_vault
     before_action :require_user, only: :timeline
 
+    FACE_ARCHIVE_PER_PAGE = 24
+
     def index
       @audit_logs = @vault.audit_logs.includes(:user, :content).order(occurred_at: :desc)
       @incidents = @vault.incidents.unresolved.recent.limit(10)
 
       apply_filters if params[:start_date].present? || params[:end_date].present?
+
+      @face_logs = @audit_logs.where.not(face_snapshot_url: nil)
+                              .page(params[:page])
+                              .per(FACE_ARCHIVE_PER_PAGE)
     end
 
     def timeline
