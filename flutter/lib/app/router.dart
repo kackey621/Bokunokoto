@@ -7,6 +7,8 @@ import '../screens/auth/signup_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/vault/vault_contents_screen.dart';
 import '../screens/profile/profile_screen.dart';
+import '../screens/admin/qr_generator_screen.dart';
+import '../screens/onboarding/qr_scanner_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authNotifierProvider);
@@ -53,6 +55,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/profile',
             name: 'profile',
             builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/qr/scan',
+            name: 'qr-scan',
+            builder: (context, state) => const QRScannerScreen(),
+          ),
+          GoRoute(
+            path: '/admin/qr/:slug',
+            name: 'qr-generate',
+            builder: (context, state) => QrGeneratorScreen(
+              slug: state.pathParameters['slug']!,
+              presetContext: state.uri.queryParameters['context'],
+              welcomeMessage: state.uri.queryParameters['welcome'],
+            ),
           ),
         ],
       ),
