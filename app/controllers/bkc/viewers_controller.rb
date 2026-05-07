@@ -1,5 +1,7 @@
 module Bkc
   class ViewersController < BaseController
+    before_action :require_vault
+
     def index
       @permissions = current_vault.permissions.includes(:user)
     end
@@ -20,6 +22,10 @@ module Bkc
     end
 
     private
+
+    def require_vault
+      redirect_to bkc_dashboard_path, alert: "No vault found" unless current_vault
+    end
 
     def permission_params
       params.require(:permission).permit(:granted_level, :status, :owner_notes)
