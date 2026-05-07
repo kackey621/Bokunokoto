@@ -1,4 +1,4 @@
-<%= form_with(model: @access_link, local: true, class: "row g-3") do |form| %>
+<%= form_with(model: [ :bkc, @access_link ], local: true, class: "row g-3") do |form| %>
   <% if @access_link.errors.any? %>
     <div class="alert alert-danger">
       <h4><%= pluralize(@access_link.errors.count, "error") %> prohibited this access link from being saved:</h4>
