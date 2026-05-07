@@ -108,4 +108,40 @@ class Api::V1::ContentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "L7 body", response.parsed_body["content"]["body"]
   end
+
+  test "viewing a content creates an audit log" do
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @owner.firebase_uid } do
+      assert_difference "AuditLog.count", 1 do
+        get api_v1_content_path(@c0), headers: auth_headers(@owner)
+      end
+    end
+
+    assert_response :success
+    log = AuditLog.last
+    assert_equal @owner, log.user
+    assert_equal @c0, log.content
+    assert_equal "view", log.action
+  end
+
+  test "404 on show does not create audit log" do
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @owner.firebase_uid } do
+      assert_no_difference "AuditLog.count" do
+        get api_v1_content_path(0), headers: auth_headers(@owner)
+      end
+    end
+
+    assert_response :not_found
+  end
+
+  test "access-denied show does not create audit log" do
+    @viewer.permissions.create!(vault: @vault, granted_level: 3)
+
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      assert_no_difference "AuditLog.count" do
+        get api_v1_content_path(@c5), headers: auth_headers(@viewer)
+      end
+    end
+
+    assert_response :not_found
+  end
 end

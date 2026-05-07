@@ -1,5 +1,6 @@
 class Content < ApplicationRecord
   belongs_to :vault
+  has_many :audit_logs, dependent: :nullify
 
   validates :title, presence: true
   validates :body, presence: true
@@ -11,7 +12,10 @@ class Content < ApplicationRecord
   scope :accessible_for, ->(user, vault, platform: nil) {
     return where(vault: vault) if user.vault == vault # Owner sees everything in their vault
 
-    user_level = user.trust_level_for(vault)
+    permission = user.permissions.find_by(vault: vault)
+    return none unless permission
+
+    user_level = permission.granted_level
 
     # Cap trust level to L4 for web platform
     user_level = [ user_level, 4 ].min if platform == "web"

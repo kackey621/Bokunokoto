@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_06_081126) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_114735) do
   create_table "audit_logs", force: :cascade do |t|
     t.string "action", null: false
     t.integer "content_id"
@@ -42,7 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_081126) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "vault_id", null: false
-    t.index [ "vault_id" ], name: "index_contents_on_vault_id"
+    t.index ["vault_id"], name: "index_contents_on_vault_id"
   end
 
   create_table "permissions", force: :cascade do |t|
@@ -55,9 +55,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_081126) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.integer "vault_id", null: false
-    t.index [ "user_id" ], name: "index_permissions_on_user_id"
-    t.index [ "vault_id", "user_id" ], name: "index_permissions_on_vault_id_and_user_id", unique: true
-    t.index [ "vault_id" ], name: "index_permissions_on_vault_id"
+    t.index ["user_id"], name: "index_permissions_on_user_id"
+    t.index ["vault_id", "user_id"], name: "index_permissions_on_vault_id_and_user_id", unique: true
+    t.index ["vault_id"], name: "index_permissions_on_vault_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -74,10 +74,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_081126) do
     t.string "status", default: "active", null: false
     t.integer "trust_level", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index [ "email" ], name: "index_users_on_email", unique: true
-    t.index [ "firebase_uid" ], name: "index_users_on_firebase_uid", unique: true
-    t.index [ "role" ], name: "index_users_on_role"
-    t.index [ "status" ], name: "index_users_on_status"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["firebase_uid"], name: "index_users_on_firebase_uid", unique: true
+    t.index ["role"], name: "index_users_on_role"
+    t.index ["status"], name: "index_users_on_status"
   end
 
   create_table "vaults", force: :cascade do |t|
@@ -86,7 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_081126) do
     t.string "display_name"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
-    t.index [ "user_id" ], name: "index_vaults_on_user_id", unique: true
+    t.index ["user_id"], name: "index_vaults_on_user_id", unique: true
   end
 
   add_foreign_key "audit_logs", "users"

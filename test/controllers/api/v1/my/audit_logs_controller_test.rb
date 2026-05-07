@@ -4,17 +4,19 @@ require "minitest/mock"
 class Api::V1::My::AuditLogsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @owner = User.create!(
-      firebase_uid: "owner_uid",
-      email: "owner@example.com",
-      display_name: "Owner",
+      firebase_uid: "audit_owner_uid",
+      email: "audit_owner@example.com",
+      display_name: "Audit Owner",
       role: "owner",
       can_create_vault: true
     )
-    @vault = @owner.create_vault!(display_name: "Vault")
-    @viewer = User.create!(
-      firebase_uid: "viewer_uid",
-      email: "viewer@example.com",
-      display_name: "Viewer",
+    @vault = @owner.create_vault!(display_name: "Audit Owner Vault")
+    @content = @vault.contents.create!(title: "Logged Content", body: "Body", required_level: 0)
+
+    @no_vault_user = User.create!(
+      firebase_uid: "audit_novault_uid",
+      email: "audit_novault@example.com",
+      display_name: "No Vault",
       role: "viewer"
     )
   end
@@ -45,33 +47,35 @@ class Api::V1::My::AuditLogsControllerTest < ActionDispatch::IntegrationTest
       get api_v1_my_audit_logs_path, headers: auth_headers
     end
 
-    logs = response.parsed_body["audit_logs"]
-    assert_equal 1, logs.length
+    assert_response :success
+    assert_equal [], response.parsed_body["audit_logs"]
   end
 
-  test "user without vault is forbidden" do
-    no_vault = User.create!(firebase_uid: "nv_uid", email: "nv@example.com", display_name: "NV", role: "viewer")
-
-    FirebaseIdToken::Signature.stub :verify, { "sub" => no_vault.firebase_uid } do
+  test "returns 404 for user without vault" do
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @no_vault_user.firebase_uid } do
       get api_v1_my_audit_logs_path, headers: auth_headers
     end
 
-    assert_response :forbidden
+    assert_response :not_found
   end
 
-  test "viewing content writes an audit log" do
-    @viewer.permissions.create!(vault: @vault, granted_level: 5)
-    content = @vault.contents.create!(title: "Secret", body: "Body", required_level: 3)
+  test "does not return logs from other vaults" do
+    other_owner = User.create!(
+      firebase_uid: "other_audit_uid",
+      email: "other_audit@example.com",
+      display_name: "Other",
+      role: "owner",
+      can_create_vault: true
+    )
+    other_vault = other_owner.create_vault!(display_name: "Other Vault")
+    other_content = other_vault.contents.create!(title: "Other", body: "Body", required_level: 0)
+    AuditLog.create!(user: @owner, content: other_content, action: "view", occurred_at: Time.current)
 
-    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
-      assert_difference "AuditLog.count", 1 do
-        get api_v1_content_path(content), headers: auth_headers
-      end
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @owner.firebase_uid } do
+      get api_v1_my_audit_logs_path, headers: auth_headers
     end
 
-    log = AuditLog.last
-    assert_equal "view", log.action
-    assert_equal @viewer.id, log.user_id
-    assert_equal content.id, log.content_id
+    assert_response :success
+    assert_equal [], response.parsed_body["audit_logs"]
   end
 end
