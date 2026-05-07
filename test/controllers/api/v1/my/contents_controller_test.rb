@@ -83,6 +83,20 @@ class Api::V1::My::ContentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "deletes content even when audit logs reference it" do
+    content = @vault.contents.create!(title: "Viewed", body: "Body", required_level: 0)
+    log = AuditLog.create!(user: @owner, content: content, action: "view", occurred_at: Time.current)
+
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @owner.firebase_uid } do
+      assert_difference "Content.count", -1 do
+        delete api_v1_my_content_path(content), headers: auth_headers(@owner)
+      end
+    end
+
+    assert_response :success
+    assert_nil log.reload.content_id
+  end
+
   test "cannot update content from another vault" do
     other_owner = User.create!(
       firebase_uid: "other_uid",

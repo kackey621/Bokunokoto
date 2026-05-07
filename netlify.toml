@@ -4,7 +4,8 @@
 
 [build.environment]
   PYTHON_VERSION = "3.10"
-  # Prevent Netlify from attempting to install Rails dependencies
-  # The Gemfile in root is for the Rails backend only; docs build uses Python/mkdocs
-  # Setting RUBY_VERSION to none prevents bundler from running
-  RUBY_VERSION = "none"
+  NODE_VERSION = "18"
+  # Install a real Ruby so bundler doesn't error on RUBY_VERSION lookup,
+  # but exclude every gem group so nothing is compiled or downloaded.
+  RUBY_VERSION = "3.3.7"
+  BUNDLE_WITHOUT = "default:development:test"
