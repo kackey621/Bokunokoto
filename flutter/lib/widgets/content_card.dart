@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../app/theme.dart';
 import '../models/content.dart';
+import 'symbol_badge.dart';
 
 class ContentCard extends StatelessWidget {
   final Content content;
@@ -38,22 +39,34 @@ class ContentCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: Spacing.sm),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Spacing.sm,
-                            vertical: Spacing.xs,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getLevelColor(content.requiredLevel),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            content.levelDisplay,
-                            style: AppTypography.labelMedium.copyWith(
-                              color: Colors.white,
-                              fontSize: 10,
+                        Wrap(
+                          spacing: Spacing.sm,
+                          runSpacing: Spacing.xs,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Spacing.sm,
+                                vertical: Spacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getLevelColor(content.requiredLevel),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                content.levelDisplay,
+                                style: AppTypography.labelMedium.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                              ),
                             ),
-                          ),
+                            if (content.symbolType != null)
+                              SymbolBadge(
+                                symbolType: content.symbolType,
+                                requiredLevel: content.requiredLevel,
+                              ),
+                          ],
                         ),
                       ],
                     ),
