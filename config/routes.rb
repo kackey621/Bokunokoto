@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       namespace :my do
         resource :vault, only: [ :show, :create, :update ]
         resources :contents, only: [ :index, :create, :update, :destroy ]
+        resources :audit_logs, only: [ :index ]
       end
 
       get "account/context", to: "account#context"
