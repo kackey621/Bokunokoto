@@ -26,7 +26,8 @@ module Api
         end
 
         def limit_param
-          [ params.fetch(:limit, 100).to_i, 500 ].min
+          raw = params.fetch(:limit, 100).to_i
+          raw.clamp(1, 500)
         end
 
         def serialize(log)

@@ -58,4 +58,18 @@ class ContentTest < ActiveSupport::TestCase
     accessible = Content.accessible_for(@viewer, @vault)
     assert_not_includes accessible, @c5
   end
+
+  test "suspended viewer sees nothing" do
+    @viewer.permissions.create!(vault: @vault, granted_level: 5, status: "suspended")
+
+    accessible = Content.accessible_for(@viewer, @vault)
+    assert_empty accessible
+  end
+
+  test "pending viewer sees nothing" do
+    @viewer.permissions.create!(vault: @vault, granted_level: 5, status: "pending")
+
+    accessible = Content.accessible_for(@viewer, @vault)
+    assert_empty accessible
+  end
 end

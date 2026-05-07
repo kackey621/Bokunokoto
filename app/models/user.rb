@@ -28,7 +28,7 @@ class User < ApplicationRecord
   def trust_level_for(vault)
     return 9 if self.vault == vault # Owner has max trust for their own vault
 
-    permissions.find_by(vault: vault)&.granted_level || 0
+    permissions.find_by(vault: vault, status: "active")&.granted_level || 0
   end
 
   def receive_only?

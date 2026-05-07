@@ -16,7 +16,7 @@ module AuditLoggable
       user_agent: request.user_agent,
       occurred_at: Time.current
     )
-  rescue ActiveRecord::RecordInvalid => e
+  rescue ActiveRecord::ActiveRecordError => e
     Rails.logger.warn("AuditLog write failed: #{e.message}")
   end
 end
