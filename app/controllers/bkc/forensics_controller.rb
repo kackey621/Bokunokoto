@@ -13,7 +13,7 @@ module Bkc
 
     def require_vault
       @vault = current_user.vault
-      redirect_to bkc_dashboard_path, alert: 'No vault found' unless @vault
+      redirect_to bkc_dashboard_path, alert: "No vault found" unless @vault
     end
 
     def apply_filters
