@@ -1,0 +1,142 @@
+<div class="bkc-forensics">
+  <h1>Forensic Monitoring</h1>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h3>Access Locations</h3>
+        </div>
+        <div class="card-body">
+          <div id="geo-map" style="height: 500px; width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Incidents</h3>
+        </div>
+        <div class="card-body">
+          <div id="incidents-list">
+            <% if @incidents.any? %>
+              <ul class="list-unstyled">
+                <% @incidents.each do |incident| %>
+                  <li class="incident-item <%= incident.severity %>">
+                    <strong><%= incident.incident_type.humanize %></strong>
+                    <p class="text-muted"><%= incident.description %></p>
+                    <small class="text-muted"><%= time_ago_in_words(incident.created_at) %> ago</small>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="text-muted">No incidents detected</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3>Filters</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Date Range</label>
+            <input type="date" id="start-date" class="form-control" />
+            <input type="date" id="end-date" class="form-control mt-2" />
+          </div>
+          <div class="form-group">
+            <label>User</label>
+            <select id="user-filter" class="form-control">
+              <option value="">All Users</option>
+              <% @vault.permissions.each do |perm| %>
+                <option value="<%= perm.user_id %>"><%= perm.user.display_name %></option>
+              <% end %>
+            </select>
+          </div>
+          <button id="apply-filters" class="btn btn-primary btn-block">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3>Face Snapshot Archive</h3>
+        </div>
+        <div class="card-body">
+          <div id="face-archive-grid" class="row">
+            <% @audit_logs.where.not(face_snapshot_url: nil).each do |log| %>
+              <div class="col-md-3 mb-3">
+                <div class="face-card">
+                  <img src="<%= log.face_snapshot_url %>" alt="Face snapshot" class="img-fluid" />
+                  <div class="face-meta">
+                    <p><strong><%= log.user.display_name %></strong></p>
+                    <p><%= link_to log.content.title, bkc_content_path(log.content) %></p>
+                    <small class="text-muted"><%= log.occurred_at.strftime("%Y-%m-%d %H:%M") %></small>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .incident-item {
+      padding: 12px;
+      border-left: 4px solid #ccc;
+      margin-bottom: 12px;
+    }
+    .incident-item.high {
+      border-color: #ff6b6b;
+      background: #ffe0e0;
+    }
+    .incident-item.critical {
+      border-color: #c92a2a;
+      background: #ffc0cb;
+    }
+    .face-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .face-meta {
+      padding: 12px;
+      background: #f8f9fa;
+    }
+  </style>
+</div>
+
+<script>
+  // Initialize Leaflet map
+  if (document.getElementById('geo-map')) {
+    const map = L.map('geo-map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    // Fetch and display access locations
+    fetch('<%= bkc_analytics_path %>/locations')
+      .then(r => r.json())
+      .then(data => {
+        data.forEach(log => {
+          if (log.latitude && log.longitude) {
+            L.circleMarker([log.latitude, log.longitude], {
+              radius: 6,
+              fillColor: '#6366F1',
+              fillOpacity: 0.7,
+              weight: 2,
+              opacity: 1,
+              color: '#fff'
+            }).bindPopup(`${log.user_name}<br>${new Date(log.occurred_at).toLocaleString()}`)
+              .addTo(map);
+          }
+        });
+      });
+  }
+</script>
