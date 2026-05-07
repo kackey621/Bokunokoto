@@ -1,0 +1,117 @@
+<div class="bkc-forensics-timeline">
+  <div class="d-flex align-items-center mb-4">
+    <%= link_to bkc_forensics_path, class: "btn btn-sm btn-outline-secondary me-3" do %>
+      &larr; Back to Forensics
+    <% end %>
+    <h1 class="mb-0">Activity Timeline — <%= @user.display_name %></h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Audit Trail</h3>
+          <span class="badge bg-secondary"><%= @audit_logs.count %> events</span>
+        </div>
+        <div class="card-body p-0">
+          <% if @audit_logs.any? %>
+            <ul class="list-unstyled timeline-list mb-0">
+              <% @audit_logs.each do |log| %>
+                <li class="timeline-item">
+                  <div class="timeline-marker timeline-marker--<%= log.action %>"></div>
+                  <div class="timeline-content">
+                    <div class="d-flex justify-content-between align-items-baseline">
+                      <strong class="timeline-action"><%= log.action.humanize %></strong>
+                      <small class="text-muted"><%= log.occurred_at.strftime("%Y-%m-%d %H:%M:%S") %></small>
+                    </div>
+                    <% if log.content %>
+                      <div class="text-muted">on <%= link_to log.content.title, bkc_content_path(log.content) %></div>
+                    <% end %>
+                    <div class="timeline-meta small text-muted mt-1">
+                      <% if log.ip_address.present? %>
+                        <span class="me-2">IP: <code><%= log.ip_address %></code></span>
+                      <% end %>
+                      <% if log.latitude.present? && log.longitude.present? %>
+                        <span class="me-2">Geo: <%= log.latitude %>, <%= log.longitude %></span>
+                      <% end %>
+                      <% if log.face_snapshot_url.present? %>
+                        <a href="<%= log.face_snapshot_url %>" target="_blank" rel="noopener">📷 face snapshot</a>
+                      <% end %>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted p-4 mb-0">No activity recorded for this user in the selected range.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0">Date Range</h3></div>
+        <div class="card-body">
+          <%= form_with url: bkc_forensics_user_timeline_path(user_id: @user.id), method: :get, local: true do %>
+            <div class="mb-2">
+              <label class="form-label small">Start</label>
+              <input type="date" name="start_date" class="form-control" value="<%= params[:start_date] %>" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">End</label>
+              <input type="date" name="end_date" class="form-control" value="<%= params[:end_date] %>" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm w-100">Apply</button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3 class="mb-0">Incidents (<%= @incidents.size %>)</h3></div>
+        <div class="card-body">
+          <% if @incidents.any? %>
+            <ul class="list-unstyled mb-0">
+              <% @incidents.each do |incident| %>
+                <li class="incident-item severity-<%= incident.severity %>">
+                  <strong><%= incident.incident_type.humanize %></strong>
+                  <p class="text-muted small mb-1"><%= incident.description %></p>
+                  <small class="text-muted"><%= time_ago_in_words(incident.created_at) %> ago</small>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted mb-0">No incidents flagged for this user.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .timeline-list { padding: 0; }
+  .timeline-item {
+    position: relative;
+    padding: 12px 16px 12px 36px;
+    border-bottom: 1px solid #eee;
+  }
+  .timeline-item:last-child { border-bottom: 0; }
+  .timeline-marker {
+    position: absolute;
+    left: 16px;
+    top: 18px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6c757d;
+  }
+  .timeline-marker--view     { background: #6366F1; }
+  .timeline-marker--handshake { background: #10B981; }
+  .timeline-marker--login    { background: #0ea5e9; }
+  .timeline-marker--profile_update { background: #f59e0b; }
+  .timeline-marker--delete   { background: #ef4444; }
+  .timeline-action { font-weight: 600; }
+  .incident-item { padding: 8px 12px; border-left: 3px solid #ccc; margin-bottom: 8px; }
+  .incident-item.severity-2, .incident-item.severity-3 { border-color: #ef4444; background: #fee2e2; }
+</style>
