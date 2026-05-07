@@ -33,7 +33,7 @@ class UserTest < ActiveSupport::TestCase
     viewer.permissions.create!(vault: vault, granted_level: 7, status: "suspended")
     assert_equal 0, viewer.trust_level_for(vault)
 
-    viewer.permissions.find_by(vault: vault).update_columns(status: "pending")
+    viewer.permissions.find_by(vault: vault).update!(status: "pending")
     assert_equal 0, viewer.trust_level_for(vault)
   end
 end
