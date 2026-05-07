@@ -1,7 +1,7 @@
 module Api
   module V1
     class HandshakeController < BaseController
-      skip_before_action :authenticate_user!, only: [:create]
+      skip_before_action :authenticate_user!, only: [ :create ]
 
       def create
         slug = handshake_params[:slug]
