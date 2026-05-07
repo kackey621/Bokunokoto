@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme.dart';
 import '../../providers/api_client_provider.dart';
@@ -26,6 +27,8 @@ class _ConversationalProfileScreenState extends ConsumerState<ConversationalProf
   late TextEditingController _relationshipController;
   late TextEditingController _purposeController;
   bool _isSubmitting = false;
+  bool _voiceMuted = false;
+  late FlutterTts _tts;
 
   final List<String> _questions = [
     'What\'s your name?',
@@ -46,6 +49,10 @@ class _ConversationalProfileScreenState extends ConsumerState<ConversationalProf
     _realNameController = TextEditingController();
     _relationshipController = TextEditingController();
     _purposeController = TextEditingController();
+    _tts = FlutterTts()
+      ..setSpeechRate(0.45)
+      ..setVolume(0.9)
+      ..setPitch(1.0);
 
     // Pre-fill from preset context if available
     if (widget.presetContext != null) {
@@ -56,15 +63,37 @@ class _ConversationalProfileScreenState extends ConsumerState<ConversationalProf
         _relationshipController.text = widget.presetContext!['relationship'];
       }
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _speakCurrentStep();
+    });
   }
 
   @override
   void dispose() {
+    _tts.stop();
     _pageController.dispose();
     _realNameController.dispose();
     _relationshipController.dispose();
     _purposeController.dispose();
     super.dispose();
+  }
+
+  Future<void> _speakCurrentStep() async {
+    if (_voiceMuted) return;
+    if (_currentStep < 0 || _currentStep >= _questions.length) return;
+    final phrase = '${_questions[_currentStep]}. ${_hints[_currentStep]}.';
+    await _tts.stop();
+    await _tts.speak(phrase);
+  }
+
+  Future<void> _toggleVoice() async {
+    setState(() => _voiceMuted = !_voiceMuted);
+    if (_voiceMuted) {
+      await _tts.stop();
+    } else {
+      await _speakCurrentStep();
+    }
   }
 
   Future<void> _submitProfile() async {
@@ -139,6 +168,13 @@ class _ConversationalProfileScreenState extends ConsumerState<ConversationalProf
                 onPressed: _previousStep,
               )
             : null,
+        actions: [
+          IconButton(
+            tooltip: _voiceMuted ? 'Enable audio guidance' : 'Mute audio guidance',
+            icon: Icon(_voiceMuted ? Icons.volume_off : Icons.volume_up),
+            onPressed: _toggleVoice,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -155,6 +191,7 @@ class _ConversationalProfileScreenState extends ConsumerState<ConversationalProf
               physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
                 setState(() => _currentStep = index);
+                _speakCurrentStep();
               },
               children: [
                 _buildStep(
