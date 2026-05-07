@@ -2,28 +2,42 @@ module Api
   module V1
     module My
       class AuditLogsController < BaseController
-        before_action :authenticate_user!
+        before_action :require_vault!
 
         def index
-          vault = current_user.vault
-          return render json: { status: "error", message: "no_vault" }, status: :not_found unless vault
+          logs = AuditLog
+            .for_vault(current_user.vault)
+            .recent
+            .includes(:user, :content)
+            .limit(limit_param)
 
-          logs = AuditLog.where(content: vault.contents)
-                         .order(occurred_at: :desc)
-                         .limit(100)
-          render json: { status: "success", audit_logs: logs.map { |l| serialize(l) } }
+          render json: {
+            status: "success",
+            audit_logs: logs.map { |log| serialize(log) }
+          }
         end
 
         private
 
+        def require_vault!
+          unless current_user.vault
+            render json: { status: "error", message: "no_vault" }, status: :forbidden
+          end
+        end
+
+        def limit_param
+          raw = params.fetch(:limit, 100).to_i
+          raw.clamp(1, 500)
+        end
+
         def serialize(log)
           {
             id: log.id,
-            content_id: log.content_id,
-            user_id: log.user_id,
             action: log.action,
-            ip_address: log.ip_address,
-            occurred_at: log.occurred_at
+            occurred_at: log.occurred_at,
+            user: { id: log.user_id, display_name: log.user.display_name },
+            content: log.content && { id: log.content_id, title: log.content.title },
+            ip_address: log.ip_address
           }
         end
       end

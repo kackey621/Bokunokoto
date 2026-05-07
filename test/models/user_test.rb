@@ -24,4 +24,16 @@ class UserTest < ActiveSupport::TestCase
     assert_equal 0, viewer.trust_level_for(Vault.new) # No permission
     assert_equal 9, owner1.trust_level_for(vault1) # Owner access
   end
+
+  test "suspended or pending permission contributes zero trust level" do
+    owner = User.create!(email: "owner@example.com", display_name: "Owner", role: "owner")
+    vault = owner.create_vault!(display_name: "Vault")
+    viewer = User.create!(email: "viewer2@example.com", display_name: "Viewer", role: "viewer")
+
+    viewer.permissions.create!(vault: vault, granted_level: 7, status: "suspended")
+    assert_equal 0, viewer.trust_level_for(vault)
+
+    viewer.permissions.find_by(vault: vault).update!(status: "pending")
+    assert_equal 0, viewer.trust_level_for(vault)
+  end
 end

@@ -1,35 +1,37 @@
 module Api
   module V1
     class HandshakeController < BaseController
-      include AuditLoggable
+      skip_before_action :authenticate_user!, only: [ :create ]
 
       def create
-        slug = params[:slug].to_s
-        link = AccessLink.find_by(slug: slug)
-        return render_error("not_found", :not_found) unless link
+        slug = handshake_params[:slug]
+        access_link = AccessLink.find_by(slug: slug)
 
-        if link.expired?
-          return render_error("expired", :unprocessable_entity)
-        elsif link.exhausted?
-          return render_error("exhausted", :unprocessable_entity)
-        elsif link.bound_to_other?(current_user)
-          return render_error("link_already_bound", :forbidden)
+        if access_link.nil?
+          return render json: { error: 'Invalid access link' }, status: :not_found
         end
 
-        permission = nil
-        ActiveRecord::Base.transaction do
-          link.claim!(current_user)
-          permission = upsert_permission(link)
+        unless access_link.valid_for_handshake?
+          return render json: { error: 'Access link expired or max uses exceeded' }, status: :forbidden
         end
 
-        log_audit!(action: "handshake", vault: link.vault, user: current_user)
+        firebase_uid = handshake_params[:firebase_uid]
+        user = User.find_by(firebase_uid: firebase_uid)
+
+        if user.nil?
+          return render json: { error: 'User not found' }, status: :not_found
+        end
+
+        permission = find_or_create_permission(access_link.vault, user, access_link)
+        access_link.use!
 
         render json: {
-          status: "success",
-          vault: { id: link.vault_id, display_name: link.vault.display_name },
-          welcome_message: link.welcome_message,
-          permission: { granted_level: permission.granted_level, status: permission.status }
-        }
+          permission: PermissionSerializer.new(permission).serializable_hash,
+          vault: VaultSerializer.new(access_link.vault).serializable_hash,
+          welcome_message: access_link.welcome_message,
+          initial_level: access_link.initial_level,
+          preset_context: access_link.preset_context
+        }, status: :created
       end
 
       private
@@ -53,6 +55,25 @@ module Api
 
       def render_error(code, status)
         render json: { status: "error", code: code }, status: status
+      def handshake_params
+        params.require(:handshake).permit(:slug, :firebase_uid)
+      end
+
+      def find_or_create_permission(vault, user, access_link)
+        permission = vault.permissions.find_by(user_id: user.id)
+
+        if permission
+          permission.update(source_access_link_id: access_link.id)
+        else
+          permission = vault.permissions.create(
+            user_id: user.id,
+            granted_level: access_link.initial_level,
+            status: "active",
+            source_access_link_id: access_link.id
+          )
+        end
+
+        permission
       end
     end
   end

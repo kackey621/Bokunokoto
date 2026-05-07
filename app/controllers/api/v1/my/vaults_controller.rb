@@ -6,11 +6,7 @@ module Api
           if current_user.vault
             render json: {
               status: "success",
-              vault: {
-                id: current_user.vault.id,
-                display_name: current_user.vault.display_name,
-                bio: current_user.vault.bio
-              }
+              vault: vault_response(current_user.vault)
             }
           else
             render json: { status: "error", message: "No vault found" }, status: :not_found
@@ -30,11 +26,7 @@ module Api
           if vault.save
             render json: {
               status: "success",
-              vault: {
-                id: vault.id,
-                display_name: vault.display_name,
-                bio: vault.bio
-              }
+              vault: vault_response(vault)
             }, status: :created
           else
             render_error(vault.errors.full_messages.join(", "))
@@ -48,11 +40,7 @@ module Api
           if vault.update(vault_params)
             render json: {
               status: "success",
-              vault: {
-                id: vault.id,
-                display_name: vault.display_name,
-                bio: vault.bio
-              }
+              vault: vault_response(vault)
             }
           else
             render_error(vault.errors.full_messages.join(", "))
@@ -62,7 +50,17 @@ module Api
         private
 
         def vault_params
-          params.require(:vault).permit(:display_name, :bio)
+          params.require(:vault).permit(:display_name, :bio, bank_account_info: {})
+        end
+
+        def vault_response(vault)
+          {
+            id: vault.id,
+            display_name: vault.display_name,
+            bio: vault.bio,
+            masked_account_number: vault.masked_account_number,
+            bank_account_info: vault.bank_account_data
+          }
         end
       end
     end

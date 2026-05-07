@@ -33,16 +33,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_114735) do
     t.datetime "created_at", null: false
     t.string "face_snapshot_url"
     t.string "ip_address"
-    t.decimal "latitude", precision: 10, scale: 7
-    t.decimal "longitude", precision: 10, scale: 7
-    t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.decimal "lat", precision: 9, scale: 6
+    t.decimal "lng", precision: 9, scale: 6
+    t.datetime "occurred_at", null: false
     t.datetime "updated_at", null: false
-    t.text "user_agent"
+    t.string "user_agent"
     t.integer "user_id", null: false
-    t.index ["content_id", "occurred_at"], name: "index_audit_logs_on_content_id_and_occurred_at"
-    t.index ["content_id"], name: "index_audit_logs_on_content_id"
-    t.index ["user_id", "occurred_at"], name: "index_audit_logs_on_user_id_and_occurred_at"
-    t.index ["user_id"], name: "index_audit_logs_on_user_id"
+    t.integer "vault_id", null: false
+    t.index [ "action" ], name: "index_audit_logs_on_action"
+    t.index [ "content_id" ], name: "index_audit_logs_on_content_id"
+    t.index [ "user_id", "occurred_at" ], name: "index_audit_logs_on_user_id_and_occurred_at"
+    t.index [ "user_id" ], name: "index_audit_logs_on_user_id"
+    t.index [ "vault_id", "occurred_at" ], name: "index_audit_logs_on_vault_id_and_occurred_at"
+    t.index [ "vault_id" ], name: "index_audit_logs_on_vault_id"
   end
 
   create_table "contents", force: :cascade do |t|
@@ -102,13 +105,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_114735) do
     t.index ["user_id"], name: "index_vaults_on_user_id", unique: true
   end
 
-<<<<<<< HEAD
-  add_foreign_key "audit_logs", "contents"
-=======
   add_foreign_key "access_links", "users", column: "bound_user_id"
   add_foreign_key "access_links", "vaults"
->>>>>>> 80e2f07 (feat(access-link): backend for QR/NFC handshake with OTP first-user lock (#52))
   add_foreign_key "audit_logs", "users"
+  add_foreign_key "audit_logs", "vaults"
   add_foreign_key "contents", "vaults"
   add_foreign_key "permissions", "users"
   add_foreign_key "permissions", "vaults"
