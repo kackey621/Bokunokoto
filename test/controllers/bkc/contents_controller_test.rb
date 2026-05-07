@@ -82,4 +82,19 @@ class Bkc::ContentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "redirects to dashboard when current user has no vault" do
+    user_without_vault = User.create!(
+      email: "novault@example.com",
+      display_name: "No Vault",
+      role: "owner",
+      status: "active",
+      can_create_vault: true
+    )
+
+    get bkc_contents_path, headers: { "X-Test-User-Id" => user_without_vault.id }
+
+    assert_redirected_to bkc_dashboard_path
+    assert_equal "No vault found", flash[:alert]
+  end
 end
