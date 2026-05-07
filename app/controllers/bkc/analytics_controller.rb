@@ -56,7 +56,7 @@ module Bkc
 
       {
         total_accesses: logs.count,
-        failed_auth_attempts: logs.where(action: ["auth_failed", "token_invalid"]).count,
+        failed_auth_attempts: logs.where(action: [ "auth_failed", "token_invalid" ]).count,
         gps_denials: logs.where(action: "gps_denied").count,
         face_captures: logs.where.not(face_snapshot_url: nil).count,
         incidents: @vault.incidents.where("created_at >= ?", start_date).count

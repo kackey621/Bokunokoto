@@ -11,8 +11,8 @@ class CreateAuditLogs < ActiveRecord::Migration[8.1]
       t.string :action, null: false
       t.string :ip_address
       t.string :user_agent
-      t.decimal :lat, precision: 9, scale: 6
-      t.decimal :lng, precision: 9, scale: 6
+      t.decimal :latitude, precision: 10, scale: 7
+      t.decimal :longitude, precision: 10, scale: 7
       t.string :face_snapshot_url
       t.datetime :occurred_at, null: false
 

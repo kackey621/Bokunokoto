@@ -12,9 +12,9 @@ class User < ApplicationRecord
   validates :trust_level, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 9 }
 
   # Account capabilities
-  validates :can_create_vault, inclusion: [true, false]
-  validates :bkc_access, inclusion: [true, false]
-  validates :is_beta_tester, inclusion: [true, false]
+  validates :can_create_vault, inclusion: [ true, false ]
+  validates :bkc_access, inclusion: [ true, false ]
+  validates :is_beta_tester, inclusion: [ true, false ]
 
   validates :firebase_uid, uniqueness: true, allow_blank: true
 

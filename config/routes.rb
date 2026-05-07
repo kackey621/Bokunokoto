@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       post "auth/verify", to: "auth#verify"
       post "handshake", to: "handshake#create"
 
-      resources :vaults, only: [ ] do
+      resources :vaults, only: [] do
         resources :contents, only: [ :index ]
       end
       resources :contents, only: [ :show ]
