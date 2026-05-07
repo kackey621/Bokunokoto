@@ -16,8 +16,12 @@ Rails.application.routes.draw do
         resource :vault, only: [ :show, :create, :update ]
         resources :contents, only: [ :index, :create, :update, :destroy ]
         resources :audit_logs, only: [ :index ]
+        get "analytics/funnel", to: "analytics#funnel"
+        get "analytics/content", to: "analytics#content"
+        get "analytics/security", to: "analytics#security"
       end
 
+      resource :profile, only: [ :show, :update ]
       get "account/context", to: "account#context"
     end
   end

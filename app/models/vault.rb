@@ -8,6 +8,8 @@ class Vault < ApplicationRecord
   has_many :viewers, through: :permissions, source: :user
   has_many :contents, dependent: :destroy
   has_many :access_links, dependent: :destroy
+  has_many :greetings, dependent: :destroy
+  has_many :incidents, dependent: :destroy
 
   encrypts :bank_account_info, deterministic: false
 
