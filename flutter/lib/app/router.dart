@@ -98,14 +98,17 @@ class _NavigationShellState extends State<_NavigationShell> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+            tooltip: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.collections_bookmark),
             label: 'Cards',
+            tooltip: 'Cards',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
+            tooltip: 'Profile',
           ),
         ],
       ),
