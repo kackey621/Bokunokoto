@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -29,41 +30,31 @@ class GreetingNotifier extends StateNotifier<GreetingState> {
   GreetingNotifier() : super(GreetingState());
 
   void loadGreeting(Greeting greeting) {
-    state = GreetingState(greeting: greeting);
-    _startCountdown();
+    state = GreetingState(
+      greeting: greeting,
+      timeUntilUnlock: _remaining(greeting),
+    );
   }
 
-  void _startCountdown() {
-    Future.delayed(const Duration(seconds: 1), () {
-      if (state.greeting != null && state.greeting!.locked) {
-        final now = DateTime.now();
-        final unlockTime = state.greeting!.scheduledDeliveryTime;
-        final duration = unlockTime.difference(now);
-
-        if (duration.isNegative) {
-          state = GreetingState(
-            greeting: state.greeting,
-            timeUntilUnlock: Duration.zero,
-          );
-        } else {
-          state = GreetingState(
-            greeting: state.greeting,
-            timeUntilUnlock: duration,
-          );
-          _startCountdown();
-        }
-      }
-    });
+  void tick() {
+    final greeting = state.greeting;
+    if (greeting == null || !greeting.locked) return;
+    state = GreetingState(
+      greeting: greeting,
+      timeUntilUnlock: _remaining(greeting),
+    );
   }
 
   void unlockGreeting() {
-    if (state.greeting != null) {
-      state = GreetingState(
-        greeting: state.greeting!.copyWith(
-          unlockedAt: DateTime.now(),
-        ),
-      );
-    }
+    if (state.greeting == null) return;
+    state = GreetingState(
+      greeting: state.greeting!.copyWith(unlockedAt: DateTime.now()),
+    );
+  }
+
+  Duration _remaining(Greeting greeting) {
+    final diff = greeting.scheduledDeliveryTime.difference(DateTime.now());
+    return diff.isNegative ? Duration.zero : diff;
   }
 }
 
@@ -84,6 +75,7 @@ class _GreetingViewerScreenState extends ConsumerState<GreetingViewerScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  Timer? _countdown;
 
   @override
   void initState() {
@@ -100,11 +92,30 @@ class _GreetingViewerScreenState extends ConsumerState<GreetingViewerScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(greetingProvider(widget.greeting.id).notifier)
           .loadGreeting(widget.greeting);
+      _startCountdown();
+    });
+  }
+
+  void _startCountdown() {
+    if (!widget.greeting.locked) return;
+    _countdown?.cancel();
+    _countdown = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) {
+        _countdown?.cancel();
+        return;
+      }
+      ref.read(greetingProvider(widget.greeting.id).notifier).tick();
+
+      final remaining = ref.read(greetingProvider(widget.greeting.id)).timeUntilUnlock;
+      if (remaining != null && remaining.inSeconds <= 0) {
+        _countdown?.cancel();
+      }
     });
   }
 
   @override
   void dispose() {
+    _countdown?.cancel();
     _animationController.dispose();
     super.dispose();
   }
@@ -197,6 +208,8 @@ class _GreetingViewerScreenState extends ConsumerState<GreetingViewerScreen>
                       color: Colors.purple[700],
                       fontFamily: 'monospace',
                     ),
+                    semanticsLabel:
+                        'Unlocks in $hours hours, $minutes minutes, $seconds seconds',
                   ),
                   const SizedBox(height: Spacing.sm),
                   Text(

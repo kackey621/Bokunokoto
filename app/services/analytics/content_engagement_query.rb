@@ -2,7 +2,7 @@ module Analytics
   class ContentEngagementQuery
     def initialize(vault:, date_range: nil)
       @vault = vault
-      @date_range = date_range || 30.days.ago..Time.current
+      @date_range = date_range || (30.days.ago..Time.current)
     end
 
     def execute
