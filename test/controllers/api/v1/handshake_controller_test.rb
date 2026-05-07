@@ -1,163 +1,122 @@
 require "test_helper"
+require "minitest/mock"
 
 class Api::V1::HandshakeControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = users(:one)
-    @vault = vaults(:one)
-    @access_link = AccessLink.create!(
+    @owner = User.create!(
+      firebase_uid: "owner_uid",
+      email: "owner@example.com",
+      display_name: "Owner",
+      role: "owner",
+      can_create_vault: true
+    )
+    @vault = @owner.create_vault!(display_name: "Owner Vault")
+
+    @viewer = User.create!(
+      firebase_uid: "viewer_uid",
+      email: "viewer@example.com",
+      display_name: "Viewer",
+      role: "viewer"
+    )
+    @other_viewer = User.create!(
+      firebase_uid: "other_uid",
+      email: "other@example.com",
+      display_name: "Other",
+      role: "viewer"
+    )
+
+    @link = AccessLink.create!(
       vault: @vault,
-      slug: "test-handshake",
       initial_level: 3,
-      welcome_message: "Welcome to my vault!",
-      preset_context: { relationship: "friend" }
+      preset_context: "Co-worker",
+      welcome_message: "Welcome!"
     )
   end
 
-  test "should create permission with valid access link" do
-    assert_difference "Permission.count", 1 do
-      post api_v1_handshake_path, params: {
-        handshake: {
-          slug: @access_link.slug,
-          firebase_uid: @user.firebase_uid
-        }
-      }
-    end
-
-    assert_response :created
-    json = response.parsed_body
-    assert json["permission"]
-    assert json["vault"]
-    assert_equal "Welcome to my vault!", json["welcome_message"]
-    assert_equal 3, json["initial_level"]
+  def auth_headers
+    { "Authorization" => "Bearer fake_token" }
   end
 
-  test "should return error with invalid slug" do
-    assert_no_difference "Permission.count" do
-      post api_v1_handshake_path, params: {
-        handshake: {
-          slug: "nonexistent-slug",
-          firebase_uid: @user.firebase_uid
-        }
-      }
+  test "first user binds and gets permission" do
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      assert_difference "Permission.count", 1 do
+        post api_v1_handshake_path, params: { slug: @link.slug }, headers: auth_headers
+      end
     end
 
-    assert_response :not_found
-    json = response.parsed_body
-    assert_equal "Invalid access link", json["error"]
+    assert_response :success
+    body = response.parsed_body
+    assert_equal "Welcome!", body["welcome_message"]
+    assert_equal 3, body["permission"]["granted_level"]
+
+    @link.reload
+    assert_equal @viewer.id, @link.bound_user_id
+    assert_equal 1, @link.use_count
   end
 
-  test "should reject expired access link" do
-    @access_link.update(expires_at: 1.hour.ago)
+  test "second user gets link_already_bound" do
+    @link.claim!(@viewer)
 
-    assert_no_difference "Permission.count" do
-      post api_v1_handshake_path, params: {
-        handshake: {
-          slug: @access_link.slug,
-          firebase_uid: @user.firebase_uid
-        }
-      }
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @other_viewer.firebase_uid } do
+      assert_no_difference "Permission.count" do
+        post api_v1_handshake_path, params: { slug: @link.slug }, headers: auth_headers
+      end
     end
 
     assert_response :forbidden
-    json = response.parsed_body
-    assert_equal "Access link expired or max uses exceeded", json["error"]
+    assert_equal "link_already_bound", response.parsed_body["code"]
   end
 
-  test "should reject access link when max uses exceeded" do
-    @access_link.update(max_uses: 2, use_count: 2)
+  test "expired link returns 422" do
+    @link.update!(expires_at: 1.hour.ago)
 
-    assert_no_difference "Permission.count" do
-      post api_v1_handshake_path, params: {
-        handshake: {
-          slug: @access_link.slug,
-          firebase_uid: @user.firebase_uid
-        }
-      }
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      post api_v1_handshake_path, params: { slug: @link.slug }, headers: auth_headers
     end
 
-    assert_response :forbidden
-    json = response.parsed_body
-    assert_equal "Access link expired or max uses exceeded", json["error"]
+    assert_response :unprocessable_entity
+    assert_equal "expired", response.parsed_body["code"]
   end
 
-  test "should increment use_count after handshake" do
-    initial_count = @access_link.use_count
-    post api_v1_handshake_path, params: {
-      handshake: {
-        slug: @access_link.slug,
-        firebase_uid: @user.firebase_uid
-      }
-    }
+  test "exhausted link returns 422" do
+    @link.update!(max_uses: 1, use_count: 1)
 
-    @access_link.reload
-    assert_equal initial_count + 1, @access_link.use_count
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      post api_v1_handshake_path, params: { slug: @link.slug }, headers: auth_headers
+    end
+
+    assert_response :unprocessable_entity
+    assert_equal "exhausted", response.parsed_body["code"]
   end
 
-  test "should set initial_level from access link" do
-    @access_link.update(initial_level: 5)
-    post api_v1_handshake_path, params: {
-      handshake: {
-        slug: @access_link.slug,
-        firebase_uid: @user.firebase_uid
-      }
-    }
-
-    permission = Permission.last
-    assert_equal 5, permission.granted_level
-  end
-
-  test "should associate permission with access link" do
-    post api_v1_handshake_path, params: {
-      handshake: {
-        slug: @access_link.slug,
-        firebase_uid: @user.firebase_uid
-      }
-    }
-
-    permission = Permission.last
-    assert_equal @access_link.id, permission.source_access_link_id
-  end
-
-  test "should update existing permission on second handshake" do
-    # First handshake
-    post api_v1_handshake_path, params: {
-      handshake: {
-        slug: @access_link.slug,
-        firebase_uid: @user.firebase_uid
-      }
-    }
-    permission1 = Permission.last
-    permission_id = permission1.id
-
-    # Second handshake with different link but same user/vault
-    @access_link2 = AccessLink.create!(
-      vault: @vault,
-      slug: "test-handshake-2",
-      initial_level: 7
-    )
-
-    post api_v1_handshake_path, params: {
-      handshake: {
-        slug: @access_link2.slug,
-        firebase_uid: @user.firebase_uid
-      }
-    }
-
-    # Permission should be updated, not created
-    permission2 = Permission.find(permission_id)
-    assert_equal @access_link2.id, permission2.source_access_link_id
-  end
-
-  test "should return error with nonexistent user" do
-    post api_v1_handshake_path, params: {
-      handshake: {
-        slug: @access_link.slug,
-        firebase_uid: "nonexistent-uid"
-      }
-    }
+  test "unknown slug returns 404" do
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      post api_v1_handshake_path, params: { slug: "nope" }, headers: auth_headers
+    end
 
     assert_response :not_found
-    json = response.parsed_body
-    assert_equal "User not found", json["error"]
+  end
+
+  test "handshake writes audit log" do
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      assert_difference "AuditLog.count", 1 do
+        post api_v1_handshake_path, params: { slug: @link.slug }, headers: auth_headers
+      end
+    end
+
+    log = AuditLog.last
+    assert_equal "handshake", log.action
+    assert_equal @viewer.id, log.user_id
+  end
+
+  test "re-handshake by bound user does not lower granted_level" do
+    @viewer.permissions.create!(vault: @vault, granted_level: 7)
+
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      post api_v1_handshake_path, params: { slug: @link.slug }, headers: auth_headers
+    end
+
+    assert_response :success
+    assert_equal 7, @viewer.permissions.find_by(vault: @vault).granted_level
   end
 end

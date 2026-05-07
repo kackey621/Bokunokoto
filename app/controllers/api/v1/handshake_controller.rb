@@ -36,6 +36,25 @@ module Api
 
       private
 
+      def upsert_permission(link)
+        permission = current_user.permissions.find_by(vault: link.vault)
+        if permission
+          # Don't lower an existing higher permission via re-handshake
+          permission.update!(granted_level: [ permission.granted_level, link.initial_level ].max)
+          permission
+        else
+          current_user.permissions.create!(
+            vault: link.vault,
+            granted_level: link.initial_level,
+            relationship_context: link.preset_context,
+            source_access_link_id: link.slug,
+            status: "active"
+          )
+        end
+      end
+
+      def render_error(code, status)
+        render json: { status: "error", code: code }, status: status
       def handshake_params
         params.require(:handshake).permit(:slug, :firebase_uid)
       end

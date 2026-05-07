@@ -2,182 +2,80 @@ require "test_helper"
 
 class AccessLinkTest < ActiveSupport::TestCase
   setup do
-    @user = users(:one)
-    @vault = Vault.create!(user: @user, display_name: "Test Vault")
+    @owner = User.create!(email: "owner@example.com", display_name: "Owner", role: "owner")
+    @vault = @owner.create_vault!(display_name: "Vault")
+    @viewer = User.create!(email: "viewer@example.com", display_name: "Viewer", role: "viewer")
+    @other_viewer = User.create!(email: "other@example.com", display_name: "Other", role: "viewer")
   end
 
-  test "should create access link with valid attributes" do
-    link = AccessLink.new(
-      vault: @vault,
-      slug: "test-link-123",
-      initial_level: 3,
-      welcome_message: "Welcome!",
-      preset_context: { key: "value" }
-    )
-    assert link.save
+  test "auto-generates slug on create" do
+    link = AccessLink.create!(vault: @vault, initial_level: 1)
+    assert_not_nil link.slug
+    assert_match(/\A[A-Za-z0-9_-]{16}\z/, link.slug)
   end
 
-  test "slug must be unique" do
-    AccessLink.create!(
-      vault: @vault,
-      slug: "unique-slug",
-      initial_level: 0
-    )
-    link = AccessLink.new(
-      vault: @vault,
-      slug: "unique-slug",
-      initial_level: 0
-    )
-    assert_not link.save
-    assert link.errors[:slug].present?
+  test "slug is unique" do
+    AccessLink.create!(vault: @vault, slug: "fixed-slug", initial_level: 1)
+    duplicate = AccessLink.new(vault: @vault, slug: "fixed-slug", initial_level: 1)
+    assert_not duplicate.valid?
   end
 
-  test "slug format validation" do
-    invalid_slugs = ["Test-Link", "test link", "test_link", "test@link"]
-    invalid_slugs.each do |slug|
-      link = AccessLink.new(vault: @vault, slug: slug, initial_level: 0)
-      assert_not link.save, "Should reject slug: #{slug}"
-    end
-
-    valid_slugs = ["test-link", "test123", "test-link-123"]
-    valid_slugs.each do |slug|
-      link = AccessLink.new(vault: @vault, slug: slug, initial_level: 0)
-      assert link.save, "Should accept slug: #{slug}"
-      link.destroy
-    end
+  test "expired? returns true past expires_at" do
+    link = AccessLink.create!(vault: @vault, initial_level: 1, expires_at: 1.hour.ago)
+    assert link.expired?
   end
 
-  test "initial_level must be between 0 and 9" do
-    invalid_link = AccessLink.new(vault: @vault, slug: "test", initial_level: 10)
-    assert_not invalid_link.save
-
-    valid_link = AccessLink.new(vault: @vault, slug: "test", initial_level: 9)
-    assert valid_link.save
+  test "expired? false if no expiry" do
+    link = AccessLink.create!(vault: @vault, initial_level: 1)
+    assert_not link.expired?
   end
 
-  test "expired scope returns only expired links" do
-    expired = AccessLink.create!(
-      vault: @vault,
-      slug: "expired-link",
-      initial_level: 0,
-      expires_at: 1.hour.ago
-    )
-    active = AccessLink.create!(
-      vault: @vault,
-      slug: "active-link",
-      initial_level: 0,
-      expires_at: 1.hour.from_now
-    )
-
-    assert_includes AccessLink.expired, expired
-    assert_not_includes AccessLink.expired, active
+  test "exhausted? returns true at max_uses" do
+    link = AccessLink.create!(vault: @vault, initial_level: 1, max_uses: 2, use_count: 2)
+    assert link.exhausted?
   end
 
-  test "active scope returns non-expired links" do
-    expired = AccessLink.create!(
-      vault: @vault,
-      slug: "expired-link",
-      initial_level: 0,
-      expires_at: 1.hour.ago
-    )
-    active = AccessLink.create!(
-      vault: @vault,
-      slug: "active-link",
-      initial_level: 0,
-      expires_at: 1.hour.from_now
-    )
-    no_expiry = AccessLink.create!(
-      vault: @vault,
-      slug: "no-expiry-link",
-      initial_level: 0
-    )
-
-    assert_includes AccessLink.active, active
-    assert_includes AccessLink.active, no_expiry
-    assert_not_includes AccessLink.active, expired
+  test "exhausted? false if no max" do
+    link = AccessLink.create!(vault: @vault, initial_level: 1, use_count: 100)
+    assert_not link.exhausted?
   end
 
-  test "available scope filters by max_uses" do
-    exceeded = AccessLink.create!(
-      vault: @vault,
-      slug: "exceeded-uses",
-      initial_level: 0,
-      max_uses: 2,
-      use_count: 2
-    )
-    available = AccessLink.create!(
-      vault: @vault,
-      slug: "available-uses",
-      initial_level: 0,
-      max_uses: 2,
-      use_count: 1
-    )
-
-    assert_includes AccessLink.available, available
-    assert_not_includes AccessLink.available, exceeded
+  test "bound_to_other? true if bound to a different user" do
+    link = AccessLink.create!(vault: @vault, initial_level: 1, bound_user: @viewer)
+    assert link.bound_to_other?(@other_viewer)
+    assert_not link.bound_to_other?(@viewer)
   end
 
-  test "expired? returns true when expires_at is in past" do
-    expired = AccessLink.new(
-      vault: @vault,
-      slug: "test",
-      initial_level: 0,
-      expires_at: 1.hour.ago
-    )
-    assert expired.expired?
+  test "claim! binds first user and increments use_count" do
+    link = AccessLink.create!(vault: @vault, initial_level: 3)
 
-    active = AccessLink.new(
-      vault: @vault,
-      slug: "test",
-      initial_level: 0,
-      expires_at: 1.hour.from_now
-    )
-    assert_not active.expired?
-  end
-
-  test "max_uses_exceeded? returns true when use_count >= max_uses" do
-    link = AccessLink.new(
-      vault: @vault,
-      slug: "test",
-      initial_level: 0,
-      max_uses: 5,
-      use_count: 5
-    )
-    assert link.max_uses_exceeded?
-
-    link.use_count = 4
-    assert_not link.max_uses_exceeded?
-  end
-
-  test "valid_for_handshake? returns true only when not expired and uses not exceeded" do
-    link = AccessLink.new(
-      vault: @vault,
-      slug: "test",
-      initial_level: 0,
-      expires_at: 1.hour.from_now,
-      max_uses: 5,
-      use_count: 3
-    )
-    assert link.valid_for_handshake?
-
-    link.expires_at = 1.hour.ago
-    assert_not link.valid_for_handshake?
-
-    link.expires_at = 1.hour.from_now
-    link.use_count = 5
-    assert_not link.valid_for_handshake?
-  end
-
-  test "use! increments use_count" do
-    link = AccessLink.create!(
-      vault: @vault,
-      slug: "test",
-      initial_level: 0,
-      use_count: 0
-    )
-    link.use!
+    assert link.claim!(@viewer)
+    assert_equal @viewer.id, link.bound_user_id
     assert_equal 1, link.use_count
-    link.use!
+  end
+
+  test "claim! rejects bound-to-other" do
+    link = AccessLink.create!(vault: @vault, initial_level: 3, bound_user: @viewer)
+
+    assert_not link.claim!(@other_viewer)
+    assert_equal 0, link.use_count
+  end
+
+  test "claim! rejects expired" do
+    link = AccessLink.create!(vault: @vault, initial_level: 3, expires_at: 1.hour.ago)
+    assert_not link.claim!(@viewer)
+  end
+
+  test "claim! rejects exhausted" do
+    link = AccessLink.create!(vault: @vault, initial_level: 3, max_uses: 1, use_count: 1)
+    assert_not link.claim!(@viewer)
+  end
+
+  test "claim! by same bound user increments and remains valid" do
+    link = AccessLink.create!(vault: @vault, initial_level: 3, max_uses: 5)
+
+    assert link.claim!(@viewer)
+    assert link.claim!(@viewer)
     assert_equal 2, link.use_count
   end
 end

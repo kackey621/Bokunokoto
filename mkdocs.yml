@@ -75,6 +75,7 @@ nav:
       - User & Trust Controller: bkc/user-trust-controller.md
       - Analytics Dashboard: bkc/analytics.md
   - Roadmap:
+      - System Plan: roadmap/system-plan.md
       - Account & Role Replan: roadmap/account-role-replan.md
       - Beta Phase: roadmap/beta.md
       - Release Phase: roadmap/release.md

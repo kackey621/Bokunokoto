@@ -2,13 +2,13 @@
 
 ## Paid Launch
 
-At the 12-month mark, BK transitions from free beta to a **dual subscription model**.
+At the 12-month mark, BK transitions from free beta to a **capability-based subscription model**. A user keeps one account and can unlock vault-owner capabilities, receiver capabilities, or both.
 
 ### Subscription Plans
 
-#### Discloser Plan (Vault Owner)
+#### Vault Owner Capability
 
-For users who create and manage their own vault.
+For users who create and manage their own vault. This is a capability attached to the user's account, not a separate discloser account.
 
 | Feature | Free (Beta Legacy) | Paid |
 |---|---|---|
@@ -22,9 +22,9 @@ For users who create and manage their own vault.
 | NTP time-lock delivery | — | :material-check: |
 | Priority support | — | :material-check: |
 
-#### Viewer Plan (Content Viewer)
+#### Receiver Capability
 
-For users who view other people's vaults.
+For users who view other people's vaults. This is a capability attached to the same account that may also own a vault.
 
 | Feature | Free | Paid |
 |---|---|---|
@@ -38,14 +38,14 @@ For users who view other people's vaults.
 ### Payment Integration
 
 - **Provider:** Stripe (via `stripe` gem for Rails)
-- **Model:** Monthly/annual subscription
-- **Rails Implementation:** `Subscription` model with `user_id`, `plan_type`, `status`, `expires_at`
-- **Feature Flag Integration:** Subscription status gates feature access at the API level
+- **Model:** Monthly/annual subscription with account capabilities
+- **Rails Implementation:** `Subscription` model with `user_id`, `capability`, `status`, `expires_at`
+- **Feature Flag Integration:** Subscription status grants or restricts account capabilities at the API level
 
 ```ruby
 def show
   content = Content.find(params[:id])
-  unless current_user.active_viewer_plan? && current_user.can_view?(content)
+  unless current_user.capability_enabled?("receiver_l5_plus") && current_user.can_view?(content)
     render_security_error and return
   end
   render json: content

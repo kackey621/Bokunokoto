@@ -22,10 +22,10 @@ module Console
       @current_console_user ||= begin
         user_id = session[:user_id]
         user_id ||= request.headers["X-Test-User-Id"] if Rails.env.test?
-        user = User.find_by(id: user_id) if user_id
-        # TODO: wire to Firebase auth or add an explicit console login flow
-        user ||= User.find_by(role: "admin") if Rails.env.development?
-        user
+        # TODO: wire to Firebase auth or add a development-only console login flow
+        # For now, development can use X-Dev-User-Id header (set by Rails.env.development? check)
+        user_id ||= request.headers["X-Dev-User-Id"] if Rails.env.development?
+        User.find_by(id: user_id) if user_id
       end
     end
     helper_method :current_console_user
