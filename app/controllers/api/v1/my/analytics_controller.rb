@@ -1,6 +1,7 @@
 module Api
   module V1
-    class AnalyticsController < BaseController
+    module My
+      class AnalyticsController < BaseController
       def funnel
         vault = current_user.vault
         return render_error("No vault found", :not_found) unless vault
@@ -33,6 +34,30 @@ module Api
             anomalies: detect_anomalies(logs)
           }
         }
+      end
+
+      def attribution
+        vault = current_user.vault
+        return render_error("No vault found", :not_found) unless vault
+
+        query = Analytics::AccessLinkAttributionQuery.new(vault: vault, date_range: date_range)
+        render json: query.execute
+      end
+
+      def accessibility
+        vault = current_user.vault
+        return render_error("No vault found", :not_found) unless vault
+
+        query = Analytics::AccessibilityMetricsQuery.new(vault: vault, date_range: date_range)
+        render json: query.execute
+      end
+
+      def greetings
+        vault = current_user.vault
+        return render_error("No vault found", :not_found) unless vault
+
+        query = Analytics::GreetingMetricsQuery.new(vault: vault, date_range: date_range)
+        render json: query.execute
       end
 
       private
@@ -71,6 +96,7 @@ module Api
         end
 
         anomalies
+      end
       end
     end
   end
