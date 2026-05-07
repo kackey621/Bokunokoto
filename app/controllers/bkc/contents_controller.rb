@@ -1,5 +1,6 @@
 module Bkc
   class ContentsController < BaseController
+    before_action :require_vault
     before_action :set_content, only: %i[edit update destroy]
 
     def index
@@ -36,6 +37,10 @@ module Bkc
     end
 
     private
+
+    def require_vault
+      redirect_to bkc_dashboard_path, alert: "No vault found" unless current_vault
+    end
 
     def set_content
       @content = current_vault.contents.find(params[:id])
