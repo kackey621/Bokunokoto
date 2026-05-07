@@ -12,7 +12,18 @@ mkdocs build
 
 # Copy Netlify configuration files to site directory
 echo "Setting up Netlify configuration..."
-cp docs/_headers site/_headers 2>/dev/null || echo "Note: _headers file not found"
-cp docs/_redirects site/_redirects 2>/dev/null || echo "Note: _redirects file not found"
+if [ -f docs/_headers ]; then
+  cp docs/_headers site/_headers && echo "✓ Copied _headers to site/"
+else
+  echo "✗ Error: docs/_headers not found"
+  exit 1
+fi
+
+if [ -f docs/_redirects ]; then
+  cp docs/_redirects site/_redirects && echo "✓ Copied _redirects to site/"
+else
+  echo "✗ Error: docs/_redirects not found"
+  exit 1
+fi
 
 echo "Documentation build complete. Output in site/"
