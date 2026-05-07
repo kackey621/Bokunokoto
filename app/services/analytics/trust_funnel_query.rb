@@ -33,15 +33,15 @@ module Analytics
     end
 
     def active_count
-      @vault.permissions.where(status: 'active').count
+      @vault.permissions.where(status: "active").count
     end
 
     def pending_count
-      @vault.permissions.where(status: 'pending').count
+      @vault.permissions.where(status: "pending").count
     end
 
     def suspended_count
-      @vault.permissions.where(status: 'suspended').count
+      @vault.permissions.where(status: "suspended").count
     end
   end
 end

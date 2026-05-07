@@ -2,7 +2,7 @@ class Greeting < ApplicationRecord
   ANIMATION_TYPES = %w[fade slide zoom bounce].freeze
 
   belongs_to :vault
-  belongs_to :recipient_user, class_name: 'User'
+  belongs_to :recipient_user, class_name: "User"
 
   validates :content, presence: true
   validates :scheduled_delivery_time, presence: true
@@ -31,7 +31,7 @@ class Greeting < ApplicationRecord
   def scheduled_time_in_future
     return if scheduled_delivery_time.blank?
     if scheduled_delivery_time <= Time.current
-      errors.add(:scheduled_delivery_time, 'must be in the future')
+      errors.add(:scheduled_delivery_time, "must be in the future")
     end
   end
 end

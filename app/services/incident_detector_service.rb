@@ -31,9 +31,9 @@ class IncidentDetectorService
     last_hour = @recent_logs.where('occurred_at > ?', 1.hour.ago)
     if last_hour.count > RAPID_ACCESS_THRESHOLD
       [create_incident(
-        'rapid_access',
-        'High-frequency access detected',
-        Incident::SEVERITIES[:medium],
+        "rapid_access",
+        "High-frequency access detected",
+        Incident::SEVERITIES[ :medium ],
         { access_count: last_hour.count }
       )]
     else
@@ -56,9 +56,9 @@ class IncidentDetectorService
 
       if distance > GEO_JUMP_THRESHOLD
         incidents << create_incident(
-          'geo_jump',
+          "geo_jump",
           "Geographic anomaly: #{distance.round}km jump detected",
-          Incident::SEVERITIES[:high],
+          Incident::SEVERITIES[ :high ],
           { distance_km: distance.round, from: "#{prev_log.latitude},#{prev_log.longitude}",
             to: "#{curr_log.latitude},#{curr_log.longitude}" }
         )
@@ -69,14 +69,14 @@ class IncidentDetectorService
   end
 
   def detect_gps_denials
-    recent_denials = @recent_logs.where(action: 'gps_denied')
-                                  .where('occurred_at > ?', 24.hours.ago)
+    recent_denials = @recent_logs.where(action: "gps_denied")
+                                  .where("occurred_at > ?", 24.hours.ago)
 
     if recent_denials.count > 3
       [create_incident(
-        'gps_denial',
-        'Multiple GPS access denials',
-        Incident::SEVERITIES[:medium],
+        "gps_denial",
+        "Multiple GPS access denials",
+        Incident::SEVERITIES[ :medium ],
         { denial_count: recent_denials.count }
       )]
     else
@@ -85,14 +85,14 @@ class IncidentDetectorService
   end
 
   def detect_auth_failures
-    recent_failures = @recent_logs.where(action: 'auth_failed')
-                                   .where('occurred_at > ?', 1.hour.ago)
+    recent_failures = @recent_logs.where(action: "auth_failed")
+                                   .where("occurred_at > ?", 1.hour.ago)
 
     if recent_failures.count > 5
       [create_incident(
-        'auth_failure',
-        'Multiple authentication failures',
-        Incident::SEVERITIES[:high],
+        "auth_failure",
+        "Multiple authentication failures",
+        Incident::SEVERITIES[ :high ],
         { failure_count: recent_failures.count }
       )]
     else

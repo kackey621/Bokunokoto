@@ -13,7 +13,7 @@ module Bkc
     def create
       @access_link = @vault.access_links.build(access_link_params)
       if @access_link.save
-        redirect_to bkc_access_links_path, notice: 'Access link created'
+        redirect_to bkc_access_links_path, notice: "Access link created"
       else
         render :new
       end
@@ -26,7 +26,7 @@ module Bkc
     def destroy
       @access_link = @vault.access_links.find(params[:id])
       @access_link.destroy
-      redirect_to bkc_access_links_path, notice: 'Access link deleted'
+      redirect_to bkc_access_links_path, notice: "Access link deleted"
     end
 
     private
@@ -37,7 +37,7 @@ module Bkc
 
     def require_vault
       @vault = current_user.vault
-      redirect_to bkc_dashboard_path, alert: 'No vault found' unless @vault
+      redirect_to bkc_dashboard_path, alert: "No vault found" unless @vault
     end
   end
 end

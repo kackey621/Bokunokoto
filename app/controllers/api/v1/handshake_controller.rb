@@ -30,7 +30,7 @@ module Api
           vault: VaultSerializer.new(access_link.vault).serializable_hash,
           welcome_message: access_link.welcome_message,
           initial_level: access_link.initial_level,
-          preset_context: access_link.preset_context,
+          preset_context: access_link.preset_context
         }, status: :created
       end
 
@@ -49,8 +49,8 @@ module Api
           permission = vault.permissions.create(
             user_id: user.id,
             granted_level: access_link.initial_level,
-            status: 'active',
-            source_access_link_id: access_link.id,
+            status: "active",
+            source_access_link_id: access_link.id
           )
         end
 

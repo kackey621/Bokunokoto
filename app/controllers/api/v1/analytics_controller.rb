@@ -45,7 +45,7 @@ module Api
 
       def failed_auth_count(logs)
         # Count logs with auth-related failures
-        logs.where(action: ['auth_failed', 'token_invalid']).count
+        logs.where(action: [ "auth_failed", "token_invalid" ]).count
       end
 
       def gps_denial_count(logs)

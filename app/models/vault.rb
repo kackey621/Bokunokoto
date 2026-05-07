@@ -24,7 +24,7 @@ class Vault < ApplicationRecord
 
   def masked_account_number
     return nil unless bank_account_data
-    account = bank_account_data['account_number']
+    account = bank_account_data["account_number"]
     return nil if account.blank?
 
     # Show first 3 and last 4 digits, mask the rest
