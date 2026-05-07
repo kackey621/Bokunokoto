@@ -1,6 +1,6 @@
 module Api
   module V1
-    class ProfileController < BaseController
+    class ProfilesController < BaseController
       def show
         render json: {
           status: "success",
