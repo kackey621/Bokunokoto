@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get "health", to: "health#show"
       post "auth/verify", to: "auth#verify"
+      post "handshake", to: "handshake#create"
 
       resources :vaults, only: [] do
         resources :contents, only: [ :index ]

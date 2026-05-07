@@ -1,0 +1,4 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# Tests construct AccessLink rows explicitly so that slug/bound_user_id
+# state is unambiguous; no fixtures here by default.
