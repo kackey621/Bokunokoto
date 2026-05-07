@@ -1,0 +1,67 @@
+<% content_for :bkc_title, "Access Link - #{@access_link.slug}" %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="mb-0">Access Link Details</h4>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">Slug</dt>
+          <dd class="col-sm-9"><code><%= @access_link.slug %></code></dd>
+
+          <dt class="col-sm-3">Initial Level</dt>
+          <dd class="col-sm-9"><span class="badge bg-info">L<%= @access_link.initial_level %></span></dd>
+
+          <dt class="col-sm-3">Welcome Message</dt>
+          <dd class="col-sm-9"><%= @access_link.welcome_message || "—" %></dd>
+
+          <dt class="col-sm-3">Expires At</dt>
+          <dd class="col-sm-9"><%= @access_link.expires_at&.strftime("%Y-%m-%d %H:%M") || "Never" %></dd>
+
+          <dt class="col-sm-3">Max Uses</dt>
+          <dd class="col-sm-9"><%= @access_link.max_uses || "Unlimited" %></dd>
+
+          <dt class="col-sm-3">Status</dt>
+          <dd class="col-sm-9">
+            <% if @access_link.expired? %>
+              <span class="badge bg-danger">Expired</span>
+            <% elsif @access_link.max_uses_reached? %>
+              <span class="badge bg-warning">Max Uses Reached</span>
+            <% else %>
+              <span class="badge bg-success">Active</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Created</dt>
+          <dd class="col-sm-9"><%= @access_link.created_at.strftime("%Y-%m-%d %H:%M") %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="mb-0">Actions</h4>
+      </div>
+      <div class="card-body">
+        <%= link_to "Edit", edit_bkc_access_link_path(@access_link), class: "btn btn-primary w-100 mb-2" %>
+        <%= link_to "Delete", bkc_access_link_path(@access_link), method: :delete, data: { confirm: "Sure?" }, class: "btn btn-danger w-100 mb-2" %>
+        <%= link_to "Back", bkc_access_links_path, class: "btn btn-secondary w-100" %>
+      </div>
+    </div>
+
+    <% if @access_link.preset_context.present? %>
+      <div class="card mt-3">
+        <div class="card-header">
+          <h4 class="mb-0">Preset Context</h4>
+        </div>
+        <div class="card-body">
+          <pre><%= JSON.pretty_generate(@access_link.preset_context) %></pre>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

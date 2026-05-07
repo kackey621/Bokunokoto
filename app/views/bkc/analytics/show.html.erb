@@ -1,0 +1,182 @@
+<% content_for :bkc_title, "Analytics Dashboard" %>
+
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-white bg-primary">
+      <div class="card-body">
+        <div class="fs-5"><%= @security[:total_accesses] %></div>
+        <div class="small">Total Accesses</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-success">
+      <div class="card-body">
+        <div class="fs-5"><%= @security[:failed_auth_attempts] %></div>
+        <div class="small">Failed Auth Attempts</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-warning">
+      <div class="card-body">
+        <div class="fs-5"><%= @security[:gps_denials] %></div>
+        <div class="small">GPS Denials</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-danger">
+      <div class="card-body">
+        <div class="fs-5"><%= @security[:incidents] %></div>
+        <div class="small">Security Incidents</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Trust Level Funnel</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="trust-funnel-chart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Content Engagement</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="engagement-chart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Access Locations</h5>
+      </div>
+      <div class="card-body">
+        <div id="analytics-map" style="height: 500px; width: 100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Face Captures</h5>
+      </div>
+      <div class="card-body">
+        <div class="fs-3"><%= @security[:face_captures] %> captured</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Date Range</h5>
+      </div>
+      <div class="card-body">
+        <form class="row g-2">
+          <div class="col-auto">
+            <select name="date_range" class="form-select" onchange="this.form.submit()">
+              <option value="7" <%= "selected" if @date_range == "7" %>>Last 7 days</option>
+              <option value="30" <%= "selected" if @date_range == "30" %>>Last 30 days</option>
+              <option value="90" <%= "selected" if @date_range == "90" %>>Last 90 days</option>
+            </select>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+<script>
+  // Trust Funnel Chart
+  const trustFunnelCtx = document.getElementById('trust-funnel-chart');
+  if (trustFunnelCtx) {
+    new Chart(trustFunnelCtx, {
+      type: 'bar',
+      data: {
+        labels: ['L0', 'L1', 'L2', 'L3', 'L4', 'L5+'],
+        datasets: [{
+          label: 'Users by Trust Level',
+          data: <%= @trust_funnel.map { |k, v| v[:count] }.join(', ') rescue "0, 0, 0, 0, 0, 0" %>,
+          backgroundColor: '#6366F1'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Engagement Chart
+  const engagementCtx = document.getElementById('engagement-chart');
+  if (engagementCtx) {
+    new Chart(engagementCtx, {
+      type: 'doughnut',
+      data: {
+        labels: <%= @engagement&.dig(:top_contents)&.map { |c| c[:title] }&.inspect || "['No Data']" %>,
+        datasets: [{
+          data: <%= @engagement&.dig(:top_contents)&.map { |c| c[:views] }&.inspect || "[0]" %>,
+          backgroundColor: ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  }
+
+  // Geo Map
+  if (document.getElementById('analytics-map')) {
+    const map = L.map('analytics-map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    fetch('/bkc/analytics/locations')
+      .then(r => r.json())
+      .then(data => {
+        data.forEach(log => {
+          if (log.latitude && log.longitude) {
+            L.circleMarker([log.latitude, log.longitude], {
+              radius: 6,
+              fillColor: '#6366F1',
+              fillOpacity: 0.7,
+              weight: 2,
+              opacity: 1,
+              color: '#fff'
+            }).bindPopup(`<strong>${log.user_name}</strong><br>${new Date(log.occurred_at).toLocaleString()}`)
+              .addTo(map);
+          }
+        });
+      })
+      .catch(err => console.error('Error loading locations:', err));
+  }
+</script>

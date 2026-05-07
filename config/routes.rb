@@ -31,6 +31,10 @@ Rails.application.routes.draw do
     resource :vault, only: [ :create, :update ]
     resources :viewers, only: [ :index, :show, :update ]
     resources :contents, except: [ :show ]
+    resources :access_links, only: [ :index, :create, :show, :update, :destroy ]
+    get "forensics", to: "forensics#index"
+    get "analytics", to: "analytics#show"
+    get "analytics/locations", to: "analytics#locations"
   end
 
   get "console", to: "console/dashboard#show"

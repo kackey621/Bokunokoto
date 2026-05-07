@@ -1,0 +1,46 @@
+<%= form_with(model: @access_link, local: true, class: "row g-3") do |form| %>
+  <% if @access_link.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(@access_link.errors.count, "error") %> prohibited this access link from being saved:</h4>
+      <ul class="mb-0">
+        <% @access_link.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="col-12">
+    <%= form.label :slug %>
+    <%= form.text_field :slug, class: "form-control", placeholder: "unique-identifier" %>
+    <small class="text-muted">URL-friendly identifier for this link</small>
+  </div>
+
+  <div class="col-12">
+    <%= form.label :initial_level, "Initial Trust Level" %>
+    <%= form.select :initial_level, (0..9).map { |i| ["L#{i}", i] }, {}, class: "form-select" %>
+    <small class="text-muted">Trust level granted when this link is used</small>
+  </div>
+
+  <div class="col-12">
+    <%= form.label :welcome_message %>
+    <%= form.text_area :welcome_message, class: "form-control", rows: 3, placeholder: "Optional message shown to users" %>
+  </div>
+
+  <div class="col-md-6">
+    <%= form.label :expires_at %>
+    <%= form.datetime_select :expires_at, class: "form-control" %>
+    <small class="text-muted">Leave blank for no expiration</small>
+  </div>
+
+  <div class="col-md-6">
+    <%= form.label :max_uses %>
+    <%= form.number_field :max_uses, class: "form-control", placeholder: "Leave blank for unlimited" %>
+    <small class="text-muted">Maximum number of times this link can be used</small>
+  </div>
+
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary"><%= @access_link.persisted? ? "Update" : "Create" %> Access Link</button>
+    <%= link_to "Cancel", bkc_access_links_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

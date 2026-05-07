@@ -1,0 +1,31 @@
+<% content_for :bkc_title, "Create Access Link" %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="mb-0">New Access Link</h4>
+      </div>
+      <div class="card-body">
+        <%= render "form", access_link: @access_link %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card bg-light">
+      <div class="card-header">
+        <h5 class="mb-0">What's an Access Link?</h5>
+      </div>
+      <div class="card-body">
+        <p>Access links allow you to share your vault with others using a unique URL or QR code. You can control:</p>
+        <ul class="small">
+          <li><strong>Initial Level</strong> — Trust level granted when they use this link</li>
+          <li><strong>Expiration</strong> — When this link stops working</li>
+          <li><strong>Max Uses</strong> — How many times it can be used</li>
+          <li><strong>Welcome Message</strong> — Custom message for users</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

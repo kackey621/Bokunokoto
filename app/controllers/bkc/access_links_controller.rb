@@ -23,6 +23,19 @@ module Bkc
       @access_link = @vault.access_links.find(params[:id])
     end
 
+    def edit
+      @access_link = @vault.access_links.find(params[:id])
+    end
+
+    def update
+      @access_link = @vault.access_links.find(params[:id])
+      if @access_link.update(access_link_params)
+        redirect_to bkc_access_links_path, notice: "Access link updated"
+      else
+        render :edit
+      end
+    end
+
     def destroy
       @access_link = @vault.access_links.find(params[:id])
       @access_link.destroy
