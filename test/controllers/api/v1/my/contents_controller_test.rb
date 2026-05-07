@@ -85,7 +85,7 @@ class Api::V1::My::ContentsControllerTest < ActionDispatch::IntegrationTest
 
   test "deletes content even when audit logs reference it" do
     content = @vault.contents.create!(title: "Viewed", body: "Body", required_level: 0)
-    log = AuditLog.create!(user: @owner, content: content, action: "view", occurred_at: Time.current)
+    log = AuditLog.create!(user: @owner, vault: @vault, content: content, action: "view", occurred_at: Time.current)
 
     FirebaseIdToken::Signature.stub :verify, { "sub" => @owner.firebase_uid } do
       assert_difference "Content.count", -1 do
