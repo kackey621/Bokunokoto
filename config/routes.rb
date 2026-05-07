@@ -19,6 +19,9 @@ Rails.application.routes.draw do
         get "analytics/funnel", to: "analytics#funnel"
         get "analytics/content", to: "analytics#content"
         get "analytics/security", to: "analytics#security"
+        get "analytics/attribution", to: "analytics#attribution"
+        get "analytics/accessibility", to: "analytics#accessibility"
+        get "analytics/greetings", to: "analytics#greetings"
       end
 
       resource :profile, only: [ :show, :update ]

@@ -5,16 +5,13 @@ module Bkc
     def show
       @date_range = params[:date_range] || "30"
       start_date = @date_range.to_i.days.ago
+      window = start_date..Time.current
 
-      @trust_funnel = Analytics::TrustFunnelQuery.new(
-        vault: @vault,
-        date_range: start_date..Time.current
-      ).execute
-
-      @engagement = Analytics::ContentEngagementQuery.new(
-        vault: @vault,
-        date_range: start_date..Time.current
-      ).execute
+      @trust_funnel  = Analytics::TrustFunnelQuery.new(vault: @vault, date_range: window).execute
+      @engagement    = Analytics::ContentEngagementQuery.new(vault: @vault, date_range: window).execute
+      @attribution   = Analytics::AccessLinkAttributionQuery.new(vault: @vault, date_range: window).execute
+      @accessibility = Analytics::AccessibilityMetricsQuery.new(vault: @vault, date_range: window).execute
+      @greetings     = Analytics::GreetingMetricsQuery.new(vault: @vault, date_range: window).execute
 
       @security = fetch_security_metrics(start_date)
       @access_locations = fetch_access_locations(start_date)
