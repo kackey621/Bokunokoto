@@ -26,12 +26,20 @@ class AccessLink < ApplicationRecord
   end
 
   def claim!(user)
-    return false unless usable_by?(user)
+    now = Time.current
 
-    transaction do
-      update_columns(bound_user_id: user.id) if bound_user_id.nil?
-      update_columns(use_count: use_count + 1)
-    end
+    updated_rows = self.class
+      .where(id: id)
+      .where("expires_at IS NULL OR expires_at >= ?", now)
+      .where("max_uses IS NULL OR use_count < max_uses")
+      .where("bound_user_id IS NULL OR bound_user_id = ?", user.id)
+      .update_all([
+        "bound_user_id = COALESCE(bound_user_id, ?), use_count = use_count + 1",
+        user.id
+      ])
+
+    return false if updated_rows == 0
+
     reload
     true
   end
