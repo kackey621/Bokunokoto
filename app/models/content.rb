@@ -20,6 +20,10 @@ class Content < ApplicationRecord
     # Cap trust level to L4 for web platform
     user_level = [ user_level, 4 ].min if platform == "web"
 
+    # If no active permission exists and user is not owner, they see nothing
+    permission = user.permissions.find_by(vault: vault, status: "active")
+    return none unless permission
+
     if ActiveRecord::Base.connection.adapter_name == "SQLite"
       where(vault: vault).where(
         "required_level <= :level OR EXISTS (SELECT 1 FROM json_each(permitted_user_ids) WHERE value = :user_id)",

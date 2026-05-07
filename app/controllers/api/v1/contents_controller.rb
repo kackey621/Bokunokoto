@@ -1,6 +1,7 @@
 module Api
   module V1
     class ContentsController < BaseController
+      include AuditLoggable
       after_action :log_view_activity, only: [ :show ]
 
       def index
@@ -18,7 +19,8 @@ module Api
         accessible = Content.accessible_for(current_user, @content.vault, platform: current_platform)
         return render_not_found unless accessible.exists?(id: @content.id)
 
-        render json: { status: "success", content: serialize(@content, include_body: true) }
+        log_audit!(action: "view", vault: content.vault, content: content)
+        render json: { status: "success", content: serialize(content, include_body: true) }
       end
 
       private
