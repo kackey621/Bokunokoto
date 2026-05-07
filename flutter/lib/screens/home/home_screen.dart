@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../app/theme.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -42,11 +43,18 @@ class HomeScreen extends ConsumerWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          // TODO: Navigate to QR scanner
-                        },
+                        onPressed: () => context.goNamed('qr-scan'),
                         icon: const Icon(Icons.qr_code_scanner),
                         label: const Text('Scan QR Code'),
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.sm),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showSlugPrompt(context),
+                        icon: const Icon(Icons.qr_code),
+                        label: const Text('Show Access QR'),
                       ),
                     ),
                   ],
@@ -70,5 +78,36 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showSlugPrompt(BuildContext context) async {
+    final controller = TextEditingController();
+    final slug = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Access Link Slug'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'e.g. my-share-link',
+            helperText: 'Enter the slug for the link to display',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(null),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+            child: const Text('Show QR'),
+          ),
+        ],
+      ),
+    );
+    if (slug == null || slug.isEmpty) return;
+    if (!context.mounted) return;
+    context.goNamed('qr-generate', pathParameters: {'slug': slug});
   }
 }

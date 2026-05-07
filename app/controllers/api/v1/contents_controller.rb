@@ -19,8 +19,7 @@ module Api
         accessible = Content.accessible_for(current_user, @content.vault, platform: current_platform)
         return render_not_found unless accessible.exists?(id: @content.id)
 
-        log_audit!(action: "view", vault: content.vault, content: content)
-        render json: { status: "success", content: serialize(content, include_body: true) }
+        render json: { status: "success", content: serialize(@content, include_body: true) }
       end
 
       private
@@ -49,6 +48,7 @@ module Api
         return unless @content && current_user && response.successful?
         AuditLog.create!(
           user: current_user,
+          vault: @content.vault,
           content: @content,
           action: "view",
           ip_address: request.remote_ip,

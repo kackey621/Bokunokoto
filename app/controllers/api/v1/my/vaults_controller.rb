@@ -23,6 +23,7 @@ module Api
           end
 
           vault = current_user.build_vault(vault_params)
+          assign_bank_account(vault)
           if vault.save
             render json: {
               status: "success",
@@ -37,7 +38,10 @@ module Api
           vault = current_user.vault
           return render_error("No vault found", :not_found) unless vault
 
-          if vault.update(vault_params)
+          assign_bank_account(vault)
+          vault.assign_attributes(vault_params)
+
+          if vault.save
             render json: {
               status: "success",
               vault: vault_response(vault)
@@ -50,7 +54,20 @@ module Api
         private
 
         def vault_params
-          params.require(:vault).permit(:display_name, :bio, bank_account_info: {})
+          params.require(:vault).permit(:display_name, :bio)
+        end
+
+        def assign_bank_account(vault)
+          info = params.dig(:vault, :bank_account_info)
+          return if info.blank?
+
+          # Use the bank_account_data= setter so the Hash is serialized to
+          # JSON before the encrypted column write. Assigning the Hash
+          # directly to bank_account_info would call .to_s and produce
+          # unparseable Ruby-syntax output.
+          vault.bank_account_data = info.permit(
+            :account_number, :bank_name, :routing_number
+          ).to_h
         end
 
         def vault_response(vault)

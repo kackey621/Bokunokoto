@@ -4,6 +4,7 @@ import '../../app/theme.dart';
 import '../../providers/content_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/content_card.dart';
+import 'content_detail_screen.dart';
 
 class VaultContentsScreen extends ConsumerWidget {
   final String vaultId;
@@ -52,9 +53,10 @@ class VaultContentsScreen extends ConsumerWidget {
                       isProfileRequired: authState.bkUser != null &&
                           authState.bkUser!.mode == BKMode.viewer,
                       onTap: () {
-                        // TODO: Navigate to content detail screen
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Opening: ${content.title}')),
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ContentDetailScreen(content: content),
+                          ),
                         );
                       },
                     ),
