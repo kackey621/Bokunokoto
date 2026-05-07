@@ -44,7 +44,7 @@ module Api
       end
 
       def log_view_activity
-        return unless @content && current_user
+        return unless @content && current_user && response.successful?
         AuditLog.create!(
           user: current_user,
           content: @content,

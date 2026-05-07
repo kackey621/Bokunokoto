@@ -132,4 +132,16 @@ class Api::V1::ContentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "access-denied show does not create audit log" do
+    @viewer.permissions.create!(vault: @vault, granted_level: 3)
+
+    FirebaseIdToken::Signature.stub :verify, { "sub" => @viewer.firebase_uid } do
+      assert_no_difference "AuditLog.count" do
+        get api_v1_content_path(@c5), headers: auth_headers(@viewer)
+      end
+    end
+
+    assert_response :not_found
+  end
 end

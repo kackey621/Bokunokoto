@@ -1,5 +1,6 @@
 class Content < ApplicationRecord
   belongs_to :vault
+  has_many :audit_logs, dependent: :nullify
 
   validates :title, presence: true
   validates :body, presence: true
