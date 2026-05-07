@@ -42,4 +42,22 @@ class Api::V1::AuthControllerTest < ActionDispatch::IntegrationTest
     assert_equal "error", json["status"]
     assert_equal "Invalid Firebase ID Token", json["message"]
   end
+
+  test "should return 401 when token is missing or blank" do
+    post api_v1_auth_verify_path, params: {}
+    assert_response :unauthorized
+    assert_equal "Invalid Firebase ID Token", response.parsed_body["message"]
+
+    post api_v1_auth_verify_path, params: { token: "" }
+    assert_response :unauthorized
+  end
+
+  test "should return 401 when Firebase certs are not loaded (NoCertificatesError)" do
+    raise_no_certs = ->(_) { raise FirebaseIdToken::Exceptions::NoCertificatesError, "no certs" }
+    FirebaseIdToken::Signature.stub :verify, raise_no_certs do
+      post api_v1_auth_verify_path, params: { token: "any_token" }
+    end
+    assert_response :unauthorized
+    assert_equal "Invalid Firebase ID Token", response.parsed_body["message"]
+  end
 end
