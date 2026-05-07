@@ -1,0 +1,41 @@
+<% content_for :bkc_title, "Access Links" %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Access Links</h2>
+  <%= link_to "Create New", bkc_access_links_path(method: :get), class: "btn btn-primary" %>
+</div>
+
+<% if @access_links.any? %>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Slug</th>
+          <th>Initial Level</th>
+          <th>Expires At</th>
+          <th>Max Uses</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @access_links.each do |link| %>
+          <tr>
+            <td><code><%= link.slug %></code></td>
+            <td><span class="badge bg-info">L<%= link.initial_level %></span></td>
+            <td><%= link.expires_at.strftime("%Y-%m-%d") if link.expires_at %></td>
+            <td><%= link.max_uses || "∞" %></td>
+            <td><%= time_ago_in_words(link.created_at) %> ago</td>
+            <td>
+              <%= link_to "View", bkc_access_link_path(link), class: "btn btn-sm btn-outline-primary" %>
+              <%= link_to "Edit", edit_bkc_access_link_path(link), class: "btn btn-sm btn-outline-secondary" %>
+              <%= link_to "Delete", bkc_access_link_path(link), method: :delete, data: { confirm: "Sure?" }, class: "btn btn-sm btn-outline-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="alert alert-info">No access links yet. <%= link_to "Create one", new_bkc_access_link_path %>.</div>
+<% end %>

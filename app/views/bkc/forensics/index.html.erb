@@ -121,7 +121,7 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
     // Fetch and display access locations
-    fetch('<%= bkc_analytics_path %>/locations')
+    fetch('/bkc/analytics/locations')
       .then(r => r.json())
       .then(data => {
         data.forEach(log => {
