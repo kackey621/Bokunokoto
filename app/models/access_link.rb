@@ -24,6 +24,7 @@ class AccessLink < ApplicationRecord
     max_uses.present? && use_count >= max_uses
   end
   alias_method :max_uses_exceeded?, :exhausted?
+  alias_method :max_uses_reached?, :exhausted?
 
   def bound_to_other?(user)
     bound_user_id.present? && bound_user_id != user.id

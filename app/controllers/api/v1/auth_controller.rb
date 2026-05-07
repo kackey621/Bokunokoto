@@ -5,6 +5,8 @@ module Api
 
       def verify
         token = params[:token]
+        return render json: { status: "error", message: "Invalid Firebase ID Token" }, status: :unauthorized if token.blank?
+
         payload = FirebaseIdToken::Signature.verify(token)
 
         if payload
@@ -46,6 +48,8 @@ module Api
         else
           render json: { status: "error", message: "Invalid Firebase ID Token" }, status: :unauthorized
         end
+      rescue FirebaseIdToken::Exceptions::NoCertificatesError
+        render json: { status: "error", message: "Invalid Firebase ID Token" }, status: :unauthorized
       end
     end
   end

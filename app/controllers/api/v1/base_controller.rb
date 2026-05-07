@@ -7,6 +7,8 @@ module Api
 
       def authenticate_user!
         token = request.headers["Authorization"]&.split(" ")&.last
+        return render_unauthorized("Invalid or missing Firebase ID Token") if token.blank?
+
         payload = FirebaseIdToken::Signature.verify(token)
 
         if payload
@@ -15,6 +17,8 @@ module Api
         else
           render_unauthorized("Invalid or missing Firebase ID Token")
         end
+      rescue FirebaseIdToken::Exceptions::NoCertificatesError
+        render_unauthorized("Invalid or missing Firebase ID Token")
       end
 
       def current_user
