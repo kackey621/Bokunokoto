@@ -91,4 +91,49 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "New Name", vault.reload.display_name
   end
+
+  test "stores bank_account_info as JSON and returns masked + parsed view" do
+    vault = @user.create_vault!(display_name: "V")
+
+    FirebaseIdToken::Signature.stub :verify, @payload do
+      patch api_v1_my_vault_path,
+            params: {
+              vault: {
+                bank_account_info: {
+                  account_number: "0123456789",
+                  bank_name: "Mizuho",
+                  routing_number: "001"
+                }
+              }
+            },
+            headers: { "Authorization" => "Bearer #{@token}" }
+    end
+
+    assert_response :success
+
+    body = response.parsed_body
+    assert_equal "012-****-6789", body["vault"]["masked_account_number"]
+    assert_equal "Mizuho", body["vault"]["bank_account_info"]["bank_name"]
+    assert_equal "001", body["vault"]["bank_account_info"]["routing_number"]
+
+    # Stored value is JSON, not Hash#to_s — round-trips through bank_account_data.
+    parsed = JSON.parse(vault.reload.bank_account_info)
+    assert_equal "0123456789", parsed["account_number"]
+    assert_equal "Mizuho", parsed["bank_name"]
+  end
+
+  test "GET vault returns parsed bank_account_info hash" do
+    vault = @user.create_vault!(display_name: "V")
+    vault.bank_account_data = { account_number: "9876543210", bank_name: "SMBC" }
+    vault.save!
+
+    FirebaseIdToken::Signature.stub :verify, @payload do
+      get api_v1_my_vault_path, headers: { "Authorization" => "Bearer #{@token}" }
+    end
+
+    assert_response :success
+    info = response.parsed_body["vault"]["bank_account_info"]
+    assert_equal "SMBC", info["bank_name"]
+    assert_equal "987-****-3210", response.parsed_body["vault"]["masked_account_number"]
+  end
 end
