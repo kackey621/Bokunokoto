@@ -8,6 +8,9 @@ class Vault < ApplicationRecord
   has_many :viewers, through: :permissions, source: :user
   has_many :contents, dependent: :destroy
   has_many :access_links, dependent: :destroy
+  # AuditLog is immutable at the model layer (raises on destroy via callback);
+  # use :delete_all so cascade purge bypasses the hook intended for app code.
+  has_many :audit_logs, dependent: :delete_all
   has_many :greetings, dependent: :destroy
   has_many :incidents, dependent: :destroy
 

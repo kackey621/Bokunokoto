@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     resources :contents, except: [ :show ]
     resources :access_links, only: [ :index, :create, :show, :update, :destroy ]
     get "forensics", to: "forensics#index"
+    get "forensics/users/:user_id/timeline", to: "forensics#timeline", as: :forensics_user_timeline
     get "analytics", to: "analytics#show"
     get "analytics/locations", to: "analytics#locations"
   end

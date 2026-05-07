@@ -56,6 +56,18 @@
               <% end %>
             </select>
           </div>
+
+          <div class="form-group mt-3">
+            <label>Per-User Timeline</label>
+            <ul class="list-unstyled small">
+              <% @vault.permissions.includes(:user).each do |perm| %>
+                <li>
+                  <%= link_to perm.user.display_name,
+                              bkc_forensics_user_timeline_path(user_id: perm.user_id) %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
           <button id="apply-filters" class="btn btn-primary btn-block">Apply Filters</button>
         </div>
       </div>
