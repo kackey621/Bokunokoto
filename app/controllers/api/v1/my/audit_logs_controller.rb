@@ -21,7 +21,7 @@ module Api
 
         def require_vault!
           unless current_user.vault
-            render json: { status: "error", message: "no_vault" }, status: :forbidden
+            render json: { status: "error", message: "no_vault" }, status: :not_found
           end
         end
 
