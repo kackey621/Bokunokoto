@@ -25,7 +25,7 @@ module Analytics
     end
 
     def status_counts
-      [pending_count, active_count, suspended_count]
+      [ pending_count, active_count, suspended_count ]
     end
 
     def total_permissions

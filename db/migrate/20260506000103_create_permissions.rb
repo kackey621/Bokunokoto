@@ -6,7 +6,6 @@ class CreatePermissions < ActiveRecord::Migration[8.1]
       t.integer :granted_level, null: false, default: 0
       t.string :status, null: false, default: "active"
       t.text :relationship_context
-      t.string :source_access_link_id
       t.text :owner_notes
 
       t.timestamps

@@ -9,10 +9,10 @@ class Greeting < ApplicationRecord
   validates :unlock_animation_type, inclusion: { in: ANIMATION_TYPES }
   validate :scheduled_time_in_future
 
-  scope :scheduled, -> { where('scheduled_delivery_time > ?', Time.current) }
+  scope :scheduled, -> { where("scheduled_delivery_time > ?", Time.current) }
   scope :unlocked, -> { where.not(unlocked_at: nil) }
   scope :locked, -> { where(unlocked_at: nil) }
-  scope :ready_to_unlock, -> { locked.where('scheduled_delivery_time <= ?', Time.current) }
+  scope :ready_to_unlock, -> { locked.where("scheduled_delivery_time <= ?", Time.current) }
 
   def locked?
     unlocked_at.nil?

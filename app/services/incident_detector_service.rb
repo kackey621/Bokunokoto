@@ -12,7 +12,7 @@ class IncidentDetectorService
     @vault = vault
     @user = user
     @recent_logs = AuditLog.where(user_id: user.id, vault_id: vault.id)
-                            .where('occurred_at > ?', 1.day.ago)
+                            .where("occurred_at > ?", 1.day.ago)
                             .order(occurred_at: :desc)
   end
 
@@ -28,14 +28,14 @@ class IncidentDetectorService
   private
 
   def detect_rapid_access
-    last_hour = @recent_logs.where('occurred_at > ?', 1.hour.ago)
+    last_hour = @recent_logs.where("occurred_at > ?", 1.hour.ago)
     if last_hour.count > RAPID_ACCESS_THRESHOLD
-      [create_incident(
+      [ create_incident(
         "rapid_access",
         "High-frequency access detected",
-        Incident::SEVERITIES[ :medium ],
+        Incident::SEVERITIES[:medium],
         { access_count: last_hour.count }
-      )]
+      ) ]
     else
       []
     end
@@ -58,7 +58,7 @@ class IncidentDetectorService
         incidents << create_incident(
           "geo_jump",
           "Geographic anomaly: #{distance.round}km jump detected",
-          Incident::SEVERITIES[ :high ],
+          Incident::SEVERITIES[:high],
           { distance_km: distance.round, from: "#{prev_log.latitude},#{prev_log.longitude}",
             to: "#{curr_log.latitude},#{curr_log.longitude}" }
         )
@@ -73,12 +73,12 @@ class IncidentDetectorService
                                   .where("occurred_at > ?", 24.hours.ago)
 
     if recent_denials.count > 3
-      [create_incident(
+      [ create_incident(
         "gps_denial",
         "Multiple GPS access denials",
-        Incident::SEVERITIES[ :medium ],
+        Incident::SEVERITIES[:medium],
         { denial_count: recent_denials.count }
-      )]
+      ) ]
     else
       []
     end
@@ -89,12 +89,12 @@ class IncidentDetectorService
                                    .where("occurred_at > ?", 1.hour.ago)
 
     if recent_failures.count > 5
-      [create_incident(
+      [ create_incident(
         "auth_failure",
         "Multiple authentication failures",
-        Incident::SEVERITIES[ :high ],
+        Incident::SEVERITIES[:high],
         { failure_count: recent_failures.count }
-      )]
+      ) ]
     else
       []
     end
