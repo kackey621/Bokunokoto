@@ -32,11 +32,25 @@ class _BankAccountScreenState extends ConsumerState<BankAccountScreen> {
 
   Future<void> _loadBankAccount() async {
     try {
-      // TODO: Load from API or local state
-      // final vault = await apiService.getVault();
-      // _maskedAccountNumber = vault.maskedAccountNumber;
-      // _bankName = vault.bankAccountData?['bank_name'];
+      final dio = ref.read(apiClientProvider);
+      final response = await dio.get('/my/vault');
+
+      if (response.statusCode == 200) {
+        final vault = response.data['vault'] as Map<String, dynamic>?;
+        if (!mounted || vault == null) return;
+        final info = vault['bank_account_info'] as Map<String, dynamic>?;
+        setState(() {
+          _maskedAccountNumber = vault['masked_account_number'] as String?;
+          _bankName = info?['bank_name'] as String?;
+          if (info?['routing_number'] is String) {
+            _routingNumberController.text = info!['routing_number'] as String;
+          }
+        });
+      }
     } catch (e) {
+      // 404 (no vault yet) is expected for new users — silently skip.
+      if (!mounted) return;
+      if (e.toString().contains('404')) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load bank account: $e')),
       );
@@ -144,7 +158,7 @@ class _BankAccountScreenState extends ConsumerState<BankAccountScreen> {
                                 ),
                                 const SizedBox(height: Spacing.sm),
                                 Text(
-                                  _showFullNumber
+                                  _showFullNumber && _accountNumberController.text.isNotEmpty
                                       ? _accountNumberController.text
                                       : _maskedAccountNumber!,
                                   style: AppTypography.h3,

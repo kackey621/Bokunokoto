@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../app/theme.dart';
 import '../models/content.dart';
+import 'symbol_badge.dart';
 
 class ContentCard extends StatelessWidget {
   final Content content;
@@ -14,16 +15,28 @@ class ContentCard extends StatelessWidget {
     required this.isProfileRequired,
   }) : super(key: key);
 
+  String _accessibilitySummary() {
+    if (content.requiresLogin && !content.requiresProfile) return 'Login required';
+    if (content.requiresProfile && isProfileRequired) return 'Profile required';
+    if (content.requiresProfile) return 'Accessible after profile';
+    return 'Accessible';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: content.requiresProfile && isProfileRequired ? null : onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(Spacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+    final tappable = !(content.requiresProfile && isProfileRequired);
+    return Semantics(
+      label: '${content.title}, ${content.levelDisplay}, ${_accessibilitySummary()}',
+      button: tappable,
+      enabled: tappable,
+      child: Card(
+        child: InkWell(
+          onTap: tappable ? onTap : null,
+          child: Padding(
+            padding: const EdgeInsets.all(Spacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -38,22 +51,34 @@ class ContentCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: Spacing.sm),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Spacing.sm,
-                            vertical: Spacing.xs,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getLevelColor(content.requiredLevel),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            content.levelDisplay,
-                            style: AppTypography.labelMedium.copyWith(
-                              color: Colors.white,
-                              fontSize: 10,
+                        Wrap(
+                          spacing: Spacing.sm,
+                          runSpacing: Spacing.xs,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Spacing.sm,
+                                vertical: Spacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getLevelColor(content.requiredLevel),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                content.levelDisplay,
+                                style: AppTypography.labelMedium.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                              ),
                             ),
-                          ),
+                            if (content.symbolType != null)
+                              SymbolBadge(
+                                symbolType: content.symbolType,
+                                requiredLevel: content.requiredLevel,
+                              ),
+                          ],
                         ),
                       ],
                     ),
@@ -116,7 +141,8 @@ class ContentCard extends StatelessWidget {
                     ),
                   ],
                 ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
