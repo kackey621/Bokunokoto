@@ -49,7 +49,7 @@ module Api
       end
 
       def gps_denial_count(logs)
-        logs.where(action: 'gps_denied').count
+        logs.where(action: "gps_denied").count
       end
 
       def face_capture_count(logs)
