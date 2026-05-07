@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../app/theme.dart';
 import '../../models/content.dart';
+import '../../widgets/symbol_badge.dart';
 
 /// Renders the full body of a [Content] using the right widget for its
 /// declared `format`. Markdown and HTML get their dedicated renderers;
@@ -27,7 +28,19 @@ class ContentDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _LevelBadge(level: content.requiredLevel, label: content.levelDisplay),
+            Wrap(
+              spacing: Spacing.sm,
+              runSpacing: Spacing.xs,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                _LevelBadge(level: content.requiredLevel, label: content.levelDisplay),
+                if (content.symbolType != null)
+                  SymbolBadge(
+                    symbolType: content.symbolType,
+                    requiredLevel: content.requiredLevel,
+                  ),
+              ],
+            ),
             const SizedBox(height: Spacing.md),
             _renderBody(context),
           ],
