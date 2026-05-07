@@ -16,7 +16,8 @@
 | **Graduated Disclosure** | Information is organized across 10 security levels (L0–L9), each requiring progressively stronger authentication and trust. |
 | **Symbolic Communication** | Visual symbols (Help Mark, Rainbow Symbol, Ear Mark, etc.) convey identity traits at a glance, reducing the burden of verbal explanation. |
 | **Accessibility First** | The system is designed so that visually impaired users can safely receive sensitive information via secure audio (earphone-only TTS). |
-| **Vault Isolation** | Every user owns an independent "Vault" — a private, encrypted data silo that is invisible to other users. |
+| **Vault Isolation** | Every disclosure space is isolated in a private encrypted Vault. A user may own a vault and also receive access to other users' vaults from the same account. |
+| **One-Person Account** | A `User` is a person, not a fixed discloser/viewer role. Product context comes from vault ownership and permission relationships. |
 
 ## System Name
 
@@ -35,9 +36,9 @@ The beta phase targets **close personal relationships** — friends, colleagues,
 
 This design document is organized into the following sections:
 
-- **Architecture** — System overview, tech stack, data model, and API design
+- **Architecture** — System overview, tech stack, account model, data model, and API design
 - **Security** — 10-level trust system, ABC Shield, authentication, audit logs, NTP sync
 - **Features** — QR/NFC handshake, greeting engine, symbolic disclosure, notifications, burn-after-reading, bank account display, dynamic access links
 - **Accessibility** — Secure audio output, inclusive design principles
 - **BKC Admin** — Command center, content editor, trust controller, analytics
-- **Roadmap** — Beta and release phase milestones
+- **Roadmap** — System plan, account-role replan, beta milestones, and release phase

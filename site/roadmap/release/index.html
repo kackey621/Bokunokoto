@@ -332,7 +332,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../account-role-replan/" class="md-tabs__link">
+        <a href="../system-plan/" class="md-tabs__link">
           
   
   
@@ -1447,6 +1447,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../system-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../account-role-replan/" class="md-nav__link">
         
   
@@ -1587,10 +1615,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#discloser-plan-vault-owner" class="md-nav__link">
+  <a href="#vault-owner-capability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Discloser Plan (Vault Owner)
+        Vault Owner Capability
       
     </span>
   </a>
@@ -1598,10 +1626,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#viewer-plan-content-viewer" class="md-nav__link">
+  <a href="#receiver-capability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Viewer Plan (Content Viewer)
+        Receiver Capability
       
     </span>
   </a>
@@ -1753,10 +1781,10 @@
 
 <h1 id="release-phase-month-12">Release Phase (Month 12+)</h1>
 <h2 id="paid-launch">Paid Launch</h2>
-<p>At the 12-month mark, BK transitions from free beta to a <strong>dual subscription model</strong>.</p>
+<p>At the 12-month mark, BK transitions from free beta to a <strong>capability-based subscription model</strong>. A user keeps one account and can unlock vault-owner capabilities, receiver capabilities, or both.</p>
 <h3 id="subscription-plans">Subscription Plans</h3>
-<h4 id="discloser-plan-vault-owner">Discloser Plan (Vault Owner)</h4>
-<p>For users who create and manage their own vault.</p>
+<h4 id="vault-owner-capability">Vault Owner Capability</h4>
+<p>For users who create and manage their own vault. This is a capability attached to the user's account, not a separate discloser account.</p>
 <table>
 <thead>
 <tr>
@@ -1813,8 +1841,8 @@
 </tr>
 </tbody>
 </table>
-<h4 id="viewer-plan-content-viewer">Viewer Plan (Content Viewer)</h4>
-<p>For users who view other people's vaults.</p>
+<h4 id="receiver-capability">Receiver Capability</h4>
+<p>For users who view other people's vaults. This is a capability attached to the same account that may also own a vault.</p>
 <table>
 <thead>
 <tr>
@@ -1859,13 +1887,13 @@
 <h3 id="payment-integration">Payment Integration</h3>
 <ul>
 <li><strong>Provider:</strong> Stripe (via <code>stripe</code> gem for Rails)</li>
-<li><strong>Model:</strong> Monthly/annual subscription</li>
-<li><strong>Rails Implementation:</strong> <code>Subscription</code> model with <code>user_id</code>, <code>plan_type</code>, <code>status</code>, <code>expires_at</code></li>
-<li><strong>Feature Flag Integration:</strong> Subscription status gates feature access at the API level</li>
+<li><strong>Model:</strong> Monthly/annual subscription with account capabilities</li>
+<li><strong>Rails Implementation:</strong> <code>Subscription</code> model with <code>user_id</code>, <code>capability</code>, <code>status</code>, <code>expires_at</code></li>
+<li><strong>Feature Flag Integration:</strong> Subscription status grants or restricts account capabilities at the API level</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span>
 <span class="w">  </span><span class="n">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
-<span class="w">  </span><span class="k">unless</span><span class="w"> </span><span class="n">current_user</span><span class="o">.</span><span class="n">active_viewer_plan?</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">current_user</span><span class="o">.</span><span class="n">can_view?</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+<span class="w">  </span><span class="k">unless</span><span class="w"> </span><span class="n">current_user</span><span class="o">.</span><span class="n">capability_enabled?</span><span class="p">(</span><span class="s2">&quot;receiver_l5_plus&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">current_user</span><span class="o">.</span><span class="n">can_view?</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 <span class="w">    </span><span class="n">render_security_error</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">return</span>
 <span class="w">  </span><span class="k">end</span>
 <span class="w">  </span><span class="n">render</span><span class="w"> </span><span class="ss">json</span><span class="p">:</span><span class="w"> </span><span class="n">content</span>
