@@ -29,4 +29,11 @@ end
 
 class ActionDispatch::IntegrationTest
   include ConsoleAuthTestHelper
+
+  # Rack::Attack stores throttle counters in a process-wide cache. Without
+  # this reset, a test that hits an API endpoint many times in a single
+  # method (e.g. the rate-limit assertion in penetration_test) leaks its
+  # counter into every subsequent test on the same worker, manifesting as
+  # spurious 429s on `/handshake` and `/auth/verify`.
+  setup { Rack::Attack.cache.store.clear if defined?(Rack::Attack) }
 end
