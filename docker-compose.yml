@@ -14,7 +14,8 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       FRONTEND_ORIGINS: http://localhost:5173,http://localhost:3001
-      FIREBASE_PROJECT_ID: bokunokoto-tell-you-myprofile
+      FIREBASE_PROJECT_ID: bokuno-koto
+      GOOGLE_APPLICATION_CREDENTIALS: /rails/config/firebase-credentials.json
     ports:
       - "${RAILS_PORT:-3000}:3000"
     volumes:
@@ -43,7 +44,8 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       FRONTEND_ORIGINS: http://localhost:5173,http://localhost:3001
-      FIREBASE_PROJECT_ID: bokunokoto-tell-you-myprofile
+      FIREBASE_PROJECT_ID: bokuno-koto
+      GOOGLE_APPLICATION_CREDENTIALS: /rails/config/firebase-credentials.json
     volumes:
       - .:/rails
       - bundle:/usr/local/bundle

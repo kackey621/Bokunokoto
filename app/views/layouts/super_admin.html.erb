@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Super Admin Console" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Bokunokoto Super Admin">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <style>
+      .super-admin-body {
+        background-color: #f8f9fa;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+      .navbar-super {
+        background-color: #343a40;
+        color: white;
+        padding: 1rem;
+      }
+      .navbar-super a {
+        color: white;
+        text-decoration: none;
+        margin-right: 1rem;
+      }
+    </style>
+  </head>
+
+  <body class="super-admin-body">
+    <nav class="navbar-super d-flex justify-content-between">
+      <div>
+        <a href="<%= super_admin_root_path %>" class="fw-bold">Super Admin Console</a>
+        <a href="<%= super_admin_root_path %>">Dashboard</a>
+      </div>
+      <div>
+        <span>Logged in as: <strong><%= current_user&.display_name || "Admin" %></strong></span>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <% if notice.present? %>
+        <div class="alert alert-success"><%= notice %></div>
+      <% end %>
+      <% if alert.present? %>
+        <div class="alert alert-danger"><%= alert %></div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>

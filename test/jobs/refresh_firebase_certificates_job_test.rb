@@ -8,9 +8,10 @@ class RefreshFirebaseCertificatesJobTest < ActiveJob::TestCase
       end
 
       next_job = enqueued_jobs.last
-      scheduled_at = next_job["scheduled_at"]
+      scheduled_at = next_job["scheduled_at"] || next_job["at"]
+      scheduled_time = scheduled_at.is_a?(String) ? Time.zone.parse(scheduled_at) : scheduled_at
       expected_at = RefreshFirebaseCertificatesJob::REFRESH_INTERVAL.from_now.to_f
-      assert_in_delta expected_at, scheduled_at, 10.0
+      assert_in_delta expected_at, scheduled_time.to_f, 10.0
     end
   end
 
@@ -21,9 +22,10 @@ class RefreshFirebaseCertificatesJobTest < ActiveJob::TestCase
       end
 
       next_job = enqueued_jobs.last
-      scheduled_at = next_job["scheduled_at"]
+      scheduled_at = next_job["scheduled_at"] || next_job["at"]
+      scheduled_time = scheduled_at.is_a?(String) ? Time.zone.parse(scheduled_at) : scheduled_at
       expected_at = RefreshFirebaseCertificatesJob::RETRY_INTERVAL.from_now.to_f
-      assert_in_delta expected_at, scheduled_at, 10.0
+      assert_in_delta expected_at, scheduled_time.to_f, 10.0
     end
   end
 end

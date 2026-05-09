@@ -71,3 +71,5 @@ yarn-debug.log*
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Ignore Firebase Service Account Key
+config/firebase-credentials.json
