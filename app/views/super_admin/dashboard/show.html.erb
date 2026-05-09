@@ -12,7 +12,7 @@
       <div class="card-body">
         <h5 class="card-title">Firebase Data & Auth</h5>
         <p class="card-text">Manage users dynamically, revoke tokens, and observe Firestore telemetry.</p>
-        <button class="btn btn-outline-primary" disabled>View Firestore Data</button>
+        <%= link_to "View Firestore Data", super_admin_firestore_index_path, class: "btn btn-outline-primary" %>
       </div>
     </div>
   </div>
@@ -23,7 +23,7 @@
       <div class="card-body">
         <h5 class="card-title">Remote Config (Mobile)</h5>
         <p class="card-text">Update mobile application configurations without an app release.</p>
-        <button class="btn btn-outline-primary" disabled>Manage Remote Config</button>
+        <%= link_to "Manage Remote Config", super_admin_remote_config_index_path, class: "btn btn-outline-primary" %>
       </div>
     </div>
   </div>
@@ -34,7 +34,7 @@
       <div class="card-body">
         <h5 class="card-title">Feature Flags</h5>
         <p class="card-text">Toggle application features via Flipper integration.</p>
-        <button class="btn btn-outline-primary" disabled>Manage Flags</button>
+        <%= link_to "Manage Flags", super_admin_feature_flags_path, class: "btn btn-outline-primary" %>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
       <div class="card-body">
         <h5 class="card-title">Push Notifications (FCM)</h5>
         <p class="card-text">Send platform-wide announcements to users.</p>
-        <button class="btn btn-outline-primary" disabled>Send Announcement</button>
+        <%= link_to "Send Announcement", super_admin_fcm_index_path, class: "btn btn-outline-primary" %>
       </div>
     </div>
   </div>

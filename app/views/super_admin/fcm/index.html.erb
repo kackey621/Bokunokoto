@@ -1,0 +1,27 @@
+<div class="row mb-4">
+  <div class="col">
+    <h2>Push Notifications (FCM)</h2>
+    <p class="text-muted">Send platform-wide announcements to all users.</p>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    <%= form_with url: super_admin_fcm_index_path, method: :post, local: true do |form| %>
+      <div class="mb-3">
+        <%= form.label :title, "Announcement Title", class: "form-label" %>
+        <%= form.text_field :title, class: "form-control", required: true %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :body, "Announcement Body", class: "form-label" %>
+        <%= form.text_area :body, class: "form-control", rows: 4, required: true %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :topic, "Target Topic (optional)", class: "form-label" %>
+        <%= form.text_field :topic, class: "form-control", placeholder: "all_users" %>
+      </div>
+      <%= form.submit "Send Announcement", class: "btn btn-primary" %>
+      <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary ms-2" %>
+    <% end %>
+  </div>
+</div>

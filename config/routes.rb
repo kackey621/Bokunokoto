@@ -51,7 +51,12 @@ Rails.application.routes.draw do
 
   namespace :super_admin do
     root to: "dashboard#show"
-    # Endpoints for Firebase Auth, Firestore, Remote Config, FCM, Flipt will be here
+    get "firestore", to: "firestore#index", as: :firestore_index
+    get "fcm", to: "fcm#index", as: :fcm_index
+    post "fcm", to: "fcm#create"
+    get "remote_config", to: "remote_config#index", as: :remote_config_index
+    post "remote_config", to: "remote_config#create"
+    get "feature_flags", to: "feature_flags#index", as: :feature_flags
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

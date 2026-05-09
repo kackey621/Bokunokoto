@@ -1,0 +1,24 @@
+<div class="row mb-4">
+  <div class="col">
+    <h2>Remote Config</h2>
+    <p class="text-muted">View and manage mobile application remote configurations.</p>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <h5 class="card-title">Current Configuration Template</h5>
+    <% if @template.present? %>
+      <pre class="bg-light p-3 rounded"><code><%= JSON.pretty_generate(@template) rescue @template.to_json %></code></pre>
+    <% else %>
+      <p class="text-danger">Failed to load configuration. Check your permissions and service account key.</p>
+    <% end %>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    <p>Future iterations will include an editor to modify these parameters.</p>
+    <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary" %>
+  </div>
+</div>
