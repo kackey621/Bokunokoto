@@ -51,6 +51,7 @@ Rails.application.routes.draw do
 
   namespace :super_admin do
     root to: "dashboard#show"
+    resource :session, only: [:new, :create, :destroy]
     get "firestore", to: "firestore#index", as: :firestore_index
     get "fcm", to: "fcm#index", as: :fcm_index
     post "fcm", to: "fcm#create"

@@ -9,14 +9,30 @@ default: &default
   password: <%= ENV.fetch("DB_PASSWORD", "password") %>
 
 development:
-  <<: *default
-  database: <%= ENV.fetch("DB_NAME", "bokunokoto_development") %>
+  primary:
+    <<: *default
+    database: <%= ENV.fetch("DB_NAME", "bokunokoto_development") %>
+  admin:
+    <<: *default
+    database: <%= ENV.fetch("ADMIN_DB_NAME", "bokunokoto_admin_development") %>
+    migrations_paths: db/admin_migrate
 
 test:
-  adapter: sqlite3
-  database: storage/test.sqlite3
-  pool: 5
+  primary:
+    adapter: sqlite3
+    database: storage/test.sqlite3
+    pool: 5
+  admin:
+    adapter: sqlite3
+    database: storage/admin_test.sqlite3
+    pool: 5
+    migrations_paths: db/admin_migrate
 
 production:
-  <<: *default
-  database: <%= ENV.fetch("DB_NAME", "bokunokoto_production") %>
+  primary:
+    <<: *default
+    database: <%= ENV.fetch("DB_NAME", "bokunokoto_production") %>
+  admin:
+    <<: *default
+    database: <%= ENV.fetch("ADMIN_DB_NAME", "bokunokoto_admin_production") %>
+    migrations_paths: db/admin_migrate

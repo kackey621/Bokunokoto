@@ -16,9 +16,17 @@
   </div>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0 mb-4">
   <div class="card-body">
-    <p>Future iterations will include an editor to modify these parameters.</p>
-    <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary" %>
+    <h5 class="card-title">Update Configuration</h5>
+    <%= form_with url: super_admin_remote_config_index_path, method: :post, local: true do |form| %>
+      <div class="mb-3">
+        <%= form.label :template_json, "Template JSON", class: "form-label fw-semibold" %>
+        <%= form.text_area :template_json, class: "form-control font-monospace", rows: 15, required: true, value: (@template.present? ? JSON.pretty_generate(@template) : "") %>
+        <div class="form-text">Ensure your JSON matches the Firebase Remote Config REST API format.</div>
+      </div>
+      <%= form.submit "Publish Template", class: "btn btn-primary" %>
+      <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary ms-2" %>
+    <% end %>
   </div>
 </div>

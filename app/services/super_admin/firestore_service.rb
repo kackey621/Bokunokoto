@@ -10,6 +10,10 @@ module SuperAdmin
       @firestore.col("support_tickets").where(:user_id, :==, user_id).get
     end
 
+    def fetch_recent_tickets(limit = 50)
+      @firestore.col("support_tickets").order(:created_at, :desc).limit(limit).get
+    end
+
     def update_document(collection, document_id, data)
       @firestore.col(collection).doc(document_id).set(data, merge: true)
     end

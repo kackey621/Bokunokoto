@@ -35,7 +35,8 @@
         <a href="<%= super_admin_root_path %>">Dashboard</a>
       </div>
       <div>
-        <span>Logged in as: <strong><%= current_user&.display_name || "Admin" %></strong></span>
+        <span>Logged in as: <strong><%= current_manager&.email || "Admin" %></strong></span>
+        <%= button_to "Sign Out", super_admin_session_path, method: :delete, class: "btn btn-sm btn-outline-light ms-3", style: "display: inline-block;" %>
       </div>
     </nav>
 
