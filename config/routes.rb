@@ -49,6 +49,11 @@ Rails.application.routes.draw do
     post "sample_mail", to: "dashboard#send_sample_mail"
   end
 
+  namespace :super_admin do
+    root to: "dashboard#show"
+    # Endpoints for Firebase Auth, Firestore, Remote Config, FCM, Flipt will be here
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check

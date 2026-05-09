@@ -40,6 +40,14 @@ gem "sidekiq"
 # Firebase ID Token verification
 gem "firebase_id_token"
 
+# Firebase Operational Gems (Firestore, FCM, Remote Config)
+gem "google-cloud-firestore"
+gem "google-apis-fcm_v1"
+
+# Feature Flags (Flipt or Flipper)
+gem "flipper"
+gem "flipper-active_record"
+
 # Rate limiting / brute-force protection
 gem "rack-attack"
 
