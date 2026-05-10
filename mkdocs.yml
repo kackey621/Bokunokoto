@@ -77,6 +77,7 @@ nav:
   - Roadmap:
       - System Plan: roadmap/system-plan.md
       - Account & Role Replan: roadmap/account-role-replan.md
+      - Super Admin TailAdmin: roadmap/super-admin-tailadmin-integration.md
       - Beta Phase: roadmap/beta.md
       - Release Phase: roadmap/release.md
 
