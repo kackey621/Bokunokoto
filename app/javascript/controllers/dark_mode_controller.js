@@ -4,7 +4,17 @@ export default class extends Controller {
   static targets = ["checkbox", "switcher"]
 
   connect() {
-    this.isDarkMode = JSON.parse(localStorage.getItem('darkMode'))
+    try {
+      const stored = localStorage.getItem('darkMode')
+      if (stored === null || stored === 'undefined' || stored === undefined) {
+        this.isDarkMode = null
+      } else {
+        this.isDarkMode = JSON.parse(stored)
+      }
+    } catch (e) {
+      console.warn("Invalid darkMode value in localStorage", e)
+      this.isDarkMode = null
+    }
 
     if (this.isDarkMode === null) {
       // Check system preference
@@ -21,7 +31,9 @@ export default class extends Controller {
   }
 
   applyTheme() {
-    this.checkboxTarget.checked = this.isDarkMode
+    if (this.hasCheckboxTarget) {
+      this.checkboxTarget.checked = this.isDarkMode
+    }
 
     if (this.isDarkMode) {
       document.body.classList.add('dark')
