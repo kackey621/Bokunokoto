@@ -31,6 +31,7 @@ Rails.application.routes.draw do
 
   namespace :bkc do
     root to: "dashboard#show", as: :dashboard
+    resource :session, only: [ :destroy ]
     resource :vault, only: [ :create, :update ]
     resources :viewers, only: [ :index, :show, :update ]
     resources :contents, except: [ :show ]

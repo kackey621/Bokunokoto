@@ -10,7 +10,7 @@
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="<%= asset_path("css/coreui.min.css") %>">
+    <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.4.3/dist/css/coreui.min.css" rel="stylesheet">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -46,9 +46,9 @@
       </ul>
     </div>
 
-    <div class="wrapper d-flex flex-column min-vh-100">
+    <div class="wrapper d-flex flex-column min-vh-100" style="padding-left: var(--cui-sidebar-occupy-start, 0);">
       <header class="header header-sticky p-0 border-bottom">
-        <div class="container-fluid">
+        <div class="container-fluid px-4">
           <button class="header-toggler px-md-0 me-md-3" type="button" data-coreui-toggle="sidebar" data-coreui-target="#sidebar" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -58,8 +58,18 @@
               <li class="breadcrumb-item active"><%= content_for(:bkc_title) || "Dashboard" %></li>
             </ol>
           </nav>
-          <div class="ms-auto d-flex align-items-center gap-3 small text-body-secondary">
-            <span>Logged in as: <strong><%= current_user.display_name %></strong></span>
+          <div class="ms-auto d-flex align-items-center gap-4">
+            <div class="d-none d-sm-flex flex-column align-items-end line-height-1">
+              <span class="small fw-semibold"><%= current_user.display_name %></span>
+              <span class="small text-body-secondary" style="font-size: 0.75rem;">Manager</span>
+            </div>
+            <%= button_to bkc_session_path, method: :delete, class: "btn btn-outline-danger btn-sm d-flex align-items-center gap-2", data: { turbo: false } do %>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+              </svg>
+              Logout
+            <% end %>
           </div>
         </div>
       </header>

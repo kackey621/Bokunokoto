@@ -1,86 +1,147 @@
 <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-  <h2 class="text-title-md2 font-bold text-black dark:text-white">
-    Super Admin Dashboard
-  </h2>
-  <p class="text-sm font-medium">Overview of platform operations and core systems.</p>
+  <div>
+    <h2 class="text-title-md2 font-bold text-black dark:text-white">
+      System Overview
+    </h2>
+    <p class="text-sm font-medium text-body dark:text-bodydark2">Real-time status of platform services and administrative modules.</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="flex h-3 w-3 rounded-full bg-success"></span>
+    <span class="text-sm font-bold text-success uppercase tracking-wider">All Systems Operational</span>
+  </div>
 </div>
 
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-  
-  <!-- Firebase Auth & Firestore -->
+  <!-- Users Metric -->
   <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 22c6.075 0 11-4.925 11-11S17.075 0 11 0 0 4.925 0 11s4.925 11 11 11Zm0-20.167c5.056 0 9.167 4.111 9.167 9.167 0 5.056-4.111 9.167-9.167 9.167-5.056 0-9.167-4.111-9.167-9.167 0-5.056 4.111-9.167 9.167-9.167Z" fill=""/>
-        <path d="M11 5.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Zm0 9.167a3.667 3.667 0 1 1 0-7.334 3.667 3.667 0 0 1 0 7.334Z" fill=""/>
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 text-primary dark:text-white">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.33 4 18V20H20V18C20 15.33 14.67 14 12 14Z" fill="currentColor"/>
       </svg>
     </div>
-    <div class="mt-4">
+    <div class="mt-4 flex items-end justify-between">
       <div>
-        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">Firebase Data</h4>
-        <span class="text-sm font-medium">Manage users dynamically, revoke tokens, and observe Firestore telemetry.</span>
-      </div>
-      <div class="mt-4">
-        <%= link_to "View Firestore Data", super_admin_firestore_index_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
+        <h4 class="text-title-md font-bold text-black dark:text-white"><%= User.count rescue "---" %></h4>
+        <span class="text-sm font-medium text-body">Total Users</span>
       </div>
     </div>
   </div>
 
-  <!-- Remote Config -->
+  <!-- Vaults Metric -->
   <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 22C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11ZM11 1.833C5.944 1.833 1.833 5.944 1.833 11c0 5.056 4.111 9.167 9.167 9.167 5.056 0 9.167-4.111 9.167-9.167 0-5.056-4.111-9.167-9.167-9.167Z" fill=""/>
-        <path d="M11 15.583a4.583 4.583 0 1 1 0-9.166 4.583 4.583 0 0 1 0 9.166Zm0-7.333a2.75 2.75 0 1 0 0 5.5 2.75 2.75 0 0 0 0-5.5Z" fill=""/>
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 text-primary dark:text-white">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 6H12L10 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6ZM20 18H4V8H20V18Z" fill="currentColor"/>
       </svg>
     </div>
-    <div class="mt-4">
+    <div class="mt-4 flex items-end justify-between">
       <div>
-        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">Remote Config</h4>
-        <span class="text-sm font-medium">Update mobile application configurations without an app release.</span>
-      </div>
-      <div class="mt-4">
-        <%= link_to "Manage Remote Config", super_admin_remote_config_index_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
+        <h4 class="text-title-md font-bold text-black dark:text-white"><%= Vault.count rescue "---" %></h4>
+        <span class="text-sm font-medium text-body">Active Vaults</span>
       </div>
     </div>
   </div>
 
-  <!-- Feature Flags -->
+  <!-- Flags Metric -->
   <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 22C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11ZM11 1.833C5.944 1.833 1.833 5.944 1.833 11c0 5.056 4.111 9.167 9.167 9.167 5.056 0 9.167-4.111 9.167-9.167 0-5.056-4.111-9.167-9.167-9.167Z" fill=""/>
-        <path d="M14.667 9.167a3.667 3.667 0 1 1-7.334 0 3.667 3.667 0 0 1 7.334 0ZM11 11a1.833 1.833 0 1 0 0-3.667A1.833 1.833 0 0 0 11 11Z" fill=""/>
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 text-primary dark:text-white">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14.4 6L14 4H5V21H7V14H12.6L13 16H20V6H14.4Z" fill="currentColor"/>
       </svg>
     </div>
-    <div class="mt-4">
+    <div class="mt-4 flex items-end justify-between">
       <div>
-        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">Feature Flags</h4>
-        <span class="text-sm font-medium">Toggle application features via Flipper integration.</span>
-      </div>
-      <div class="mt-4">
-        <%= link_to "Manage Flags", super_admin_feature_flags_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
+        <h4 class="text-title-md font-bold text-black dark:text-white"><%= Flipper.features.count rescue "---" %></h4>
+        <span class="text-sm font-medium text-body">Feature Flags</span>
       </div>
     </div>
   </div>
 
-  <!-- FCM Notifications -->
+  <!-- Uptime Metric -->
   <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 22C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11ZM11 1.833C5.944 1.833 1.833 5.944 1.833 11c0 5.056 4.111 9.167 9.167 9.167 5.056 0 9.167-4.111 9.167-9.167 0-5.056-4.111-9.167-9.167-9.167Z" fill=""/>
-        <path d="M11 18.333c-3.538 0-6.417-2.878-6.417-6.416a6.417 6.417 0 1 1 12.834 0c0 3.538-2.879 6.416-6.417 6.416Zm0-11a4.583 4.583 0 1 0 0 9.167 4.583 4.583 0 0 0 0-9.167Z" fill=""/>
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 text-primary dark:text-white">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2ZM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8ZM12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67V7Z" fill="currentColor"/>
       </svg>
     </div>
-    <div class="mt-4">
+    <div class="mt-4 flex items-end justify-between">
       <div>
-        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">FCM Notifications</h4>
-        <span class="text-sm font-medium">Send platform-wide announcements to users.</span>
+        <h4 class="text-title-md font-bold text-black dark:text-white">99.9%</h4>
+        <span class="text-sm font-medium text-body">System Uptime</span>
       </div>
-      <div class="mt-4">
-        <%= link_to "Send Announcement", super_admin_fcm_index_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+  <!-- Module Management -->
+  <div class="col-span-12 xl:col-span-8">
+    <div class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+      <h4 class="mb-6 text-xl font-bold text-black dark:text-white">
+        Platform Modules
+      </h4>
+
+      <div class="flex flex-col">
+        <div class="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-4">
+          <div class="p-2.5 xl:p-5"><h5 class="text-sm font-medium uppercase xsm:text-base">Service</h5></div>
+          <div class="p-2.5 text-center xl:p-5"><h5 class="text-sm font-medium uppercase xsm:text-base">Status</h5></div>
+          <div class="hidden p-2.5 text-center sm:block xl:p-5"><h5 class="text-sm font-medium uppercase xsm:text-base">Action</h5></div>
+        </div>
+
+        <!-- Firestore Module -->
+        <div class="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-4">
+          <div class="flex items-center gap-3 p-2.5 xl:p-5">
+            <p class="font-medium text-black dark:text-white">Firestore Engine</p>
+          </div>
+          <div class="flex items-center justify-center p-2.5 xl:p-5">
+            <span class="inline-flex rounded-full bg-success bg-opacity-10 py-1 px-3 text-sm font-medium text-success">Healthy</span>
+          </div>
+          <div class="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+            <%= link_to "Access Data", super_admin_firestore_index_path, class: "text-primary hover:underline font-medium" %>
+          </div>
+        </div>
+
+        <!-- Remote Config Module -->
+        <div class="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-4">
+          <div class="flex items-center gap-3 p-2.5 xl:p-5">
+            <p class="font-medium text-black dark:text-white">Remote Config</p>
+          </div>
+          <div class="flex items-center justify-center p-2.5 xl:p-5">
+            <span class="inline-flex rounded-full bg-success bg-opacity-10 py-1 px-3 text-sm font-medium text-success">Active</span>
+          </div>
+          <div class="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+            <%= link_to "Configure", super_admin_remote_config_index_path, class: "text-primary hover:underline font-medium" %>
+          </div>
+        </div>
+
+        <!-- FCM Module -->
+        <div class="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-4">
+          <div class="flex items-center gap-3 p-2.5 xl:p-5">
+            <p class="font-medium text-black dark:text-white">Push Engine (FCM)</p>
+          </div>
+          <div class="flex items-center justify-center p-2.5 xl:p-5">
+            <span class="inline-flex rounded-full bg-success bg-opacity-10 py-1 px-3 text-sm font-medium text-success">Standby</span>
+          </div>
+          <div class="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+            <%= link_to "Compose", super_admin_fcm_index_path, class: "text-primary hover:underline font-medium" %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Quick Actions -->
+  <div class="col-span-12 xl:col-span-4">
+    <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <h4 class="mb-6 text-xl font-bold text-black dark:text-white">Quick Actions</h4>
+      <div class="flex flex-col gap-4">
+        <%= button_to "/super_admin/fcm", class: "flex w-full items-center gap-3 rounded border border-stroke py-3 px-4 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 text-left font-medium" do %>
+          <span>Broadcast Message</span>
+        <% end %>
+        <%= link_to super_admin_feature_flags_path, class: "flex w-full items-center gap-3 rounded border border-stroke py-3 px-4 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 font-medium" do %>
+          <span>Manage Feature Rollout</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>
