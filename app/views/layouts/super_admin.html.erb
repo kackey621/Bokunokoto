@@ -8,47 +8,173 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <!-- Plan C: Tailwind CDN Fallback -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        important: '.tailadmin-scope',
+        darkMode: 'class',
+        corePlugins: { preflight: false },
+        theme: {
+          extend: {
+            colors: {
+              primary: { DEFAULT: '#3C50E0', dark: '#80CAEE' },
+              stroke: { DEFAULT: '#E2E8F0', dark: '#2E3A47', form: '#d5d9e2' },
+              boxdark: { DEFAULT: '#24303F', 2: '#313D4A' },
+              body: { DEFAULT: '#64748B', dark: '#AEB7C0' },
+              whiten: { DEFAULT: '#F1F5F9' },
+              danger: { DEFAULT: '#DC3545' },
+              success: { DEFAULT: '#219653' },
+              warning: { DEFAULT: '#F9C107' },
+              meta: { 4: '#313D4A' }
+            }
+          }
+        }
+      }
+    </script>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" rescue nil %>
     <%= javascript_importmap_tags %>
-    <style>
-      .super-admin-body {
-        background-color: #f8f9fa;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      }
-      .navbar-super {
-        background-color: #343a40;
-        color: white;
-        padding: 1rem;
-      }
-      .navbar-super a {
-        color: white;
-        text-decoration: none;
-        margin-right: 1rem;
-      }
-    </style>
   </head>
 
-  <body class="super-admin-body">
-    <nav class="navbar-super d-flex justify-content-between">
-      <div>
-        <a href="<%= super_admin_root_path %>" class="fw-bold">Super Admin Console</a>
-        <a href="<%= super_admin_root_path %>">Dashboard</a>
-      </div>
-      <div>
-        <span>Logged in as: <strong><%= current_manager&.email || "Admin" %></strong></span>
-        <%= button_to "Sign Out", super_admin_session_path, method: :delete, class: "btn btn-sm btn-outline-light ms-3", style: "display: inline-block;" %>
-      </div>
-    </nav>
+  <body class="dark:bg-boxdark-2 dark:text-bodydark" data-controller="dark-mode">
+    <div class="tailadmin-scope h-full w-full">
+      <div class="flex h-screen overflow-hidden">
+      
+      <!-- ===== Sidebar Start ===== -->
+      <aside id="sidebar" class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 -translate-x-full" data-controller="sidebar">
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+          <a href="<%= super_admin_root_path %>">
+            <h1 class="text-2xl font-bold text-white">Super Admin</h1>
+          </a>
+          <button class="block lg:hidden" aria-label="Close Sidebar" data-action="click->sidebar#toggle">
+            <span class="sr-only">Close Sidebar</span>
+            <svg class="fill-current" aria-hidden="true" width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 8.175H2.98748L9.36248 1.6875C9.69998 1.35 9.69998 0.825 9.36248 0.4875C9.02498 0.15 8.49998 0.15 8.16248 0.4875L0.399976 8.3625C0.0624756 8.7 0.0624756 9.225 0.399976 9.5625L8.16248 17.4375C8.31248 17.5875 8.53748 17.7 8.76248 17.7C8.98748 17.7 9.17498 17.625 9.36248 17.475C9.69998 17.1375 9.69998 16.6125 9.36248 16.275L3.02498 9.8625H19C19.45 9.8625 19.825 9.4875 19.825 9.0375C19.825 8.55 19.45 8.175 19 8.175Z" fill=""></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Sidebar Menu -->
+        <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+          <nav class="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
+            <div>
+              <h3 class="mb-4 ml-4 text-sm font-semibold text-bodydark2">MENU</h3>
+              <ul class="mb-6 flex flex-col gap-1.5">
+                <li>
+                  <a href="<%= super_admin_root_path %>" class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4">
+                    Dashboard
+                  </a>
+                </li>
+                <li>
+                  <%= button_to "Sign Out", super_admin_session_path, method: :delete, class: "group relative flex w-full items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4" %>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </aside>
+      <!-- ===== Sidebar End ===== -->
 
-    <main class="container py-4">
-      <% if notice.present? %>
-        <div class="alert alert-success"><%= notice %></div>
-      <% end %>
-      <% if alert.present? %>
-        <div class="alert alert-danger"><%= alert %></div>
-      <% end %>
+      <!-- ===== Content Area Start ===== -->
+      <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <!-- ===== Header Start ===== -->
+        <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+          <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+            <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+              <!-- Hamburger Toggle BTN -->
+              <button class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden" aria-label="Open Sidebar" data-action="click->sidebar#toggle">
+                <span class="sr-only">Open Sidebar</span>
+                <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                  <span class="du-block absolute right-0 h-full w-full">
+                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white" data-sidebar-target="line1"></span>
+                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white" data-sidebar-target="line2"></span>
+                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white" data-sidebar-target="line3"></span>
+                  </span>
+                </span>
+              </button>
+              <!-- Hamburger Toggle BTN -->
+            </div>
 
-      <%= yield %>
-    </main>
+            <div class="hidden sm:block">
+            </div>
+
+            <div class="flex items-center gap-3 2xsm:gap-7">
+              <ul class="flex items-center gap-2 2xsm:gap-4">
+                <!-- Dark Mode Toggler -->
+                <li>
+                  <label class="relative m-0 block h-7.5 w-14 rounded-full bg-stroke dark:bg-primary">
+                    <span class="sr-only">Toggle Dark Mode</span>
+                    <input type="checkbox" class="absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0" data-action="change->dark-mode#toggle" data-dark-mode-target="checkbox" aria-label="Toggle Dark Mode" />
+                    <span class="absolute top-1/2 left-[3px] flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full bg-white shadow-switcher duration-75 ease-linear" data-dark-mode-target="switcher" aria-hidden="true">
+                      <span class="dark:hidden">☀️</span>
+                      <span class="hidden dark:inline-block">🌙</span>
+                    </span>
+                  </label>
+                </li>
+                <!-- Dark Mode Toggler -->
+              </ul>
+
+              <!-- User Area -->
+              <div class="relative" data-controller="dropdown">
+                <a class="flex items-center gap-4" href="#" data-action="click->dropdown#toggle">
+                  <span class="hidden text-right lg:block">
+                    <span class="block text-sm font-medium text-black dark:text-white"><%= current_manager&.email || "Admin" %></span>
+                    <span class="block text-xs">Super Admin</span>
+                  </span>
+                </a>
+                
+                <!-- Dropdown -->
+                <div class="absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark hidden" data-dropdown-target="menu">
+                  <ul class="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
+                    <li>
+                      <%= button_to "Log Out", super_admin_session_path, method: :delete, class: "flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" %>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!-- User Area -->
+            </div>
+          </div>
+        </header>
+        <!-- ===== Header End ===== -->
+
+        <!-- ===== Main Content Start ===== -->
+        <main>
+          <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <% if notice.present? %>
+              <div class="flex w-full border-l-6 border-[#34D399] bg-[#34D399] bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 mb-6">
+                <div class="mr-5 flex h-9 w-full max-w-[36px] items-center justify-center rounded-lg bg-[#34D399]">
+                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.2984 0.826822L15.2868 0.811827L15.2741 0.797751C14.9173 0.401867 14.3238 0.400754 13.9657 0.794406L5.91888 9.45376L2.05667 5.2868C1.69856 4.89287 1.10487 4.89389 0.747996 5.28987C0.417335 5.65675 0.417335 6.22337 0.747996 6.59026L0.747959 6.59029L0.752701 6.59541L4.86742 11.0348C5.14445 11.3405 5.52858 11.5 5.89581 11.5C6.29242 11.5 6.65178 11.3355 6.92401 11.035L15.2162 2.11161C15.5833 1.74452 15.576 1.18615 15.2984 0.826822Z" fill="white" stroke="white"></path>
+                  </svg>
+                </div>
+                <div class="w-full">
+                  <h5 class="mb-3 text-lg font-semibold text-black dark:text-[#34D399]">Success</h5>
+                  <p class="text-base leading-relaxed text-body"><%= notice %></p>
+                </div>
+              </div>
+            <% end %>
+            <% if alert.present? %>
+              <div class="flex w-full border-l-6 border-[#F87171] bg-[#F87171] bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 mb-6">
+                <div class="mr-5 flex h-9 w-full max-w-[36px] items-center justify-center rounded-lg bg-[#F87171]">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.4917 7.65573L11.106 12.2645C11.2545 12.4128 11.4715 12.5 11.6738 12.5C11.8762 12.5 12.0931 12.4128 12.2416 12.2645C12.5621 11.9445 12.5623 11.4317 12.2423 11.1114C12.2422 11.1113 12.2422 11.1113 12.2422 11.1113C12.242 11.1111 12.2418 11.1109 12.2416 11.1107L7.64539 6.50351L12.2589 1.91221L12.2595 1.91158C12.5802 1.59132 12.5802 1.07805 12.2595 0.757793C11.9393 0.437994 11.4268 0.437869 11.1064 0.757418C11.1063 0.757543 11.1062 0.757668 11.106 0.757793L6.49234 5.34931L1.89459 0.740581L1.89396 0.739942C1.57364 0.420019 1.0608 0.420019 0.740487 0.739944C0.42005 1.05999 0.419837 1.57279 0.73985 1.89309L6.4917 7.65573ZM6.4917 7.65573L1.89396 12.2645L1.89332 12.2651C1.57291 12.5855 1.0601 12.5855 0.739773 12.2651C0.41935 11.9446 0.41935 11.4313 0.739773 11.1107L5.33854 6.50201L6.4917 7.65573Z" fill="white" stroke="white"></path>
+                  </svg>
+                </div>
+                <div class="w-full">
+                  <h5 class="mb-3 text-lg font-semibold text-[#B45454]">Error</h5>
+                  <p class="text-base leading-relaxed text-[#CD5D5D]"><%= alert %></p>
+                </div>
+              </div>
+            <% end %>
+
+            <%= yield %>
+          </div>
+        </main>
+        <!-- ===== Main Content End ===== -->
+      </div>
+      <!-- ===== Content Area End ===== -->
+    </div>
+    </div>
   </body>
 </html>

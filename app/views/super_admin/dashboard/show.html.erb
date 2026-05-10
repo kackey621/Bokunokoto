@@ -1,52 +1,86 @@
-<div class="row mb-4">
-  <div class="col">
-    <h2>Super Admin Dashboard</h2>
-    <p class="text-muted">Overview of platform operations and core systems.</p>
-  </div>
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h2 class="text-title-md2 font-bold text-black dark:text-white">
+    Super Admin Dashboard
+  </h2>
+  <p class="text-sm font-medium">Overview of platform operations and core systems.</p>
 </div>
 
-<div class="row g-4">
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+  
   <!-- Firebase Auth & Firestore -->
-  <div class="col-md-6">
-    <div class="card h-100 shadow-sm border-0">
-      <div class="card-body">
-        <h5 class="card-title">Firebase Data & Auth</h5>
-        <p class="card-text">Manage users dynamically, revoke tokens, and observe Firestore telemetry.</p>
-        <%= link_to "View Firestore Data", super_admin_firestore_index_path, class: "btn btn-outline-primary" %>
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 22c6.075 0 11-4.925 11-11S17.075 0 11 0 0 4.925 0 11s4.925 11 11 11Zm0-20.167c5.056 0 9.167 4.111 9.167 9.167 0 5.056-4.111 9.167-9.167 9.167-5.056 0-9.167-4.111-9.167-9.167 0-5.056 4.111-9.167 9.167-9.167Z" fill=""/>
+        <path d="M11 5.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Zm0 9.167a3.667 3.667 0 1 1 0-7.334 3.667 3.667 0 0 1 0 7.334Z" fill=""/>
+      </svg>
+    </div>
+    <div class="mt-4">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">Firebase Data</h4>
+        <span class="text-sm font-medium">Manage users dynamically, revoke tokens, and observe Firestore telemetry.</span>
+      </div>
+      <div class="mt-4">
+        <%= link_to "View Firestore Data", super_admin_firestore_index_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
       </div>
     </div>
   </div>
 
   <!-- Remote Config -->
-  <div class="col-md-6">
-    <div class="card h-100 shadow-sm border-0">
-      <div class="card-body">
-        <h5 class="card-title">Remote Config (Mobile)</h5>
-        <p class="card-text">Update mobile application configurations without an app release.</p>
-        <%= link_to "Manage Remote Config", super_admin_remote_config_index_path, class: "btn btn-outline-primary" %>
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 22C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11ZM11 1.833C5.944 1.833 1.833 5.944 1.833 11c0 5.056 4.111 9.167 9.167 9.167 5.056 0 9.167-4.111 9.167-9.167 0-5.056-4.111-9.167-9.167-9.167Z" fill=""/>
+        <path d="M11 15.583a4.583 4.583 0 1 1 0-9.166 4.583 4.583 0 0 1 0 9.166Zm0-7.333a2.75 2.75 0 1 0 0 5.5 2.75 2.75 0 0 0 0-5.5Z" fill=""/>
+      </svg>
+    </div>
+    <div class="mt-4">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">Remote Config</h4>
+        <span class="text-sm font-medium">Update mobile application configurations without an app release.</span>
+      </div>
+      <div class="mt-4">
+        <%= link_to "Manage Remote Config", super_admin_remote_config_index_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
       </div>
     </div>
   </div>
 
   <!-- Feature Flags -->
-  <div class="col-md-6">
-    <div class="card h-100 shadow-sm border-0">
-      <div class="card-body">
-        <h5 class="card-title">Feature Flags</h5>
-        <p class="card-text">Toggle application features via Flipper integration.</p>
-        <%= link_to "Manage Flags", super_admin_feature_flags_path, class: "btn btn-outline-primary" %>
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 22C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11ZM11 1.833C5.944 1.833 1.833 5.944 1.833 11c0 5.056 4.111 9.167 9.167 9.167 5.056 0 9.167-4.111 9.167-9.167 0-5.056-4.111-9.167-9.167-9.167Z" fill=""/>
+        <path d="M14.667 9.167a3.667 3.667 0 1 1-7.334 0 3.667 3.667 0 0 1 7.334 0ZM11 11a1.833 1.833 0 1 0 0-3.667A1.833 1.833 0 0 0 11 11Z" fill=""/>
+      </svg>
+    </div>
+    <div class="mt-4">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">Feature Flags</h4>
+        <span class="text-sm font-medium">Toggle application features via Flipper integration.</span>
+      </div>
+      <div class="mt-4">
+        <%= link_to "Manage Flags", super_admin_feature_flags_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
       </div>
     </div>
   </div>
 
   <!-- FCM Notifications -->
-  <div class="col-md-6">
-    <div class="card h-100 shadow-sm border-0">
-      <div class="card-body">
-        <h5 class="card-title">Push Notifications (FCM)</h5>
-        <p class="card-text">Send platform-wide announcements to users.</p>
-        <%= link_to "Send Announcement", super_admin_fcm_index_path, class: "btn btn-outline-primary" %>
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+      <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 22C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11ZM11 1.833C5.944 1.833 1.833 5.944 1.833 11c0 5.056 4.111 9.167 9.167 9.167 5.056 0 9.167-4.111 9.167-9.167 0-5.056-4.111-9.167-9.167-9.167Z" fill=""/>
+        <path d="M11 18.333c-3.538 0-6.417-2.878-6.417-6.416a6.417 6.417 0 1 1 12.834 0c0 3.538-2.879 6.416-6.417 6.416Zm0-11a4.583 4.583 0 1 0 0 9.167 4.583 4.583 0 0 0 0-9.167Z" fill=""/>
+      </svg>
+    </div>
+    <div class="mt-4">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white mb-2">FCM Notifications</h4>
+        <span class="text-sm font-medium">Send platform-wide announcements to users.</span>
+      </div>
+      <div class="mt-4">
+        <%= link_to "Send Announcement", super_admin_fcm_index_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
       </div>
     </div>
   </div>
+
 </div>

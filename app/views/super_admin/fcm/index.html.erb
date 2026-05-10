@@ -1,27 +1,38 @@
-<div class="row mb-4">
-  <div class="col">
-    <h2>Push Notifications (FCM)</h2>
-    <p class="text-muted">Send platform-wide announcements to all users.</p>
-  </div>
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h2 class="text-title-md2 font-bold text-black dark:text-white">
+    Push Notifications (FCM)
+  </h2>
+  <p class="text-sm font-medium">Send platform-wide announcements to all users.</p>
 </div>
 
-<div class="card shadow-sm border-0">
-  <div class="card-body">
-    <%= form_with url: super_admin_fcm_index_path, method: :post, local: true do |form| %>
-      <div class="mb-3">
-        <%= form.label :title, "Announcement Title", class: "form-label" %>
-        <%= form.text_field :title, class: "form-control", required: true %>
-      </div>
-      <div class="mb-3">
-        <%= form.label :body, "Announcement Body", class: "form-label" %>
-        <%= form.text_area :body, class: "form-control", rows: 4, required: true %>
-      </div>
-      <div class="mb-3">
-        <%= form.label :topic, "Target Topic (optional)", class: "form-label" %>
-        <%= form.text_field :topic, class: "form-control", placeholder: "all_users" %>
-      </div>
-      <%= form.submit "Send Announcement", class: "btn btn-primary" %>
-      <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary ms-2" %>
-    <% end %>
+<div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+  <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+    <h3 class="font-medium text-black dark:text-white">
+      Create Announcement
+    </h3>
   </div>
+  
+  <%= form_with url: super_admin_fcm_index_path, method: :post, local: true do |form| %>
+    <div class="p-6.5">
+      <div class="mb-4.5">
+        <%= form.label :title, "Announcement Title", class: "mb-2.5 block text-black dark:text-white" %>
+        <%= form.text_field :title, class: "w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary", required: true %>
+      </div>
+
+      <div class="mb-6">
+        <%= form.label :body, "Announcement Body", class: "mb-2.5 block text-black dark:text-white" %>
+        <%= form.text_area :body, class: "w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary", rows: 4, required: true %>
+      </div>
+
+      <div class="mb-5.5">
+        <%= form.label :topic, "Target Topic (optional)", class: "mb-2.5 block text-black dark:text-white" %>
+        <%= form.text_field :topic, class: "w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary", placeholder: "all_users" %>
+      </div>
+
+      <div class="flex gap-4">
+        <%= form.submit "Send Announcement", class: "flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90" %>
+        <%= link_to "Cancel", super_admin_root_path, class: "flex w-full justify-center rounded border border-stroke p-3 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white" %>
+      </div>
+    </div>
+  <% end %>
 </div>

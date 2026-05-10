@@ -1,56 +1,70 @@
-<div class="row mb-4">
-  <div class="col">
-    <h2>Firestore Data</h2>
-    <p class="text-muted">Observe Firestore telemetry and manage user support data.</p>
-  </div>
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h2 class="text-title-md2 font-bold text-black dark:text-white">
+    Firestore Data
+  </h2>
+  <p class="text-sm font-medium">Observe Firestore telemetry and manage user support data.</p>
 </div>
 
-<div class="card shadow-sm border-0 mb-4">
-  <div class="card-body">
-    <h5 class="card-title mb-3">Recent Support Tickets</h5>
-    
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>ID</th>
-            <th>User ID</th>
-            <th>Subject</th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if @tickets.any? %>
-            <% @tickets.each do |ticket| %>
-              <% data = ticket.data || {} %>
-              <tr>
-                <td><code><%= ticket.document_id %></code></td>
-                <td><%= data[:user_id] || "N/A" %></td>
-                <td><%= data[:subject] || "No Subject" %></td>
-                <td>
-                  <span class="badge bg-<%= data[:status] == 'open' ? 'warning text-dark' : 'success' %>">
-                    <%= data[:status] || "Unknown" %>
-                  </span>
-                </td>
-                <td><%= data[:created_at] ? Time.parse(data[:created_at].to_s).strftime("%Y-%m-%d %H:%M") : "Unknown" %></td>
-                <td>
-                  <button class="btn btn-sm btn-outline-primary">View</button>
-                </td>
-              </tr>
-            <% end %>
-          <% else %>
+<div class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+  <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
+    Recent Support Tickets
+  </h4>
+
+  <div class="max-w-full overflow-x-auto">
+    <table class="w-full table-auto">
+      <thead>
+        <tr class="bg-gray-2 text-left dark:bg-meta-4">
+          <th class="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">ID</th>
+          <th class="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">User ID</th>
+          <th class="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Subject</th>
+          <th class="py-4 px-4 font-medium text-black dark:text-white">Status</th>
+          <th class="py-4 px-4 font-medium text-black dark:text-white">Created At</th>
+          <th class="py-4 px-4 font-medium text-black dark:text-white">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @tickets.any? %>
+          <% @tickets.each do |ticket| %>
+            <% data = ticket.data || {} %>
             <tr>
-              <td colspan="6" class="text-center text-muted py-4">No support tickets found.</td>
+              <td class="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                <code class="text-sm font-medium text-primary"><%= ticket.document_id %></code>
+              </td>
+              <td class="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                <p class="text-black dark:text-white"><%= data[:user_id] || "N/A" %></p>
+              </td>
+              <td class="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                <p class="text-black dark:text-white"><%= data[:subject] || "No Subject" %></p>
+              </td>
+              <td class="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                <% status = data[:status] %>
+                <% status_class = status == 'open' ? 'bg-warning text-warning' : 'bg-success text-success' %>
+                <p class="inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium <%= status_class %>">
+                  <%= status || "Unknown" %>
+                </p>
+              </td>
+              <td class="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                <p class="text-black dark:text-white"><%= data[:created_at] ? Time.parse(data[:created_at].to_s).strftime("%Y-%m-%d %H:%M") : "Unknown" %></p>
+              </td>
+              <td class="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                <button class="hover:text-primary">
+                  View
+                </button>
+              </td>
             </tr>
           <% end %>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="mt-3">
-      <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary" %>
-    </div>
+        <% else %>
+          <tr>
+            <td colspan="6" class="border-b border-[#eee] py-5 px-4 text-center dark:border-strokedark">
+              <p class="text-black dark:text-white">No support tickets found.</p>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="mt-6 mb-4">
+    <%= link_to "Back to Dashboard", super_admin_root_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
   </div>
 </div>

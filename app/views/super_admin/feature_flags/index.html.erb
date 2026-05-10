@@ -1,28 +1,37 @@
-<div class="row mb-4">
-  <div class="col">
-    <h2>Feature Flags</h2>
-    <p class="text-muted">Manage application feature toggles using Flipper.</p>
-  </div>
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h2 class="text-title-md2 font-bold text-black dark:text-white">
+    Feature Flags
+  </h2>
+  <p class="text-sm font-medium">Manage application feature toggles using Flipper.</p>
 </div>
 
-<div class="card shadow-sm border-0">
-  <div class="card-body">
+<div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+  <div class="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
+    <h3 class="font-medium text-black dark:text-white">
+      Available Flags
+    </h3>
+  </div>
+  <div class="p-6.5">
     <% if @features.any? %>
-      <ul class="list-group">
+      <div class="flex flex-col gap-5">
         <% @features.each do |feature| %>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <%= feature.name %>
-            <span class="badge bg-<%= feature.enabled? ? 'success' : 'secondary' %> rounded-pill">
+          <div class="flex items-center justify-between rounded border border-stroke p-4 dark:border-strokedark">
+            <h5 class="font-medium text-black dark:text-white">
+              <%= feature.name %>
+            </h5>
+            <% status_class = feature.enabled? ? 'bg-success text-success' : 'bg-body text-body' %>
+            <p class="inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium <%= status_class %>">
               <%= feature.enabled? ? 'Enabled' : 'Disabled' %>
-            </span>
-          </li>
+            </p>
+          </div>
         <% end %>
-      </ul>
+      </div>
     <% else %>
-      <p>No feature flags configured currently.</p>
+      <p class="mb-4 text-black dark:text-white">No feature flags configured currently.</p>
     <% end %>
-    <div class="mt-4">
-      <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary" %>
+    
+    <div class="mt-6">
+      <%= link_to "Back to Dashboard", super_admin_root_path, class: "inline-flex items-center justify-center rounded-md border border-primary py-2 px-6 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10" %>
     </div>
   </div>
 </div>

@@ -1,32 +1,46 @@
-<div class="row mb-4">
-  <div class="col">
-    <h2>Remote Config</h2>
-    <p class="text-muted">View and manage mobile application remote configurations.</p>
-  </div>
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h2 class="text-title-md2 font-bold text-black dark:text-white">
+    Remote Config
+  </h2>
+  <p class="text-sm font-medium">View and manage mobile application remote configurations.</p>
 </div>
 
-<div class="card shadow-sm border-0 mb-4">
-  <div class="card-body">
-    <h5 class="card-title">Current Configuration Template</h5>
+<div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-6">
+  <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+    <h3 class="font-medium text-black dark:text-white">
+      Current Configuration Template
+    </h3>
+  </div>
+  <div class="p-6.5">
     <% if @template.present? %>
-      <pre class="bg-light p-3 rounded"><code><%= JSON.pretty_generate(@template) rescue @template.to_json %></code></pre>
+      <pre class="rounded-md bg-gray px-4 py-3 text-sm dark:bg-meta-4 overflow-x-auto"><code class="text-black dark:text-white"><%= JSON.pretty_generate(@template) rescue @template.to_json %></code></pre>
     <% else %>
-      <p class="text-danger">Failed to load configuration. Check your permissions and service account key.</p>
+      <div class="flex w-full border-l-6 border-danger bg-danger bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30">
+        <p class="text-base leading-relaxed text-danger">Failed to load configuration. Check your permissions and service account key.</p>
+      </div>
     <% end %>
   </div>
 </div>
 
-<div class="card shadow-sm border-0 mb-4">
-  <div class="card-body">
-    <h5 class="card-title">Update Configuration</h5>
-    <%= form_with url: super_admin_remote_config_index_path, method: :post, local: true do |form| %>
-      <div class="mb-3">
-        <%= form.label :template_json, "Template JSON", class: "form-label fw-semibold" %>
-        <%= form.text_area :template_json, class: "form-control font-monospace", rows: 15, required: true, value: (@template.present? ? JSON.pretty_generate(@template) : "") %>
-        <div class="form-text">Ensure your JSON matches the Firebase Remote Config REST API format.</div>
-      </div>
-      <%= form.submit "Publish Template", class: "btn btn-primary" %>
-      <%= link_to "Back to Dashboard", super_admin_root_path, class: "btn btn-secondary ms-2" %>
-    <% end %>
+<div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+  <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+    <h3 class="font-medium text-black dark:text-white">
+      Update Configuration
+    </h3>
   </div>
+  
+  <%= form_with url: super_admin_remote_config_index_path, method: :post, local: true do |form| %>
+    <div class="p-6.5">
+      <div class="mb-6">
+        <%= form.label :template_json, "Template JSON", class: "mb-2.5 block text-black dark:text-white font-medium" %>
+        <%= form.text_area :template_json, class: "w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-mono outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary", rows: 15, required: true, value: (@template.present? ? JSON.pretty_generate(@template) : "") %>
+        <p class="mt-2 text-sm text-body">Ensure your JSON matches the Firebase Remote Config REST API format.</p>
+      </div>
+
+      <div class="flex gap-4">
+        <%= form.submit "Publish Template", class: "flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90" %>
+        <%= link_to "Back to Dashboard", super_admin_root_path, class: "flex w-full justify-center rounded border border-stroke p-3 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white" %>
+      </div>
+    </div>
+  <% end %>
 </div>
