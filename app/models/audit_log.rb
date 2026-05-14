@@ -5,6 +5,7 @@ class AuditLog < ApplicationRecord
   belongs_to :user
   belongs_to :content, optional: true
 
+  validates :vault_id, presence: true
   validates :action, presence: true, inclusion: { in: ACTIONS }
   validates :occurred_at, presence: true
 

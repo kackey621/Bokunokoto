@@ -45,7 +45,14 @@ module Bkc
       cookie_vault_id = cookies.signed[:bk_active_vault]
       if cookie_vault_id.present?
         vault = current_user.owned_vaults.find_by(id: cookie_vault_id)
-        return vault if vault
+        if vault
+          # If cookie points at an archived vault, clear the cookie and fall through
+          if vault.archived?
+            cookies.delete(:bk_active_vault)
+          else
+            return vault
+          end
+        end
       end
 
       current_user.default_vault

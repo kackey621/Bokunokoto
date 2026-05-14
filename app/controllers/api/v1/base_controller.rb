@@ -35,8 +35,13 @@ module Api
       end
 
       # Like current_vault but renders 409 when none is resolved.
+      # Uses performed? to avoid double-render when resolve_active_vault
+      # already rendered (e.g. vault_not_found, archived vault).
       def current_vault!
-        current_vault || render_active_vault_required
+        vault = current_vault
+        return vault if vault
+        render_active_vault_required unless performed?
+        nil
       end
 
       def resolve_active_vault
@@ -47,7 +52,10 @@ module Api
 
         if vault_id.present?
           vault = current_user.owned_vaults.find_by(id: vault_id)
-          return vault if vault
+          if vault
+            return render_active_vault_required if vault.archived?
+            return vault
+          end
 
           # Might be a vault shared with the user via permissions.
           permitted = current_user.accessible_vaults.find_by(id: vault_id)

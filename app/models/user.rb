@@ -30,10 +30,10 @@ class User < ApplicationRecord
 
   def default_vault
     if default_vault_id.present?
-      owned_vaults.find_by(id: default_vault_id) || owned_vaults.first
-    else
-      owned_vaults.first
+      vault = owned_vaults.find_by(id: default_vault_id)
+      return vault if vault && !vault.archived?
     end
+    owned_vaults.active.first || owned_vaults.first
   end
 
   # Deprecated: delegates to default_vault for one-release compatibility.

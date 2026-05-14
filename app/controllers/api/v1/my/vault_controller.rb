@@ -9,6 +9,8 @@ module Api
           "Link" => '</api/v1/my/vaults>; rel="successor-version"'
         }.freeze
 
+        before_action :log_deprecation_hit
+
         def show
           vault = current_user.default_vault
           return render_error("No vault found", :not_found) unless vault
@@ -69,6 +71,16 @@ module Api
         end
 
         private
+
+        def log_deprecation_hit
+          Rails.logger.warn(
+            "[DEPRECATION] /api/v1/my/vault (singular) hit — " \
+            "action=#{action_name} " \
+            "user_id=#{current_user&.id} " \
+            "user_agent=#{request.user_agent.to_s.first(120).inspect} " \
+            "bk_client_version=#{request.headers['X-BK-Client-Version'].inspect}"
+          )
+        end
 
         def vault_params
           params.require(:vault).permit(:display_name, :bio)
