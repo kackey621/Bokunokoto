@@ -2,6 +2,8 @@
 
 Minimum issue set organized by milestone. Each issue represents a shippable unit of work.
 
+> **Multi-tenant note (2026-05-14).** Issues #3, #4, #6, #25, #26 in this file were drafted under the original "one vault per user" simplification. They are **partially superseded** by `GITHUB_ISSUES_MULTI_TENANT.md`. The acceptance criteria for those issues remain valid for the *first* owned vault but the implementation must use `current_vault` (active-vault resolver) instead of `current_user.vault`. See `GITHUB_ISSUES_INDEX.md` for the canonical view across all three issue files.
+
 ---
 
 ## Milestone: Phase 1 — Foundation (Month 0–3)
@@ -39,6 +41,7 @@ Implement Firebase ID Token verification on the Rails API.
 ### Issue #3: Vault & Content data model
 
 **Labels:** `backend`, `data-model`
+**Superseded-by:** `MT-1`, `MT-2` (multi-tenant rewrite — drop unique index, add quota)
 
 Create core models for multi-tenant vault system.
 
@@ -54,6 +57,7 @@ Create core models for multi-tenant vault system.
 ### Issue #4: Content API endpoints
 
 **Labels:** `backend`, `api`
+**Superseded-by:** `MT-5`, `MT-7` (plural `/my/vaults/:id/contents` replaces singular `/my/contents`)
 
 CRUD endpoints for vault content with level-based access control.
 
@@ -84,6 +88,7 @@ Implement immutable audit logging for all content access.
 ### Issue #6: BKC Admin Console — base setup
 
 **Labels:** `backend`, `admin`
+**Superseded-by:** `MT-8`, `MT-9` (vault switcher + per-active-vault scoping). The "current_user.my_vault" check below is replaced by `current_user.owns?(current_vault)`.
 
 Set up the Rails admin console (BKC) for vault owners.
 
@@ -92,7 +97,7 @@ Set up the Rails admin console (BKC) for vault owners.
 - [ ] Content management: list, create, edit, delete content
 - [ ] User directory: list viewers with level and last access
 - [ ] Route namespace: `/bkc/`
-- [ ] Admin authentication check (current_user.my_vault)
+- [ ] Admin authentication check (current_user.my_vault) — **superseded:** use `current_user.owns?(current_vault)` per `MT-9`
 
 ---
 
@@ -369,6 +374,7 @@ Masked bank account display with clipboard copy.
 ### Issue #25: Analytics dashboard in BKC
 
 **Labels:** `backend`, `admin`
+**Superseded-by:** `MT-9` (analytics re-scoped to active vault). Each owned vault has its own dashboard; the switcher toggles between them.
 
 Full analytics dashboard for vault owners.
 
@@ -385,6 +391,7 @@ Full analytics dashboard for vault owners.
 ### Issue #26: Forensic monitor (geo map & face archive)
 
 **Labels:** `backend`, `admin`, `security`
+**Superseded-by:** `MT-9` (per-vault forensics stream). One vault, one live stream; switcher closes and reopens streams.
 
 Real-time forensic monitoring dashboard in BKC.
 

@@ -2,7 +2,9 @@
 
 ## Overview
 
-**BKC** (Bokunokoto Command Center) is the admin backbone of the BK platform. Every registered user can eventually manage a personal vault from the same account they use to receive other people's disclosures. BKC is where vault owners maintain full control over who sees what and under what conditions.
+**BKC** (Bokunokoto Command Center) is the admin backbone of the BK platform. Every registered user can manage **one or more personal vaults** from the same account they use to receive other people's disclosures. BKC scopes every screen to the **currently active vault** — the user picks which of their owned vaults they're working in via the context switcher (top-right dropdown on web, app bar on mobile own-vault context). Switching vaults is instant; the dashboard, content list, viewer directory, audit logs, and analytics all re-scope on switch.
+
+See [Multi-Tenant Model](../architecture/multi-tenant-model.md) and [Context Switching](../architecture/context-switching.md) for the underlying contract.
 
 ---
 
@@ -56,12 +58,13 @@ The content and link management hub:
 
 ### 2. User & Trust Controller
 
-Viewer and permission management for the current user's owned vault:
+Viewer and permission management for the **currently active vault**. Each owned vault has its own viewer directory; switching vaults switches the directory.
 
-- **User Directory** — Browse all users who have accessed the vault
-- **Level Management** — Adjust trust levels (L0-L9) per user with one action
+- **User Directory** — Browse all users who have accessed *this* vault
+- **Level Management** — Adjust trust levels (L0–L9) per user with one action
 - **Invitation System** — Create and send email invitations with preset access levels
 - **Batch Operations** — Select multiple users for bulk level changes
+- **Cross-vault hint** — If the same viewer also has permission on another vault you own, BKC shows a non-blocking badge ("Also in: *Personal*") so you can navigate without losing context
 
 See [User & Trust Controller](user-trust-controller.md) for full details.
 
@@ -127,16 +130,16 @@ The BK Flutter app includes an **Own Vault context** that mirrors BKC functional
 
 ### Ownership and Capabilities
 
-Personal BKC access is enforced from database relationships:
+BKC access is enforced per active vault from database relationships:
 
 ```ruby
-current_user.owns?(target_vault) && current_user.capability_enabled?("bkc_access")
+current_user.owns?(current_vault) && current_user.capability_enabled?("bkc_access")
 ```
 
-Firebase custom claims may still identify platform operators, but personal vault ownership must be checked in Rails against the `Vault` and account capability records.
+`current_vault` is resolved from the `X-BK-Active-Vault` header (or `users.default_vault_id`) and validated against `current_user.owned_vaults`. Firebase custom claims may still identify platform operators, but vault ownership must be checked against the `Vault` and `AccountCapability` records.
 
-!!! danger "No Shared Personal Admin Access"
-    Personal BKC is single-owner by default. Delegate or team access is out of scope for the personal product and belongs to a future business tier.
+!!! danger "Single-owner per vault (v1)"
+    Each vault has exactly one owner in v1. A `VaultMembership` table is specced for future co-ownership (FB Page Roles analog: Admin/Editor/Analyst) but is not built in v1. Users who need parallel surfaces should create multiple vaults instead — they can switch between them with the context switcher.
 
 ---
 

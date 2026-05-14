@@ -2,26 +2,28 @@
 
 ## Direction
 
-Bokunokoto should grow around a person-first account model:
+Bokunokoto grows around a person-first, **multi-tenant** account model:
 
 - One `User` represents one authenticated person.
-- A user becomes a discloser by owning a `Vault`.
-- A user becomes a receiver through a `Permission` / `ViewerRelationship` to another vault.
-- BKC access is authorized by vault ownership plus account capability, not by a permanent user role.
+- A user becomes a discloser by owning **one or more `Vaults`** (capped by `AccountCapability.vault_quota`, default 3).
+- A user becomes a receiver through a `Permission` to another vault.
+- The active vault is a runtime context resolved from `X-BK-Active-Vault` (or `users.default_vault_id`) on every request.
+- BKC access is authorized per active vault by ownership plus account capability, not by a permanent user role.
 
-This plan supersedes any design that assumes separate discloser and receiver accounts.
+This plan supersedes earlier designs that assumed separate discloser/receiver accounts **or** a one-vault-per-user simplification. See [Multi-Tenant Model](../architecture/multi-tenant-model.md), [Multi-Tenant Rollout](multi-tenant-rollout.md), and [Comparative Analysis](../architecture/comparative-analysis.md).
 
 ## Implementation Sequence
 
 | Order | Workstream | Goal | Primary docs |
 |---|---|---|---|
 | 1 | Account foundation | Keep `User` as identity, account status, verification, and capabilities. | [Account & Role Model](../architecture/account-role-model.md), [User Role Audit](../architecture/users-role-audit.md) |
-| 2 | Vault ownership | Add the owned disclosure space for users who become disclosers. | [Data Model](../architecture/data-model.md) |
+| 2 | Vault ownership (single) | Add the owned disclosure space for users who become disclosers. | [Data Model](../architecture/data-model.md) |
 | 3 | Viewer relationships | Move trust levels to per-vault permission records. | [API Design](../architecture/api-design.md) |
 | 4 | BKC ownership model | Scope command center screens to the current user's owned vault. | [BKC Overview](../bkc/overview.md), [User & Trust Controller](../bkc/user-trust-controller.md) |
 | 5 | Client context switching | Show own-vault and received-vault contexts in one account. | [System Overview](../architecture/overview.md) |
 | 6 | Compatibility migration | Preserve current console behavior while product roles move to relationships. | [Account & Role Replan](account-role-replan.md) |
-| 7 | Release hardening | Relationship-aware audit logs, security gates, billing, and eKYC. | [Release Phase](release.md) |
+| **7** | **Multi-tenant rewrite** | **Lift one-vault-per-user; add quota, switcher, vault-scoped APIs.** | **[Multi-Tenant Model](../architecture/multi-tenant-model.md), [Context Switching](../architecture/context-switching.md), [Multi-Tenant Rollout](multi-tenant-rollout.md)** |
+| 8 | Release hardening | Relationship-aware audit logs, security gates, billing, and eKYC. | [Release Phase](release.md) |
 
 ## System Boundaries
 
@@ -31,7 +33,8 @@ This plan supersedes any design that assumes separate discloser and receiver acc
 | Product role | Discloser and receiver are contexts derived from owned vaults and permissions. |
 | Platform role | `User.role` may remain for operator/admin console access only. |
 | Trust | Trust level is per target vault relationship. A global user trust level is compatibility data only. |
-| BKC | Personal BKC is single-owner by default. Delegated/team management belongs to a future business tier. |
+| BKC | Personal BKC is **scoped per active vault**. Each vault has exactly one owner in v1. Delegated/team management (`VaultMembership`, FB Page Roles analog) belongs to a future business tier. |
+| Tenancy | Vault is the tenancy boundary. One user may own up to `account.vault_quota` vaults (default 3). The active vault is sent on every request as `X-BK-Active-Vault`. |
 | Billing | Billing attaches capabilities to a user/account and can unlock vault-owner or receiver features without splitting accounts. |
 
 ## API Surface

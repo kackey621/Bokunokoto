@@ -57,25 +57,29 @@ BK operates as a **rental-base SaaS** (multi-tenant monolith). A single Rails ap
 
 ## Multi-Tenant Isolation
 
-Every disclosure record is scoped to a **Vault**. Initial product scope is one active vault per user, but the account model treats vault ownership as a relationship instead of a permanent user role. Rails controllers enforce vault-level scoping through ownership and permission checks, preventing cross-tenant data leakage.
+Every disclosure record is scoped to a **Vault**. A user can own **multiple vaults** (capped by `AccountCapability.vault_quota`, default 3) and can independently receive access to other users' vaults from the same account. Each vault is a tenancy boundary: its own contents, viewers, links, audit logs, greetings, Q&A, and incidents.
+
+The active vault for any given request is resolved from (in order): the `:vault_id` route param, the `X-BK-Active-Vault` header, then `users.default_vault_id`. If none resolve and the route is owner-scoped, the API returns `409 active_vault_required` with the user's owned-vault list so the client can prompt the switcher.
 
 ```ruby
-# Owner queries go through the user's owned vault.
-@contents = current_user.owned_vault.contents
+# Owner queries go through the resolved active vault (validated against current_user).
+@contents = current_vault.contents
 
 # Viewer queries go through the target vault and the viewer relationship.
 @contents = target_vault.contents.accessible_for(current_user, platform)
 ```
 
+See [Multi-Tenant Model](multi-tenant-model.md), [Context Switching](context-switching.md), and [Comparative Analysis](comparative-analysis.md).
+
 ## Context-Aware Client
 
-The Flutter app may present admin and viewer experiences as modes, but these are **runtime contexts**, not permanent account roles:
+The Flutter app presents a **per-vault context switcher** (Instagram-style) — one Firebase identity, multiple vaults, no mode toggle. The active vault is persisted per device and sent on every request:
 
 | Context | Source of truth | Capabilities |
 |---|---|---|
-| **Own Vault** | Current user owns the selected vault and has BKC capability | Edit content, issue QR codes, monitor audit logs, send greetings |
-| **Received Vault** | Current user has a permission relationship with another vault | Browse permitted content, submit questions, receive notifications |
-| **Operator** | Platform-level operator grant | Support, compliance, abuse response, and system administration |
+| **Own Vault (active)** | `current_user` owns the resolved active vault, has BKC capability | Edit content, issue QR codes, monitor audit logs, send greetings, manage viewers |
+| **Received Vault (active)** | `current_user` has an active permission relationship with the resolved vault | Browse permitted content, submit questions, receive notifications |
+| **Operator** | Platform-level operator grant with an explicit override token | Support, compliance, abuse response, and system administration |
 
 See [Account & Role Model](account-role-model.md) for the canonical account model.
 

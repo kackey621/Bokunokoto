@@ -2,6 +2,8 @@
 
 This file is ready to be copied into GitHub Issues once repository access is available to the GitHub connector. Each issue is written as a shippable unit with aligned monday.com roadmap phases.
 
+> **Multi-tenant continuation (2026-05-14).** All seven issues in this file are complete and shipped the person-first single-vault account model. The **multi-tenant rewrite** in `GITHUB_ISSUES_MULTI_TENANT.md` (MT-1 through MT-20) continues the work by lifting "one vault per user" to "one account → N vaults." Read this file for context, then move to `GITHUB_ISSUES_MULTI_TENANT.md` for active work.
+
 ---
 
 ## Issue: Account Foundation — person-first User model [COMPLETE]

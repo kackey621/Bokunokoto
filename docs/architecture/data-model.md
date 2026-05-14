@@ -1,12 +1,16 @@
 # Data Model
 
+!!! info "Multi-tenant update"
+    As of the multi-tenant rewrite, `User` owns **many** `Vault` rows (capped by `AccountCapability.vault_quota`, default 3). See [Multi-Tenant Model](multi-tenant-model.md) for the full design and migration plan. This page documents the canonical schema after the rewrite.
+
 ## Entity Relationship Diagram
 
 ```mermaid
 erDiagram
-    User ||--o| Vault : "owns initially"
+    User ||--o{ Vault : "owns (0..N, capped by quota)"
     User ||--o{ AccountCapability : "has many"
     User ||--o{ Permission : "receives access through"
+    User }o--o| Vault : "default_vault_id"
     Vault ||--o{ Content : "has many"
     Vault ||--o{ Permission : "grants access through"
     Vault ||--o{ AccessLink : "has many"
@@ -14,9 +18,11 @@ erDiagram
     Vault ||--o{ QaContent : "has many"
     Content ||--o{ Symbol : "has many"
     Content ||--o{ AuditLog : "has many"
+    Vault ||--o{ AuditLog : "has many (per-tenant scope)"
     User ||--o{ AuditLog : "has many (as viewer)"
     User ||--o{ Notification : "has many (as recipient)"
     Vault ||--o{ Invitation : "has many"
+    Vault ||--o{ Incident : "has many"
     User ||--o{ FeatureFlag : "checked against"
 ```
 
@@ -41,15 +47,25 @@ erDiagram
 
 ### Vault
 
-`Vault` is the disclosure space owned by a user. Initial scope is 0 or 1 active vault per user, but naming and authorization should not block future multi-vault support.
+`Vault` is a disclosure tenant owned by a user. A user can own multiple vaults, each capped by `AccountCapability.vault_quota` (default 3). The vault is the boundary for every per-tenant resource: contents, audit logs, access links, greetings, Q&A, incidents, and analytics. See [Multi-Tenant Model](multi-tenant-model.md) for the full design.
 
 | Column | Type | Notes |
 |---|---|---|
 | `id` | bigint | Primary key |
-| `user_id` | bigint | FK → User (owner/discloser) |
-| `display_name` | string | Public-facing name |
+| `user_id` | bigint | FK → User (owner). Indexed but **not unique** — one user can own multiple vaults. Exposed in code as `vault.owner`. |
+| `display_name` | string | Owner-facing name |
+| `slug` | string | URL-safe identifier, unique per owner (used by `X-BK-Active-Vault` header) |
+| `kind` | enum | `personal` / `professional` / `medical` / `social` / `legal` / `other` — hint for default symbol palette and onboarding copy |
 | `bio` | text | Short introduction (L0 visible) |
+| `archived_at` | datetime | Nullable; non-null means soft-archived; archived vaults are excluded from `account/context` lists unless `include_archived=true` |
 | `created_at` | datetime | |
+
+!!! warning "Unique-index removal"
+    The pre-rewrite schema had `UNIQUE INDEX vaults_on_user_id`. The migration drops it and replaces it with a non-unique index. Tests that asserted "a user cannot create a second vault" are obsolete and replaced by quota-based assertions (see the multi-tenant rollout plan).
+
+### Default vault pointer (on User)
+
+`users.default_vault_id` (nullable, FK → `vaults`) is the user's preferred seed for the client context switcher. It is set on first vault creation and can be changed via `PATCH /api/v1/my/default_vault`. Archiving the referenced vault clears the pointer.
 
 ### Content (Disclosure)
 
