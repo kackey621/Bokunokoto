@@ -49,6 +49,9 @@ nav:
       - System Overview: architecture/overview.md
       - Tech Stack: architecture/tech-stack.md
       - Account & Role Model: architecture/account-role-model.md
+      - Multi-Tenant Model: architecture/multi-tenant-model.md
+      - Context Switching: architecture/context-switching.md
+      - Comparative Analysis (FB / LinkedIn / IG): architecture/comparative-analysis.md
       - User Role Audit: architecture/users-role-audit.md
       - Data Model: architecture/data-model.md
       - API Design: architecture/api-design.md
@@ -77,6 +80,7 @@ nav:
   - Roadmap:
       - System Plan: roadmap/system-plan.md
       - Account & Role Replan: roadmap/account-role-replan.md
+      - Multi-Tenant Rollout: roadmap/multi-tenant-rollout.md
       - Super Admin TailAdmin: roadmap/super-admin-tailadmin-integration.md
       - Beta Phase: roadmap/beta.md
       - Release Phase: roadmap/release.md

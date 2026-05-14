@@ -1,0 +1,48 @@
+Item,Blocked by,Notes
+MT-2,MT-1,Schema must land before model refactor
+MT-3,MT-2,Quota check needs owns? + has_many
+MT-4,MT-2,Resolver uses owns? predicate
+MT-5,MT-3,Plural endpoints depend on quota service
+MT-5,MT-4,Plural endpoints depend on resolver
+MT-6,MT-5,Deprecated alias delegates to default vault helper added in MT-5
+MT-7,MT-2,Re-scoping needs has_many association
+MT-7,MT-4,Re-scoping uses current_vault resolver
+MT-7,MT-5,Some /my/* routes are added in MT-5
+MT-8,MT-5,Switcher targets the plural API
+MT-9,MT-7,BKC re-scope follows API re-scope
+MT-9,MT-8,BKC switcher must exist before re-scoping its views
+MT-10,MT-5,Flutter switcher targets the plural API
+MT-11,MT-7,Header interceptor needs the resolver in place
+MT-11,MT-10,Header value comes from the switcher state
+MT-12,MT-10,Empty state lives inside the switcher flow
+MT-13,MT-1,Soft-archive needs archived_at column
+MT-13,MT-9,Archive UI lives in BKC vault settings
+MT-14,MT-9,Cross-vault test sweep exercises BKC + API together
+MT-14,MT-13,Archive flow is part of the threat model
+MT-15,MT-1,Backfill needs default_vault_id column
+MT-16,MT-7,Audit verification follows /my/audit_logs re-scope
+MT-17,MT-6,Telemetry counts deprecated route hits
+MT-18,MT-9,Override flow plugs into BKC after re-scope
+MT-20,MT-14,Pentest follows internal test sweep
+MT-20,MT-16,Pentest requires audit verification
+MT-20,MT-18,Pentest covers operator override surface
+MT-EPIC,MT-1,Epic tracks all sub-items
+MT-EPIC,MT-2,Epic tracks all sub-items
+MT-EPIC,MT-3,Epic tracks all sub-items
+MT-EPIC,MT-4,Epic tracks all sub-items
+MT-EPIC,MT-5,Epic tracks all sub-items
+MT-EPIC,MT-6,Epic tracks all sub-items
+MT-EPIC,MT-7,Epic tracks all sub-items
+MT-EPIC,MT-8,Epic tracks all sub-items
+MT-EPIC,MT-9,Epic tracks all sub-items
+MT-EPIC,MT-10,Epic tracks all sub-items
+MT-EPIC,MT-11,Epic tracks all sub-items
+MT-EPIC,MT-12,Epic tracks all sub-items
+MT-EPIC,MT-13,Epic tracks all sub-items
+MT-EPIC,MT-14,Epic tracks all sub-items
+MT-EPIC,MT-15,Epic tracks all sub-items
+MT-EPIC,MT-16,Epic tracks all sub-items
+MT-EPIC,MT-17,Epic tracks all sub-items
+MT-EPIC,MT-18,Epic tracks all sub-items
+MT-EPIC,MT-19,Epic tracks all sub-items
+MT-EPIC,MT-20,Epic tracks all sub-items

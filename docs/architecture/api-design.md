@@ -102,21 +102,55 @@ The API uses this header to enforce platform-level restrictions. Web clients are
 | `PATCH` | `/my/permissions/:id` | Update a viewer's trust level | Owner |
 | `POST` | `/my/invitations` | Send email invitation with preset access | Owner |
 
-### Account Context
+### Account Context (multi-tenant)
 
 | Method | Path | Description | Auth |
 |---|---|---|---|
-| `GET` | `/account/context` | Return current user's capabilities, owned vault summary, and received vault list | Required |
-| `POST` | `/my/vault` | Create the current user's first vault when `create_vault` capability is active | Required |
+| `GET` | `/account/context` | Return current user, capabilities, **owned vault list**, **received vault list**, `default_vault_id` | Required |
+| `GET` | `/my/vaults` | List the current user's owned vaults | Required |
+| `POST` | `/my/vaults` | Create a new owned vault (subject to `account.vault_quota`) | Required |
+| `PATCH` | `/my/vaults/:id` | Update an owned vault | Owner |
+| `POST` | `/my/vaults/:id/archive` | Soft-archive an owned vault | Owner |
+| `POST` | `/my/vaults/:id/restore` | Restore an archived vault | Owner |
+| `PATCH` | `/my/default_vault` | Set or change the default vault seed | Required |
 
-`/my/*` endpoints always refer to resources owned by the current user. `/vaults/:vault_id/*` endpoints refer to a target vault viewed through a permission relationship.
+`/my/*` endpoints always refer to resources owned by the current user **within the active vault context** resolved from `X-BK-Active-Vault` (or `default_vault_id`). `/vaults/:vault_id/*` endpoints refer to a specific target vault.
+
+#### Deprecated aliases (one-release-cycle compatibility)
+
+| Method | Path | Notes |
+|---|---|---|
+| `GET` | `/my/vault` | Returns the default vault; emits `Deprecation: true` and `Link: <…multi-tenant-model>; rel="successor-version"` |
+| `POST` | `/my/vault` | Creates the first vault for users with zero vaults; returns `409 vault_quota_required_endpoint` otherwise with the canonical `POST /my/vaults` endpoint in the body |
+
+#### Required request headers
+
+| Header | Required for | Purpose |
+|---|---|---|
+| `X-BK-Active-Vault` | All `/my/*` routes that don't carry `:vault_id` | Selects the vault context for the request |
+| `X-BK-Platform` | All authenticated requests | Enforces the L4 web cap |
+| `X-BK-Time-Anchor` | All authenticated requests | NTP anchor for time-locked content |
+
+#### `409 active_vault_required` response body
+
+```json
+{
+  "error": "active_vault_required",
+  "message": "This request requires an active vault context. Send X-BK-Active-Vault, or set default_vault_id via PATCH /api/v1/my/default_vault.",
+  "owned_vaults": [
+    {"id": 1, "slug": "personal", "display_name": "Personal", "kind": "personal"},
+    {"id": 2, "slug": "work", "display_name": "Work", "kind": "professional"}
+  ],
+  "default_vault_id": null
+}
+```
 
 ## Content Filtering Logic
 
 ```ruby
 # app/models/content.rb
 scope :accessible_for, ->(user, vault, platform: nil) {
-  return where(vault: vault) if user.vault == vault # Owner sees everything in their vault
+  return where(vault: vault) if user.owns?(vault) # Owner sees everything in this vault
 
   user_level = user.trust_level_for(vault)
   

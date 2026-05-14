@@ -1,0 +1,97 @@
+Parent,Subitem,Status,Estimate (hours)
+MT-1,"Generate RemoveUniqueIndexFromVaultsUserId migration",Not started,2
+MT-1,"Generate AddMultiTenantColumnsToVaults migration (slug, kind, archived_at)",Not started,2
+MT-1,"Generate AddDefaultVaultIdToUsers migration",Not started,1
+MT-1,"Generate AddVaultQuotaToAccountCapabilities migration",Not started,1
+MT-1,"Schema.rb regenerated and reviewed",Not started,0.5
+MT-1,"Forward + backward migration tested on clean dev DB",Not started,1
+MT-2,"User has_many :owned_vaults",Not started,1
+MT-2,"Vault belongs_to :owner alias",Not started,0.5
+MT-2,"Remove uniqueness validation on vault.user_id",Not started,0.5
+MT-2,"Implement User#owns?(vault)",Not started,0.5
+MT-2,"Implement User#default_vault with fallback",Not started,1
+MT-2,"Deprecate User#vault with warning",Not started,1
+MT-2,"Update User#trust_level_for to use owns?",Not started,0.5
+MT-2,"Unit tests: own one, own two, own zero, owns? predicate",Not started,2
+MT-3,"Service object Vaults::CreateForOwner with quota check",Not started,2
+MT-3,"Vaults::QuotaExceeded exception rendered as 422",Not started,1
+MT-3,"Seed default vault_quota = 3",Not started,0.5
+MT-3,"Tests: at-quota, under-quota, operator unlimited",Not started,1
+MT-4,"ApplicationController#current_vault + current_vault!",Not started,2
+MT-4,"Bkc::ActiveVaultRequired exception with 409 body",Not started,1
+MT-4,"Foreign vault returns 404 (not 403) to avoid disclosure",Not started,1
+MT-4,"Tests: param wins over header, header over default, foreign vault 404",Not started,2
+MT-5,"routes.rb: resources :vaults under /my/",Not started,1
+MT-5,"Api::V1::My::VaultsController plural rewrite",Not started,3
+MT-5,"Api::V1::My::DefaultVaultController#update",Not started,1
+MT-5,"Serializer: kind, slug, archived_at, default_vault?",Not started,1
+MT-5,"Controller tests per action",Not started,2
+MT-6,"Singular route maps to default_vault helper",Not started,1
+MT-6,"Deprecation header on responses",Not started,0.5
+MT-6,"POST singular: 409 if owned_vaults.count > 0",Not started,1
+MT-6,"Tests tagged @deprecated",Not started,1
+MT-7,"Api::V1::My::ContentsController uses current_vault",Not started,1
+MT-7,"Api::V1::My::AnalyticsController (6 actions)",Not started,2
+MT-7,"Api::V1::My::AuditLogsController",Not started,1
+MT-7,"AccountController#context returns owned vault list",Not started,1
+MT-7,"Update tests to send X-BK-Active-Vault",Not started,2
+MT-8,"Bkc::ApplicationController#current_vault reads cookie",Not started,1
+MT-8,"Bkc::VaultSwitcherComponent ViewComponent",Not started,3
+MT-8,"POST /bkc/active_vault cookie + redirect",Not started,1
+MT-8,"Long-press 'Set as default' calls PATCH",Not started,1
+MT-8,"System test: two-vault account switching",Not started,2
+MT-9,"Bkc::DashboardController uses current_vault",Not started,1
+MT-9,"Bkc::ContentsController (4 places)",Not started,1
+MT-9,"Bkc::ViewersController (2 places)",Not started,1
+MT-9,"Bkc::AccessLinksController (7 places)",Not started,2
+MT-9,"Bkc::ForensicsController (3 places)",Not started,1
+MT-9,"Bkc::AnalyticsController (5 places)",Not started,2
+MT-9,"Bkc::VaultsController#create uses quota check",Not started,1
+MT-9,"Active vault name in BKC header partial",Not started,1
+MT-10,"VaultContextProvider (Riverpod)",Not started,2
+MT-10,"VaultSwitcher widget (app bar + left rail)",Not started,3
+MT-10,"Secure storage adapter",Not started,1
+MT-10,"Accessibility labels",Not started,1
+MT-10,"Load /account/context on launch and switcher open",Not started,1
+MT-11,"Dio interceptor adds X-BK-Active-Vault",Not started,1
+MT-11,"409 response opens switcher modal",Not started,1
+MT-11,"403 permission_revoked re-fetches context",Not started,1
+MT-11,"Interceptor tests",Not started,1
+MT-12,"Bkc::OnboardingController#new_vault polished",Not started,2
+MT-12,"Flutter VaultEmptyStateScreen with two CTAs",Not started,2
+MT-12,"Inclusive-language copy review",Not started,1
+MT-13,"POST /my/vaults/:id/archive + restore",Not started,1
+MT-13,"BKC archive confirmation modal",Not started,1
+MT-13,"Flutter archive option in vault settings",Not started,1
+MT-13,"Operator hard-delete remains separate",Not started,0.5
+MT-14,"Cross-vault content read denied (404)",Not started,1
+MT-14,"Cross-vault audit log read denied",Not started,1
+MT-14,"Cross-vault analytics read denied",Not started,1
+MT-14,"Cross-vault permission update denied",Not started,1
+MT-14,"Cache-key sweep with vault_id",Not started,2
+MT-14,"Header forgery test (foreign vault)",Not started,1
+MT-15,"lib/tasks/multi_tenant_backfill.rake",Not started,1
+MT-15,"Dry-run mode with counts",Not started,0.5
+MT-15,"Run on staging snapshot",Not started,1
+MT-15,"Telemetry: users updated/skipped",Not started,0.5
+MT-16,"Migration: audit_logs.vault_id NOT NULL",Not started,1
+MT-16,"Model: validates :vault_id presence",Not started,0.5
+MT-16,"Test: audit without vault_id raises",Not started,1
+MT-16,"BKC audit viewer filtered by active vault",Not started,1
+MT-17,"Per-request log: user_agent, bk_client_version",Not started,1
+MT-17,"Daily aggregation",Not started,1
+MT-17,"Removal PR scheduled",Not started,0.5
+MT-18,"OperatorOverride model",Not started,2
+MT-18,"BKC red banner during override",Not started,1
+MT-18,"Audit rows tagged actor_role: operator",Not started,1
+MT-18,"30-minute default; renewal requires re-justification",Not started,1
+MT-19,"mkdocs build --strict",Not started,0.5
+MT-19,"Cross-link audit",Not started,1
+MT-19,"Nav order matches rollout phase order",Not started,0.5
+MT-19,"Doc reference per MT-N acceptance criteria",Not started,1
+MT-20,"Threat model writeup in docs/security/",Not started,2
+MT-20,"Cross-vault data access attempts (4 vectors)",Not started,2
+MT-20,"Header forgery scenarios",Not started,1
+MT-20,"Operator override misuse scenarios",Not started,1
+MT-20,"Cache poisoning across vaults",Not started,1
+MT-20,"Sign-off doc filed",Not started,1
