@@ -553,6 +553,90 @@
   
   
     <li class="md-nav__item">
+      <a href="../../architecture/multi-tenant-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/context-switching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Switching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/comparative-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis (FB / LinkedIn / IG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../architecture/users-role-audit/" class="md-nav__link">
         
   
@@ -818,6 +902,34 @@
     
   
     NTP Time Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/multi-tenant-pentest-20260515/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Pentest (2026-05-15)
   
 
     
@@ -1618,6 +1730,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-tenant-rollout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Rollout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../super-admin-tailadmin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Super Admin TailAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../beta/" class="md-nav__link">
         
   
@@ -1693,14 +1861,15 @@
 
 <h1 id="system-plan">System Plan</h1>
 <h2 id="direction">Direction</h2>
-<p>Bokunokoto should grow around a person-first account model:</p>
+<p>Bokunokoto grows around a person-first, <strong>multi-tenant</strong> account model:</p>
 <ul>
 <li>One <code>User</code> represents one authenticated person.</li>
-<li>A user becomes a discloser by owning a <code>Vault</code>.</li>
-<li>A user becomes a receiver through a <code>Permission</code> / <code>ViewerRelationship</code> to another vault.</li>
-<li>BKC access is authorized by vault ownership plus account capability, not by a permanent user role.</li>
+<li>A user becomes a discloser by owning <strong>one or more <code>Vaults</code></strong> (capped by <code>AccountCapability.vault_quota</code>, default 3).</li>
+<li>A user becomes a receiver through a <code>Permission</code> to another vault.</li>
+<li>The active vault is a runtime context resolved from <code>X-BK-Active-Vault</code> (or <code>users.default_vault_id</code>) on every request.</li>
+<li>BKC access is authorized per active vault by ownership plus account capability, not by a permanent user role.</li>
 </ul>
-<p>This plan supersedes any design that assumes separate discloser and receiver accounts.</p>
+<p>This plan supersedes earlier designs that assumed separate discloser/receiver accounts <strong>or</strong> a one-vault-per-user simplification. See <a href="../../architecture/multi-tenant-model/">Multi-Tenant Model</a>, <a href="../multi-tenant-rollout/">Multi-Tenant Rollout</a>, and <a href="../../architecture/comparative-analysis/">Comparative Analysis</a>.</p>
 <h2 id="implementation-sequence">Implementation Sequence</h2>
 <table>
 <thead>
@@ -1720,7 +1889,7 @@
 </tr>
 <tr>
 <td>2</td>
-<td>Vault ownership</td>
+<td>Vault ownership (single)</td>
 <td>Add the owned disclosure space for users who become disclosers.</td>
 <td><a href="../../architecture/data-model/">Data Model</a></td>
 </tr>
@@ -1749,7 +1918,13 @@
 <td><a href="../account-role-replan/">Account &amp; Role Replan</a></td>
 </tr>
 <tr>
-<td>7</td>
+<td><strong>7</strong></td>
+<td><strong>Multi-tenant rewrite</strong></td>
+<td><strong>Lift one-vault-per-user; add quota, switcher, vault-scoped APIs.</strong></td>
+<td><strong><a href="../../architecture/multi-tenant-model/">Multi-Tenant Model</a>, <a href="../../architecture/context-switching/">Context Switching</a>, <a href="../multi-tenant-rollout/">Multi-Tenant Rollout</a></strong></td>
+</tr>
+<tr>
+<td>8</td>
 <td>Release hardening</td>
 <td>Relationship-aware audit logs, security gates, billing, and eKYC.</td>
 <td><a href="../release/">Release Phase</a></td>
@@ -1783,7 +1958,11 @@
 </tr>
 <tr>
 <td>BKC</td>
-<td>Personal BKC is single-owner by default. Delegated/team management belongs to a future business tier.</td>
+<td>Personal BKC is <strong>scoped per active vault</strong>. Each vault has exactly one owner in v1. Delegated/team management (<code>VaultMembership</code>, FB Page Roles analog) belongs to a future business tier.</td>
+</tr>
+<tr>
+<td>Tenancy</td>
+<td>Vault is the tenancy boundary. One user may own up to <code>account.vault_quota</code> vaults (default 3). The active vault is sent on every request as <code>X-BK-Active-Vault</code>.</td>
 </tr>
 <tr>
 <td>Billing</td>

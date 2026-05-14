@@ -16,7 +16,7 @@
         <link rel="prev" href="../tech-stack/">
       
       
-        <link rel="next" href="../users-role-audit/">
+        <link rel="next" href="../multi-tenant-model/">
       
       
         
@@ -621,10 +621,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#initial-account-lifecycle" class="md-nav__link">
+  <a href="#account-lifecycle-multi-tenant" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Initial Account Lifecycle
+        Account Lifecycle (multi-tenant)
       
     </span>
   </a>
@@ -668,6 +668,90 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-tenant-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../context-switching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Switching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparative-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis (FB / LinkedIn / IG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -945,6 +1029,34 @@
     
   
     NTP Time Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/multi-tenant-pentest-20260515/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Pentest (2026-05-15)
   
 
     
@@ -1629,6 +1741,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/multi-tenant-rollout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Rollout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/super-admin-tailadmin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Super Admin TailAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../roadmap/beta/" class="md-nav__link">
         
   
@@ -1704,8 +1872,9 @@
 
 <h1 id="account-role-model">Account &amp; Role Model</h1>
 <h2 id="principle">Principle</h2>
-<p>Bokunokoto uses a <strong>one-person, one-account</strong> model. A <code>User</code> represents a real authenticated person, not a permanent product role. The same user can disclose their own information through a vault and receive information from someone else's vault.</p>
-<p>This keeps the account model stable as BK grows from a personal disclosure tool into a reciprocal trust network.</p>
+<p>Bokunokoto uses a <strong>one-person, one-account, many-vaults</strong> model. A <code>User</code> represents a real authenticated person, not a permanent product role. The same user can disclose their own information through <strong>one or more vaults</strong> and receive information from someone else's vault.</p>
+<p>This keeps the account model stable as BK grows from a personal disclosure tool into a reciprocal trust network with multiple disclosure surfaces per person — close in shape to the Facebook account ↔ multiple Pages relationship, with Instagram's account-switcher UX for moving between them.</p>
+<p>See <a href="../multi-tenant-model/">Multi-Tenant Model</a> and <a href="../comparative-analysis/">Comparative Analysis</a> for the full architectural rationale.</p>
 <h2 id="core-concepts">Core Concepts</h2>
 <table>
 <thead>
@@ -1723,8 +1892,8 @@
 </tr>
 <tr>
 <td><code>Vault</code></td>
-<td>Disclosure space owned by a user</td>
-<td>Initial product scope is 0 or 1 vault per user. The model should not block future multi-vault support.</td>
+<td>Disclosure tenant owned by a user</td>
+<td>A user can own multiple vaults (capped by <code>AccountCapability.vault_quota</code>, default 3). Each vault is a self-contained disclosure surface with its own contents, viewers, links, and audit history.</td>
 </tr>
 <tr>
 <td><code>Permission</code> / <code>ViewerRelationship</code></td>
@@ -1734,7 +1903,12 @@
 <tr>
 <td><code>AccountCapability</code></td>
 <td>What the user can do in the product</td>
-<td>Examples: can create a vault, can access BKC, receive-only state, beta flags, billing gates.</td>
+<td>Examples: vault quota, can access BKC, receive-only state, beta flags, billing gates.</td>
+</tr>
+<tr>
+<td><code>ActiveVaultContext</code></td>
+<td>Runtime selection of which vault the user is currently acting in</td>
+<td>Persisted per-device as <code>active_vault_id</code>; canonical default is <code>users.default_vault_id</code>. Sent on every API request as <code>X-BK-Active-Vault</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -1768,15 +1942,19 @@
 </tbody>
 </table>
 <p>The client may show these as mode switches, but the backend authorizes each request from the current resource relationship.</p>
-<h2 id="initial-account-lifecycle">Initial Account Lifecycle</h2>
+<h2 id="account-lifecycle-multi-tenant">Account Lifecycle (multi-tenant)</h2>
 <pre class="mermaid"><code>stateDiagram-v2
     [*] --&gt; Registered: Firebase Auth verified
     Registered --&gt; ReceiveOnly: no vault yet
-    ReceiveOnly --&gt; VaultOwner: creates first vault
-    VaultOwner --&gt; DualContext: receives access to another vault
+    ReceiveOnly --&gt; SingleOwner: creates first vault
+    SingleOwner --&gt; MultiOwner: creates additional vault (within quota)
+    SingleOwner --&gt; DualContext: receives access to another vault
+    MultiOwner --&gt; DualContext: receives access in addition to owning
     ReceiveOnly --&gt; DualContext: receives access, then creates vault later
+    DualContext --&gt; MultiOwner: creates additional vault
+    MultiOwner --&gt; Suspended: account status action
     DualContext --&gt; Suspended: account status action
-    VaultOwner --&gt; Suspended: account status action
+    SingleOwner --&gt; Suspended: account status action
     Suspended --&gt; Registered: reinstated</code></pre>
 <h2 id="authorization-rules">Authorization Rules</h2>
 <table>
@@ -1815,18 +1993,21 @@
 </table>
 <h2 id="implementation-notes">Implementation Notes</h2>
 <ul>
-<li>Add <code>Vault.owner_user_id</code> or keep <code>Vault.user_id</code> with clear owner semantics.</li>
-<li>Keep trust level per vault relationship, not globally on <code>users</code>. A global <code>users.trust_level</code> can exist only as legacy/admin display until relationship permissions replace it.</li>
-<li>Use <code>AccountCapability</code> or equivalent fields to express product access: <code>can_create_vault</code>, <code>bkc_enabled</code>, <code>receive_only</code>, <code>billing_plan</code>, and beta access.</li>
-<li>Avoid Firebase custom claims that imply permanent product roles such as <code>isAdmin</code> for personal vault ownership. Claims may reference platform operators, but vault ownership is checked against database relationships.</li>
+<li>Keep <code>vaults.user_id</code> as the owner FK (no destructive rename). Expose it in code as <code>vault.owner</code> via <code>belongs_to :owner, class_name: "User", foreign_key: :user_id</code>.</li>
+<li>Trust level is per vault relationship, not globally on <code>users</code>. A global <code>users.trust_level</code> exists only as legacy/admin display until relationship permissions replace it.</li>
+<li>Use <code>AccountCapability</code> to express product access: <code>vault_quota</code> (int, default 3), <code>bkc_enabled</code>, <code>receive_only</code>, <code>billing_plan</code>, and beta access.</li>
+<li>Firebase custom claims may reference platform operators only. Vault ownership and trust are checked against database relationships, never claims.</li>
 </ul>
 <h2 id="migration-direction">Migration Direction</h2>
 <ol>
 <li>Keep the current <code>User</code> table as the identity anchor.</li>
-<li>Introduce vault ownership and relationship permissions as separate records.</li>
+<li>Lift the unique index on <code>vaults.user_id</code>; allow many vaults per user.</li>
+<li>Backfill <code>users.default_vault_id</code> so existing single-vault users keep a stable seed.</li>
+<li>Introduce vault quota via <code>AccountCapability.vault_quota</code>.</li>
+<li>Add the <code>X-BK-Active-Vault</code> header contract and resolve the active vault on every authenticated request.</li>
 <li>Move viewer trust from <code>users.trust_level</code> to the per-vault permission record.</li>
 <li>Replace role-based UI gates with relationship/capability checks.</li>
-<li>Preserve existing console user management as an operator view until BKC ownership screens are implemented.</li>
+<li>Preserve existing console user management as an operator view until BKC ownership screens are migrated.</li>
 </ol>
 
 

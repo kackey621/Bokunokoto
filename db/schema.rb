@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_14_151811) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
   create_table "access_links", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "bound_user_id"
     t.datetime "created_at", null: false
@@ -30,6 +30,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_151811) do
 
   create_table "audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "action", null: false
+    t.string "actor_role"
     t.bigint "content_id"
     t.datetime "created_at", null: false
     t.string "face_snapshot_url"
@@ -42,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_151811) do
     t.bigint "user_id", null: false
     t.bigint "vault_id", null: false
     t.index ["action"], name: "index_audit_logs_on_action"
+    t.index ["actor_role"], name: "index_audit_logs_on_actor_role"
     t.index ["content_id"], name: "index_audit_logs_on_content_id"
     t.index ["user_id", "occurred_at"], name: "index_audit_logs_on_user_id_and_occurred_at"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
@@ -109,6 +111,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_151811) do
     t.index ["user_id"], name: "index_incidents_on_user_id"
     t.index ["vault_id", "created_at"], name: "index_incidents_on_vault_id_and_created_at"
     t.index ["vault_id"], name: "index_incidents_on_vault_id"
+  end
+
+  create_table "operator_overrides", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "operator_id", null: false
+    t.string "reason", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "vault_id", null: false
+    t.index ["operator_id", "expires_at"], name: "index_operator_overrides_on_operator_id_and_expires_at"
+    t.index ["operator_id"], name: "index_operator_overrides_on_operator_id"
+    t.index ["vault_id"], name: "index_operator_overrides_on_vault_id"
   end
 
   create_table "permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -180,6 +194,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_151811) do
   add_foreign_key "greetings", "vaults"
   add_foreign_key "incidents", "users"
   add_foreign_key "incidents", "vaults"
+  add_foreign_key "operator_overrides", "users", column: "operator_id"
+  add_foreign_key "operator_overrides", "vaults"
   add_foreign_key "permissions", "access_links", column: "source_access_link_id", on_delete: :nullify
   add_foreign_key "permissions", "users"
   add_foreign_key "permissions", "vaults"
