@@ -1,5 +1,5 @@
 class AuditLog < ApplicationRecord
-  ACTIONS = %w[view create update delete handshake login profile_update].freeze
+  ACTIONS = %w[view create update delete handshake login profile_update operator_override operator_override_closed].freeze
 
   belongs_to :vault
   belongs_to :user

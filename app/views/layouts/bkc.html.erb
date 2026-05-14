@@ -76,6 +76,19 @@
 
       <main class="body flex-grow-1">
         <div class="container-lg px-4 py-4">
+          <% if current_operator_override %>
+            <div class="alert alert-danger border-danger fw-semibold d-flex align-items-center gap-3" role="alert">
+              <span>
+                OPERATOR OVERRIDE ACTIVE &mdash;
+                Vault: <strong><%= current_operator_override.vault.display_name %></strong>
+                &mdash; Expires <%= distance_of_time_in_words_to_now(current_operator_override.expires_at) %>
+                &mdash; Reason: <%= h current_operator_override.reason %>
+              </span>
+              <%= button_to "Close Override", bkc_operator_override_path, method: :delete,
+                    class: "btn btn-sm btn-outline-danger ms-auto",
+                    data: { turbo: false } %>
+            </div>
+          <% end %>
           <% if notice.present? %>
             <div class="alert alert-success" role="alert"><%= notice %></div>
           <% end %>

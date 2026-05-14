@@ -22,6 +22,7 @@ class User < ApplicationRecord
   has_many :owned_vaults, class_name: "Vault", foreign_key: :user_id, dependent: :destroy
   belongs_to :default_vault_record, class_name: "Vault", foreign_key: :default_vault_id, optional: true
   has_many :permissions, dependent: :destroy
+  has_many :operator_overrides, foreign_key: :operator_id, dependent: :destroy
   has_many :accessible_vaults, through: :permissions, source: :vault
 
   def owns?(vault)

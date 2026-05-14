@@ -42,6 +42,12 @@ module Bkc
     def resolve_bkc_vault
       return nil unless current_user
 
+      # Operator override takes precedence over cookie and default
+      if current_user.platform_operator?
+        override = current_operator_override
+        return override.vault if override
+      end
+
       cookie_vault_id = cookies.signed[:bk_active_vault]
       if cookie_vault_id.present?
         vault = current_user.owned_vaults.find_by(id: cookie_vault_id)
@@ -58,6 +64,11 @@ module Bkc
       current_user.default_vault
     end
 
-    helper_method :current_user, :current_vault
+    def current_operator_override
+      return nil unless current_user&.platform_operator?
+      @current_operator_override ||= current_user.operator_overrides.active.first
+    end
+
+    helper_method :current_user, :current_vault, :current_operator_override
   end
 end
