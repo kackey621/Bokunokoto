@@ -8,10 +8,8 @@ class User < ApplicationRecord
   validates :role, inclusion: { in: ROLES }
   validates :status, inclusion: { in: STATUSES }
 
-  # Temporary compatibility data until per-vault permissions own trust.
   validates :trust_level, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 9 }
 
-  # Account capabilities
   validates :can_create_vault, inclusion: [ true, false ]
   validates :bkc_access, inclusion: [ true, false ]
   validates :is_beta_tester, inclusion: [ true, false ]
@@ -21,18 +19,46 @@ class User < ApplicationRecord
   normalizes :email, with: ->(email) { email.strip.downcase }
   normalizes :firebase_uid, with: ->(uid) { uid.presence&.strip }
 
-  has_one :vault, dependent: :destroy
+  has_many :owned_vaults, class_name: "Vault", foreign_key: :user_id, dependent: :destroy
+  belongs_to :default_vault_record, class_name: "Vault", foreign_key: :default_vault_id, optional: true
   has_many :permissions, dependent: :destroy
   has_many :accessible_vaults, through: :permissions, source: :vault
 
+  def owns?(vault)
+    vault&.user_id == id
+  end
+
+  def default_vault
+    if default_vault_id.present?
+      owned_vaults.find_by(id: default_vault_id) || owned_vaults.first
+    else
+      owned_vaults.first
+    end
+  end
+
+  # Deprecated: delegates to default_vault for one-release compatibility.
+  def vault
+    Rails.logger.warn "DEPRECATION WARNING: User#vault is deprecated. Use User#default_vault or User#owned_vaults."
+    default_vault
+  end
+
+  # Deprecated compatibility writer used by create_vault! in tests.
+  def build_vault(attrs = {})
+    owned_vaults.build(attrs)
+  end
+
+  def create_vault!(attrs = {})
+    owned_vaults.create!(attrs)
+  end
+
   def trust_level_for(vault)
-    return 9 if self.vault == vault # Owner has max trust for their own vault
+    return 9 if owns?(vault)
 
     permissions.find_by(vault: vault, status: "active")&.granted_level || 0
   end
 
   def receive_only?
-    vault.nil?
+    owned_vaults.empty?
   end
 
   def platform_admin?

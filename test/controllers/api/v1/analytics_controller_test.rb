@@ -37,12 +37,13 @@ class Api::V1::AnalyticsControllerTest < ActionDispatch::IntegrationTest
     assert body.key?("summary")
   end
 
-  test "GET /my/analytics/attribution returns 404 when no vault" do
+  test "GET /my/analytics/attribution returns 409 when no vault" do
     FirebaseIdToken::Signature.stub :verify, { "sub" => @no_vault_user.firebase_uid } do
       get "/api/v1/my/analytics/attribution", headers: auth_headers
     end
 
-    assert_response :not_found
+    assert_response :conflict
+    assert_equal "active_vault_required", response.parsed_body["message"]
   end
 
   test "GET /my/analytics/accessibility returns format/symbol breakdown" do

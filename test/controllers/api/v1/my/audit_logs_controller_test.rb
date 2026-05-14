@@ -60,12 +60,13 @@ class Api::V1::My::AuditLogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal own_log.id, logs.first["id"]
   end
 
-  test "returns 404 for user without vault" do
+  test "returns 409 active_vault_required for user without vault" do
     FirebaseIdToken::Signature.stub :verify, { "sub" => @no_vault_user.firebase_uid } do
       get api_v1_my_audit_logs_path, headers: auth_headers
     end
 
-    assert_response :not_found
+    assert_response :conflict
+    assert_equal "active_vault_required", response.parsed_body["message"]
   end
 
   test "does not return logs from other vaults" do

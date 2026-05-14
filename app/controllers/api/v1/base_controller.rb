@@ -25,6 +25,51 @@ module Api
         @current_user
       end
 
+      # Resolves the active vault for the current user via:
+      #   1. route :vault_id param
+      #   2. X-BK-Active-Vault request header
+      #   3. users.default_vault_id / first owned vault
+      # Returns nil when no vault is resolvable.
+      def current_vault
+        @current_vault ||= resolve_active_vault
+      end
+
+      # Like current_vault but renders 409 when none is resolved.
+      def current_vault!
+        current_vault || render_active_vault_required
+      end
+
+      def resolve_active_vault
+        return nil unless current_user
+
+        vault_id = params[:vault_id].presence ||
+                   request.headers["X-BK-Active-Vault"].presence
+
+        if vault_id.present?
+          vault = current_user.owned_vaults.find_by(id: vault_id)
+          return vault if vault
+
+          # Might be a vault shared with the user via permissions.
+          permitted = current_user.accessible_vaults.find_by(id: vault_id)
+          return permitted if permitted
+
+          render json: { status: "error", message: "vault_not_found" }, status: :not_found
+          return nil
+        end
+
+        current_user.default_vault
+      end
+
+      def render_active_vault_required
+        owned = current_user.owned_vaults.map { |v| { id: v.id, display_name: v.display_name } }
+        render json: {
+          status: "error",
+          message: "active_vault_required",
+          owned_vaults: owned
+        }, status: :conflict
+        nil
+      end
+
       def render_unauthorized(message)
         render json: { status: "error", message: message }, status: :unauthorized
       end

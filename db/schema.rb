@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
-  create_table "access_links", force: :cascade do |t|
+ActiveRecord::Schema[8.1].define(version: 2026_05_14_151811) do
+  create_table "access_links", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "bound_user_id"
     t.datetime "created_at", null: false
     t.datetime "expires_at"
@@ -23,12 +23,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
     t.integer "use_count", default: 0, null: false
     t.bigint "vault_id", null: false
     t.text "welcome_message"
-    t.index [ "bound_user_id" ], name: "index_access_links_on_bound_user_id"
-    t.index [ "slug" ], name: "index_access_links_on_slug", unique: true
-    t.index [ "vault_id" ], name: "index_access_links_on_vault_id"
+    t.index ["bound_user_id"], name: "index_access_links_on_bound_user_id"
+    t.index ["slug"], name: "index_access_links_on_slug", unique: true
+    t.index ["vault_id"], name: "index_access_links_on_vault_id"
   end
 
-  create_table "audit_logs", force: :cascade do |t|
+  create_table "audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "action", null: false
     t.bigint "content_id"
     t.datetime "created_at", null: false
@@ -41,15 +41,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
     t.string "user_agent"
     t.bigint "user_id", null: false
     t.bigint "vault_id", null: false
-    t.index [ "action" ], name: "index_audit_logs_on_action"
-    t.index [ "content_id" ], name: "index_audit_logs_on_content_id"
-    t.index [ "user_id", "occurred_at" ], name: "index_audit_logs_on_user_id_and_occurred_at"
-    t.index [ "user_id" ], name: "index_audit_logs_on_user_id"
-    t.index [ "vault_id", "occurred_at" ], name: "index_audit_logs_on_vault_id_and_occurred_at"
-    t.index [ "vault_id" ], name: "index_audit_logs_on_vault_id"
+    t.index ["action"], name: "index_audit_logs_on_action"
+    t.index ["content_id"], name: "index_audit_logs_on_content_id"
+    t.index ["user_id", "occurred_at"], name: "index_audit_logs_on_user_id_and_occurred_at"
+    t.index ["user_id"], name: "index_audit_logs_on_user_id"
+    t.index ["vault_id", "occurred_at"], name: "index_audit_logs_on_vault_id_and_occurred_at"
+    t.index ["vault_id"], name: "index_audit_logs_on_vault_id"
   end
 
-  create_table "contents", force: :cascade do |t|
+  create_table "contents", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
     t.string "format", default: "markdown", null: false
@@ -59,10 +59,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.bigint "vault_id", null: false
-    t.index [ "vault_id" ], name: "index_contents_on_vault_id"
+    t.index ["vault_id"], name: "index_contents_on_vault_id"
   end
 
-  create_table "greetings", force: :cascade do |t|
+  create_table "flipper_features", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_flipper_features_on_key", unique: true
+  end
+
+  create_table "flipper_gates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "feature_key", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.text "value"
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true, length: { value: 255 }
+  end
+
+  create_table "greetings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
     t.bigint "recipient_user_id"
@@ -71,13 +87,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
     t.datetime "unlocked_at"
     t.datetime "updated_at", null: false
     t.bigint "vault_id", null: false
-    t.index [ "recipient_user_id" ], name: "index_greetings_on_recipient_user_id"
-    t.index [ "scheduled_delivery_time" ], name: "index_greetings_on_scheduled_delivery_time"
-    t.index [ "unlocked_at" ], name: "index_greetings_on_unlocked_at"
-    t.index [ "vault_id" ], name: "index_greetings_on_vault_id"
+    t.index ["recipient_user_id"], name: "index_greetings_on_recipient_user_id"
+    t.index ["scheduled_delivery_time"], name: "index_greetings_on_scheduled_delivery_time"
+    t.index ["unlocked_at"], name: "index_greetings_on_unlocked_at"
+    t.index ["vault_id"], name: "index_greetings_on_vault_id"
   end
 
-  create_table "incidents", force: :cascade do |t|
+  create_table "incidents", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.json "context"
     t.datetime "created_at", null: false
     t.text "description"
@@ -88,14 +104,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.bigint "vault_id", null: false
-    t.index [ "incident_type" ], name: "index_incidents_on_incident_type"
-    t.index [ "severity" ], name: "index_incidents_on_severity"
-    t.index [ "user_id" ], name: "index_incidents_on_user_id"
-    t.index [ "vault_id", "created_at" ], name: "index_incidents_on_vault_id_and_created_at"
-    t.index [ "vault_id" ], name: "index_incidents_on_vault_id"
+    t.index ["incident_type"], name: "index_incidents_on_incident_type"
+    t.index ["severity"], name: "index_incidents_on_severity"
+    t.index ["user_id"], name: "index_incidents_on_user_id"
+    t.index ["vault_id", "created_at"], name: "index_incidents_on_vault_id_and_created_at"
+    t.index ["vault_id"], name: "index_incidents_on_vault_id"
   end
 
-  create_table "permissions", force: :cascade do |t|
+  create_table "permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "granted_level", default: 0, null: false
     t.text "owner_notes"
@@ -105,16 +121,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.bigint "vault_id", null: false
-    t.index [ "source_access_link_id" ], name: "index_permissions_on_source_access_link_id"
-    t.index [ "user_id" ], name: "index_permissions_on_user_id"
-    t.index [ "vault_id", "user_id" ], name: "index_permissions_on_vault_id_and_user_id", unique: true
-    t.index [ "vault_id" ], name: "index_permissions_on_vault_id"
+    t.index ["source_access_link_id"], name: "index_permissions_on_source_access_link_id"
+    t.index ["user_id"], name: "index_permissions_on_user_id"
+    t.index ["vault_id", "user_id"], name: "index_permissions_on_vault_id_and_user_id", unique: true
+    t.index ["vault_id"], name: "index_permissions_on_vault_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "bkc_access", default: false, null: false
     t.boolean "can_create_vault", default: true, null: false
     t.datetime "created_at", null: false
+    t.bigint "default_vault_id"
     t.string "display_name", null: false
     t.string "email", null: false
     t.datetime "face_verified_at"
@@ -130,21 +147,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
     t.string "status", default: "active", null: false
     t.integer "trust_level", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index [ "email" ], name: "index_users_on_email", unique: true
-    t.index [ "firebase_uid" ], name: "index_users_on_firebase_uid", unique: true
-    t.index [ "profile_completed_at" ], name: "index_users_on_profile_completed_at"
-    t.index [ "role" ], name: "index_users_on_role"
-    t.index [ "status" ], name: "index_users_on_status"
+    t.integer "vault_quota", default: 3, null: false
+    t.index ["default_vault_id"], name: "index_users_on_default_vault_id"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["firebase_uid"], name: "index_users_on_firebase_uid", unique: true
+    t.index ["profile_completed_at"], name: "index_users_on_profile_completed_at"
+    t.index ["role"], name: "index_users_on_role"
+    t.index ["status"], name: "index_users_on_status"
   end
 
-  create_table "vaults", force: :cascade do |t|
+  create_table "vaults", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "archived_at"
     t.text "bank_account_info"
     t.text "bio"
     t.datetime "created_at", null: false
     t.string "display_name"
+    t.string "kind", default: "personal", null: false
+    t.string "slug"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index [ "user_id" ], name: "index_vaults_on_user_id", unique: true
+    t.index ["archived_at"], name: "index_vaults_on_archived_at"
+    t.index ["slug"], name: "index_vaults_on_slug", unique: true
+    t.index ["user_id"], name: "index_vaults_on_user_id"
   end
 
   add_foreign_key "access_links", "users", column: "bound_user_id"
@@ -159,5 +183,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120501) do
   add_foreign_key "permissions", "access_links", column: "source_access_link_id", on_delete: :nullify
   add_foreign_key "permissions", "users"
   add_foreign_key "permissions", "vaults"
+  add_foreign_key "users", "vaults", column: "default_vault_id", on_delete: :nullify
   add_foreign_key "vaults", "users"
 end

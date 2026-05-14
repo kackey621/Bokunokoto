@@ -33,8 +33,8 @@ module Bkc
     private
 
     def require_vault
-      @vault = current_user.vault
-      redirect_to bkc_dashboard_path, alert: "No vault found" unless @vault
+      @vault = current_vault
+      redirect_to bkc_dashboard_path, alert: "No active vault. Please create or select a vault." unless @vault
     end
 
     def require_user

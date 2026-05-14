@@ -2,13 +2,11 @@ module Bkc
   class BaseController < ApplicationController
     layout "bkc"
     before_action :authenticate_bkc_user!
-    before_action :ensure_vault_exists!
+    before_action :ensure_vault_accessible!
 
     private
 
     def authenticate_bkc_user!
-      # Placeholder for actual session/Firebase auth
-      # For now, we'll try to find a user from session or fallback to first user in dev
       user_id = session[:user_id]
       user_id ||= request.headers["X-Test-User-Id"] if Rails.env.test?
 
@@ -23,8 +21,9 @@ module Bkc
       end
     end
 
-    def ensure_vault_exists!
-      unless current_user.vault || current_user.can_create_vault
+    def ensure_vault_accessible!
+      return if current_user.nil?
+      unless current_user.owned_vaults.exists? || current_user.can_create_vault
         redirect_to root_path, alert: "You do not have a vault and cannot create one."
       end
     end
@@ -33,9 +32,25 @@ module Bkc
       @current_user
     end
 
+    # Resolves active vault for BKC via:
+    #   1. bk_active_vault signed cookie
+    #   2. users.default_vault_id / first owned vault
     def current_vault
-      @current_vault ||= current_user.vault
+      @current_vault ||= resolve_bkc_vault
     end
+
+    def resolve_bkc_vault
+      return nil unless current_user
+
+      cookie_vault_id = cookies.signed[:bk_active_vault]
+      if cookie_vault_id.present?
+        vault = current_user.owned_vaults.find_by(id: cookie_vault_id)
+        return vault if vault
+      end
+
+      current_user.default_vault
+    end
+
     helper_method :current_user, :current_vault
   end
 end

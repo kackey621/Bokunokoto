@@ -48,14 +48,15 @@ class Api::V1::My::ContentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "New", response.parsed_body["content"]["title"]
   end
 
-  test "user without vault is forbidden" do
+  test "user without vault gets 409 active_vault_required" do
     FirebaseIdToken::Signature.stub :verify, { "sub" => @no_vault_user.firebase_uid } do
       post api_v1_my_contents_path,
            params: { content: { title: "X", body: "X", required_level: 0 } },
            headers: auth_headers(@no_vault_user)
     end
 
-    assert_response :forbidden
+    assert_response :conflict
+    assert_equal "active_vault_required", response.parsed_body["message"]
   end
 
   test "updates content" do

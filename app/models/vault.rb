@@ -1,20 +1,28 @@
 class Vault < ApplicationRecord
   belongs_to :user
+  belongs_to :owner, class_name: "User", foreign_key: :user_id
+
+  KINDS = %w[personal shared].freeze
 
   validates :display_name, presence: true
-  validates :user_id, uniqueness: true
+  validates :kind, inclusion: { in: KINDS }
 
   has_many :permissions, dependent: :destroy
   has_many :viewers, through: :permissions, source: :user
   has_many :contents, dependent: :destroy
   has_many :access_links, dependent: :destroy
-  # AuditLog is immutable at the model layer (raises on destroy via callback);
-  # use :delete_all so cascade purge bypasses the hook intended for app code.
   has_many :audit_logs, dependent: :delete_all
   has_many :greetings, dependent: :destroy
   has_many :incidents, dependent: :destroy
 
   encrypts :bank_account_info, deterministic: false
+
+  scope :active, -> { where(archived_at: nil) }
+  scope :archived, -> { where.not(archived_at: nil) }
+
+  def archived?
+    archived_at.present?
+  end
 
   def bank_account_data
     return nil if bank_account_info.blank?
@@ -30,7 +38,6 @@ class Vault < ApplicationRecord
     account = bank_account_data["account_number"]
     return nil if account.blank?
 
-    # Show first 3 and last 4 digits, mask the rest
     if account.length > 7
       first = account[0..2]
       last = account[-4..-1]

@@ -1,22 +1,31 @@
 module Api
   module V1
     module My
-      class VaultsController < BaseController
-        before_action :set_vault, only: [ :show, :update, :archive, :restore ]
-
-        def index
-          vaults = current_user.owned_vaults.active.order(created_at: :asc)
-          render json: {
-            status: "success",
-            vaults: vaults.map { |v| vault_response(v) }
-          }
-        end
+      # Deprecated singular /api/v1/my/vault — kept for one release cycle.
+      # Clients should migrate to /api/v1/my/vaults.
+      class VaultController < BaseController
+        DEPRECATION_HEADERS = {
+          "Deprecation" => "true",
+          "Link" => '</api/v1/my/vaults>; rel="successor-version"'
+        }.freeze
 
         def show
-          render json: { status: "success", vault: vault_response(@vault) }
+          vault = current_user.default_vault
+          return render_error("No vault found", :not_found) unless vault
+
+          response.headers.merge!(DEPRECATION_HEADERS)
+          render json: { status: "success", vault: vault_response(vault) }
         end
 
         def create
+          if current_user.owned_vaults.count > 0
+            response.headers.merge!(DEPRECATION_HEADERS)
+            return render json: {
+              status: "error",
+              message: "Use POST /api/v1/my/vaults for multi-vault accounts"
+            }, status: :conflict
+          end
+
           unless current_user.can_create_vault
             return render_error("You do not have permission to create a vault", :forbidden)
           end
@@ -29,8 +38,9 @@ module Api
           assign_bank_account(vault)
           vault.save! if vault.changed?
 
-          current_user.update!(default_vault_id: vault.id) if current_user.default_vault_id.nil?
+          current_user.update!(default_vault_id: vault.id)
 
+          response.headers.merge!(DEPRECATION_HEADERS)
           render json: { status: "success", vault: vault_response(vault) }, status: :created
         rescue Vaults::QuotaExceeded => e
           render json: {
@@ -44,35 +54,24 @@ module Api
         end
 
         def update
-          assign_bank_account(@vault)
-          @vault.assign_attributes(vault_params)
+          vault = current_user.default_vault
+          return render_error("No vault found", :not_found) unless vault
 
-          if @vault.save
-            render json: { status: "success", vault: vault_response(@vault) }
+          assign_bank_account(vault)
+          vault.assign_attributes(vault_params)
+
+          if vault.save
+            response.headers.merge!(DEPRECATION_HEADERS)
+            render json: { status: "success", vault: vault_response(vault) }
           else
-            render_error(@vault.errors.full_messages.join(", "))
+            render_error(vault.errors.full_messages.join(", "))
           end
-        end
-
-        def archive
-          @vault.update!(archived_at: Time.current)
-          render json: { status: "success", vault: vault_response(@vault) }
-        end
-
-        def restore
-          @vault.update!(archived_at: nil)
-          render json: { status: "success", vault: vault_response(@vault) }
         end
 
         private
 
-        def set_vault
-          @vault = current_user.owned_vaults.find_by(id: params[:id])
-          render_error("Vault not found", :not_found) unless @vault
-        end
-
         def vault_params
-          params.require(:vault).permit(:display_name, :bio, :slug, :kind)
+          params.require(:vault).permit(:display_name, :bio)
         end
 
         def assign_bank_account(vault)
@@ -89,10 +88,6 @@ module Api
             id: vault.id,
             display_name: vault.display_name,
             bio: vault.bio,
-            slug: vault.slug,
-            kind: vault.kind,
-            archived_at: vault.archived_at,
-            default_vault: current_user.default_vault_id == vault.id,
             masked_account_number: vault.masked_account_number,
             bank_account_info: vault.bank_account_data
           }

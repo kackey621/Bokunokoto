@@ -13,7 +13,16 @@ Rails.application.routes.draw do
       resources :contents, only: [ :show ]
 
       namespace :my do
-        resource :vault, only: [ :show, :create, :update ]
+        # MT-5: plural vault API
+        resources :vaults, only: [ :index, :show, :create, :update ] do
+          member do
+            post :archive
+            post :restore
+          end
+        end
+        resource :default_vault, only: [ :update ], controller: "default_vault"
+        # MT-6: deprecated singular alias (one-release compat)
+        resource :vault, only: [ :show, :create, :update ], controller: "vault"
         resources :contents, only: [ :index, :create, :update, :destroy ]
         resources :audit_logs, only: [ :index ]
         get "analytics/funnel", to: "analytics#funnel"
@@ -32,7 +41,9 @@ Rails.application.routes.draw do
   namespace :bkc do
     root to: "dashboard#show", as: :dashboard
     resource :session, only: [ :destroy ]
+    resource :active_vault, only: [ :update ]
     resource :vault, only: [ :create, :update ]
+    resources :vaults, only: [ :index ]
     resources :viewers, only: [ :index, :show, :update ]
     resources :contents, except: [ :show ]
     resources :access_links, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
