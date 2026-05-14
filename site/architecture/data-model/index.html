@@ -556,6 +556,90 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-tenant-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../context-switching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Switching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparative-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis (FB / LinkedIn / IG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../users-role-audit/" class="md-nav__link">
         
   
@@ -682,6 +766,17 @@
     <span class="md-ellipsis">
       
         Vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default-vault-pointer-on-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default vault pointer (on User)
       
     </span>
   </a>
@@ -1039,6 +1134,34 @@
     
   
     NTP Time Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/multi-tenant-pentest-20260515/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Pentest (2026-05-15)
   
 
     
@@ -1723,6 +1846,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/multi-tenant-rollout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Rollout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/super-admin-tailadmin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Super Admin TailAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../roadmap/beta/" class="md-nav__link">
         
   
@@ -1797,11 +1976,16 @@
 
 
 <h1 id="data-model">Data Model</h1>
+<div class="admonition info">
+<p class="admonition-title">Multi-tenant update</p>
+<p>As of the multi-tenant rewrite, <code>User</code> owns <strong>many</strong> <code>Vault</code> rows (capped by <code>AccountCapability.vault_quota</code>, default 3). See <a href="../multi-tenant-model/">Multi-Tenant Model</a> for the full design and migration plan. This page documents the canonical schema after the rewrite.</p>
+</div>
 <h2 id="entity-relationship-diagram">Entity Relationship Diagram</h2>
 <pre class="mermaid"><code>erDiagram
-    User ||--o| Vault : "owns initially"
+    User ||--o{ Vault : "owns (0..N, capped by quota)"
     User ||--o{ AccountCapability : "has many"
     User ||--o{ Permission : "receives access through"
+    User }o--o| Vault : "default_vault_id"
     Vault ||--o{ Content : "has many"
     Vault ||--o{ Permission : "grants access through"
     Vault ||--o{ AccessLink : "has many"
@@ -1809,9 +1993,11 @@
     Vault ||--o{ QaContent : "has many"
     Content ||--o{ Symbol : "has many"
     Content ||--o{ AuditLog : "has many"
+    Vault ||--o{ AuditLog : "has many (per-tenant scope)"
     User ||--o{ AuditLog : "has many (as viewer)"
     User ||--o{ Notification : "has many (as recipient)"
     Vault ||--o{ Invitation : "has many"
+    Vault ||--o{ Incident : "has many"
     User ||--o{ FeatureFlag : "checked against"</code></pre>
 <h2 id="core-models">Core Models</h2>
 <h3 id="user">User</h3>
@@ -1878,7 +2064,7 @@
 </tbody>
 </table>
 <h3 id="vault">Vault</h3>
-<p><code>Vault</code> is the disclosure space owned by a user. Initial scope is 0 or 1 active vault per user, but naming and authorization should not block future multi-vault support.</p>
+<p><code>Vault</code> is a disclosure tenant owned by a user. A user can own multiple vaults, each capped by <code>AccountCapability.vault_quota</code> (default 3). The vault is the boundary for every per-tenant resource: contents, audit logs, access links, greetings, Q&amp;A, incidents, and analytics. See <a href="../multi-tenant-model/">Multi-Tenant Model</a> for the full design.</p>
 <table>
 <thead>
 <tr>
@@ -1896,17 +2082,32 @@
 <tr>
 <td><code>user_id</code></td>
 <td>bigint</td>
-<td>FK → User (owner/discloser)</td>
+<td>FK → User (owner). Indexed but <strong>not unique</strong> — one user can own multiple vaults. Exposed in code as <code>vault.owner</code>.</td>
 </tr>
 <tr>
 <td><code>display_name</code></td>
 <td>string</td>
-<td>Public-facing name</td>
+<td>Owner-facing name</td>
+</tr>
+<tr>
+<td><code>slug</code></td>
+<td>string</td>
+<td>URL-safe identifier, unique per owner (used by <code>X-BK-Active-Vault</code> header)</td>
+</tr>
+<tr>
+<td><code>kind</code></td>
+<td>enum</td>
+<td><code>personal</code> / <code>professional</code> / <code>medical</code> / <code>social</code> / <code>legal</code> / <code>other</code> — hint for default symbol palette and onboarding copy</td>
 </tr>
 <tr>
 <td><code>bio</code></td>
 <td>text</td>
 <td>Short introduction (L0 visible)</td>
+</tr>
+<tr>
+<td><code>archived_at</code></td>
+<td>datetime</td>
+<td>Nullable; non-null means soft-archived; archived vaults are excluded from <code>account/context</code> lists unless <code>include_archived=true</code></td>
 </tr>
 <tr>
 <td><code>created_at</code></td>
@@ -1915,6 +2116,12 @@
 </tr>
 </tbody>
 </table>
+<div class="admonition warning">
+<p class="admonition-title">Unique-index removal</p>
+<p>The pre-rewrite schema had <code>UNIQUE INDEX vaults_on_user_id</code>. The migration drops it and replaces it with a non-unique index. Tests that asserted "a user cannot create a second vault" are obsolete and replaced by quota-based assertions (see the multi-tenant rollout plan).</p>
+</div>
+<h3 id="default-vault-pointer-on-user">Default vault pointer (on User)</h3>
+<p><code>users.default_vault_id</code> (nullable, FK → <code>vaults</code>) is the user's preferred seed for the client context switcher. It is set on first vault creation and can be changed via <code>PATCH /api/v1/my/default_vault</code>. Archiving the referenced vault clears the pointer.</p>
 <h3 id="content-disclosure">Content (Disclosure)</h3>
 <table>
 <thead>

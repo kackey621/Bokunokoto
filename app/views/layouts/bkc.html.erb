@@ -31,6 +31,11 @@
             <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Dashboard
           <% end %>
         </li>
+        <li class="nav-item">
+          <%= link_to bkc_vaults_path, class: "nav-link #{current_page?(bkc_vaults_path) ? "active" : ""}" do %>
+            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Vaults
+          <% end %>
+        </li>
         <% if current_vault %>
           <li class="nav-item">
             <%= link_to bkc_contents_path, class: "nav-link #{current_page?(bkc_contents_path) ? "active" : ""}" do %>
@@ -58,10 +63,92 @@
               <li class="breadcrumb-item active"><%= content_for(:bkc_title) || "Dashboard" %></li>
             </ol>
           </nav>
-          <div class="ms-auto d-flex align-items-center gap-4">
+          <div class="ms-auto d-flex align-items-center gap-3">
+
+            <%# ─── Vault Switcher Dropdown ──────────────────────────────── %>
+            <% owned_vaults = current_user.owned_vaults.order(created_at: :asc) %>
+            <% if owned_vaults.any? %>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2"
+                        type="button"
+                        data-coreui-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-label="Switch vault">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zm0-1h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2"/>
+                  </svg>
+                  <% if current_operator_override %>
+                    <span class="text-danger fw-semibold"><%= current_operator_override.vault.display_name %></span>
+                    <span class="badge bg-danger ms-1" style="font-size:0.65rem;">OVERRIDE</span>
+                  <% elsif current_vault %>
+                    <%= current_vault.display_name %>
+                  <% else %>
+                    Select vault
+                  <% end %>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width:260px;">
+                  <li><h6 class="dropdown-header">Your Vaults</h6></li>
+                  <% owned_vaults.each do |vault| %>
+                    <li>
+                      <div class="d-flex align-items-center px-3 py-1 gap-2">
+                        <span class="flex-grow-1 small <%= vault.archived? ? "text-muted text-decoration-line-through" : "" %>">
+                          <%= vault.display_name %>
+                          <% if vault == current_vault && !current_operator_override %>
+                            <span class="badge bg-success ms-1" style="font-size:0.6rem;">active</span>
+                          <% end %>
+                          <% if vault.archived? %>
+                            <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">archived</span>
+                          <% end %>
+                        </span>
+                        <% unless vault == current_vault && !current_operator_override || vault.archived? %>
+                          <%= button_to "Switch",
+                                bkc_active_vault_path,
+                                method: :patch,
+                                params: { vault_id: vault.id },
+                                class: "btn btn-xs btn-outline-primary py-0 px-2",
+                                style: "font-size:0.7rem;",
+                                data: { turbo: false } %>
+                        <% end %>
+                      </div>
+                    </li>
+                  <% end %>
+
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <%= link_to bkc_vaults_path, class: "dropdown-item small" do %>
+                      Manage vaults&hellip;
+                    <% end %>
+                  </li>
+
+                  <% if current_user.platform_operator? %>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><h6 class="dropdown-header text-danger">Operator Override</h6></li>
+                    <% if current_operator_override %>
+                      <li>
+                        <%= button_to "Close override",
+                              bkc_operator_override_path,
+                              method: :delete,
+                              class: "dropdown-item small text-danger",
+                              data: { turbo: false } %>
+                      </li>
+                    <% else %>
+                      <li>
+                        <a class="dropdown-item small text-danger" href="#" data-coreui-toggle="modal" data-coreui-target="#operatorOverrideModal">
+                          Open operator override&hellip;
+                        </a>
+                      </li>
+                    <% end %>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <%# ─── User info ──────────────────────────────────────────── %>
             <div class="d-none d-sm-flex flex-column align-items-end line-height-1">
               <span class="small fw-semibold"><%= current_user.display_name %></span>
-              <span class="small text-body-secondary" style="font-size: 0.75rem;">Manager</span>
+              <span class="small text-body-secondary" style="font-size: 0.75rem;">
+                <%= current_user.role.humanize %>
+              </span>
             </div>
             <%= button_to bkc_session_path, method: :delete, class: "btn btn-outline-danger btn-sm d-flex align-items-center gap-2", data: { turbo: false } do %>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
@@ -71,11 +158,62 @@
               Logout
             <% end %>
           </div>
+
+          <%# ─── Operator Override Modal (operator users only) ──────── %>
+          <% if current_user&.platform_operator? && !current_operator_override %>
+            <div class="modal fade" id="operatorOverrideModal" tabindex="-1" aria-labelledby="operatorOverrideModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header border-danger">
+                    <h5 class="modal-title text-danger" id="operatorOverrideModalLabel">Open Operator Override</h5>
+                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <%= form_with url: bkc_operator_override_path, method: :post, data: { turbo: false } do |f| %>
+                    <div class="modal-body">
+                      <p class="text-danger small">
+                        Override context allows you to act on a vault you do not own.
+                        Every action is audited with <code>actor_role: operator</code>. Expires in 30 minutes.
+                      </p>
+                      <div class="mb-3">
+                        <%= f.label :vault_id, "Target Vault", class: "form-label" %>
+                        <%= f.select :vault_id,
+                              Vault.joins(:owner).select("vaults.id, vaults.display_name, users.email as owner_email").map { |v| ["#{v.display_name} (#{v.owner_email})", v.id] },
+                              { include_blank: "— select vault —" },
+                              class: "form-select" %>
+                      </div>
+                      <div class="mb-3">
+                        <%= f.label :reason, "Reason (required)", class: "form-label" %>
+                        <%= f.text_area :reason, class: "form-control", rows: 2, required: true,
+                              placeholder: "e.g. Compliance review per ticket #1234" %>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cancel</button>
+                      <%= f.submit "Open Override", class: "btn btn-danger" %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
         </div>
       </header>
 
       <main class="body flex-grow-1">
         <div class="container-lg px-4 py-4">
+          <% if current_operator_override %>
+            <div class="alert alert-danger border-danger fw-semibold d-flex align-items-center gap-3" role="alert">
+              <span>
+                OPERATOR OVERRIDE ACTIVE &mdash;
+                Vault: <strong><%= current_operator_override.vault.display_name %></strong>
+                &mdash; Expires <%= distance_of_time_in_words_to_now(current_operator_override.expires_at) %>
+                &mdash; Reason: <%= h current_operator_override.reason %>
+              </span>
+              <%= button_to "Close Override", bkc_operator_override_path, method: :delete,
+                    class: "btn btn-sm btn-outline-danger ms-auto",
+                    data: { turbo: false } %>
+            </div>
+          <% end %>
           <% if notice.present? %>
             <div class="alert alert-success" role="alert"><%= notice %></div>
           <% end %>

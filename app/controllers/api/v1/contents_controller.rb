@@ -25,7 +25,7 @@ module Api
       private
 
       def readable_vault?(vault)
-        return true if current_user.vault == vault
+        return true if current_user.owns?(vault)
 
         current_user.permissions.exists?(vault: vault, status: "active")
       end

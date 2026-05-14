@@ -553,6 +553,90 @@
   
   
     <li class="md-nav__item">
+      <a href="../../architecture/multi-tenant-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/context-switching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Switching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/comparative-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis (FB / LinkedIn / IG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../architecture/users-role-audit/" class="md-nav__link">
         
   
@@ -818,6 +902,34 @@
     
   
     NTP Time Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/multi-tenant-pentest-20260515/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Pentest (2026-05-15)
   
 
     
@@ -1735,6 +1847,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/multi-tenant-rollout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Rollout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/super-admin-tailadmin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Super Admin TailAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../roadmap/beta/" class="md-nav__link">
         
   
@@ -1810,7 +1978,8 @@
 
 <h1 id="bkc-command-center-overview">BKC Command Center Overview</h1>
 <h2 id="overview">Overview</h2>
-<p><strong>BKC</strong> (Bokunokoto Command Center) is the admin backbone of the BK platform. Every registered user can eventually manage a personal vault from the same account they use to receive other people's disclosures. BKC is where vault owners maintain full control over who sees what and under what conditions.</p>
+<p><strong>BKC</strong> (Bokunokoto Command Center) is the admin backbone of the BK platform. Every registered user can manage <strong>one or more personal vaults</strong> from the same account they use to receive other people's disclosures. BKC scopes every screen to the <strong>currently active vault</strong> — the user picks which of their owned vaults they're working in via the context switcher (top-right dropdown on web, app bar on mobile own-vault context). Switching vaults is instant; the dashboard, content list, viewer directory, audit logs, and analytics all re-scope on switch.</p>
+<p>See <a href="../../architecture/multi-tenant-model/">Multi-Tenant Model</a> and <a href="../../architecture/context-switching/">Context Switching</a> for the underlying contract.</p>
 <hr />
 <h2 id="tech-stack">Tech Stack</h2>
 <table>
@@ -1883,12 +2052,13 @@
 <li><strong>Template Library</strong> — Pre-built and custom templates for common disclosure scenarios</li>
 </ul>
 <h3 id="2-user-trust-controller">2. User &amp; Trust Controller</h3>
-<p>Viewer and permission management for the current user's owned vault:</p>
+<p>Viewer and permission management for the <strong>currently active vault</strong>. Each owned vault has its own viewer directory; switching vaults switches the directory.</p>
 <ul>
-<li><strong>User Directory</strong> — Browse all users who have accessed the vault</li>
-<li><strong>Level Management</strong> — Adjust trust levels (L0-L9) per user with one action</li>
+<li><strong>User Directory</strong> — Browse all users who have accessed <em>this</em> vault</li>
+<li><strong>Level Management</strong> — Adjust trust levels (L0–L9) per user with one action</li>
 <li><strong>Invitation System</strong> — Create and send email invitations with preset access levels</li>
 <li><strong>Batch Operations</strong> — Select multiple users for bulk level changes</li>
+<li><strong>Cross-vault hint</strong> — If the same viewer also has permission on another vault you own, BKC shows a non-blocking badge ("Also in: <em>Personal</em>") so you can navigate without losing context</li>
 </ul>
 <p>See <a href="../user-trust-controller/">User &amp; Trust Controller</a> for full details.</p>
 <h3 id="3-bk-observer">3. BK Observer</h3>
@@ -1989,13 +2159,13 @@
 </tbody>
 </table>
 <h3 id="ownership-and-capabilities">Ownership and Capabilities</h3>
-<p>Personal BKC access is enforced from database relationships:</p>
-<div class="highlight"><pre><span></span><code><span class="n">current_user</span><span class="o">.</span><span class="n">owns?</span><span class="p">(</span><span class="n">target_vault</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">current_user</span><span class="o">.</span><span class="n">capability_enabled?</span><span class="p">(</span><span class="s2">&quot;bkc_access&quot;</span><span class="p">)</span>
+<p>BKC access is enforced per active vault from database relationships:</p>
+<div class="highlight"><pre><span></span><code><span class="n">current_user</span><span class="o">.</span><span class="n">owns?</span><span class="p">(</span><span class="n">current_vault</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">current_user</span><span class="o">.</span><span class="n">capability_enabled?</span><span class="p">(</span><span class="s2">&quot;bkc_access&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>Firebase custom claims may still identify platform operators, but personal vault ownership must be checked in Rails against the <code>Vault</code> and account capability records.</p>
+<p><code>current_vault</code> is resolved from the <code>X-BK-Active-Vault</code> header (or <code>users.default_vault_id</code>) and validated against <code>current_user.owned_vaults</code>. Firebase custom claims may still identify platform operators, but vault ownership must be checked against the <code>Vault</code> and <code>AccountCapability</code> records.</p>
 <div class="admonition danger">
-<p class="admonition-title">No Shared Personal Admin Access</p>
-<p>Personal BKC is single-owner by default. Delegate or team access is out of scope for the personal product and belongs to a future business tier.</p>
+<p class="admonition-title">Single-owner per vault (v1)</p>
+<p>Each vault has exactly one owner in v1. A <code>VaultMembership</code> table is specced for future co-ownership (FB Page Roles analog: Admin/Editor/Analyst) but is not built in v1. Users who need parallel surfaces should create multiple vaults instead — they can switch between them with the context switcher.</p>
 </div>
 <hr />
 <h2 id="dual-entry-points">Dual Entry Points</h2>

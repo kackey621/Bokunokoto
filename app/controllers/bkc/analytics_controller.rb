@@ -18,8 +18,7 @@ module Bkc
     end
 
     def locations
-      @vault = current_user.vault
-      return render json: { error: "No vault found" }, status: :not_found unless @vault
+      return render json: { error: "No active vault" }, status: :not_found unless @vault
 
       start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : 30.days.ago
       end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Time.current
@@ -44,8 +43,8 @@ module Bkc
     private
 
     def require_vault
-      @vault = current_user.vault
-      redirect_to bkc_dashboard_path, alert: "No vault found" unless @vault
+      @vault = current_vault
+      redirect_to bkc_dashboard_path, alert: "No active vault. Please create or select a vault." unless @vault
     end
 
     def fetch_security_metrics(start_date)

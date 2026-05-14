@@ -658,6 +658,90 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-tenant-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../context-switching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Switching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparative-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis (FB / LinkedIn / IG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../users-role-audit/" class="md-nav__link">
         
   
@@ -923,6 +1007,34 @@
     
   
     NTP Time Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/multi-tenant-pentest-20260515/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Pentest (2026-05-15)
   
 
     
@@ -1607,6 +1719,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/multi-tenant-rollout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Rollout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/super-admin-tailadmin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Super Admin TailAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../roadmap/beta/" class="md-nav__link">
         
   
@@ -1758,15 +1926,17 @@
 </tbody>
 </table>
 <h2 id="multi-tenant-isolation">Multi-Tenant Isolation</h2>
-<p>Every disclosure record is scoped to a <strong>Vault</strong>. Initial product scope is one active vault per user, but the account model treats vault ownership as a relationship instead of a permanent user role. Rails controllers enforce vault-level scoping through ownership and permission checks, preventing cross-tenant data leakage.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Owner queries go through the user&#39;s owned vault.</span>
-<span class="vi">@contents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_user</span><span class="o">.</span><span class="n">owned_vault</span><span class="o">.</span><span class="n">contents</span>
+<p>Every disclosure record is scoped to a <strong>Vault</strong>. A user can own <strong>multiple vaults</strong> (capped by <code>AccountCapability.vault_quota</code>, default 3) and can independently receive access to other users' vaults from the same account. Each vault is a tenancy boundary: its own contents, viewers, links, audit logs, greetings, Q&amp;A, and incidents.</p>
+<p>The active vault for any given request is resolved from (in order): the <code>:vault_id</code> route param, the <code>X-BK-Active-Vault</code> header, then <code>users.default_vault_id</code>. If none resolve and the route is owner-scoped, the API returns <code>409 active_vault_required</code> with the user's owned-vault list so the client can prompt the switcher.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Owner queries go through the resolved active vault (validated against current_user).</span>
+<span class="vi">@contents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_vault</span><span class="o">.</span><span class="n">contents</span>
 
 <span class="c1"># Viewer queries go through the target vault and the viewer relationship.</span>
 <span class="vi">@contents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target_vault</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">accessible_for</span><span class="p">(</span><span class="n">current_user</span><span class="p">,</span><span class="w"> </span><span class="n">platform</span><span class="p">)</span>
 </code></pre></div>
+<p>See <a href="../multi-tenant-model/">Multi-Tenant Model</a>, <a href="../context-switching/">Context Switching</a>, and <a href="../comparative-analysis/">Comparative Analysis</a>.</p>
 <h2 id="context-aware-client">Context-Aware Client</h2>
-<p>The Flutter app may present admin and viewer experiences as modes, but these are <strong>runtime contexts</strong>, not permanent account roles:</p>
+<p>The Flutter app presents a <strong>per-vault context switcher</strong> (Instagram-style) — one Firebase identity, multiple vaults, no mode toggle. The active vault is persisted per device and sent on every request:</p>
 <table>
 <thead>
 <tr>
@@ -1777,18 +1947,18 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>Own Vault</strong></td>
-<td>Current user owns the selected vault and has BKC capability</td>
-<td>Edit content, issue QR codes, monitor audit logs, send greetings</td>
+<td><strong>Own Vault (active)</strong></td>
+<td><code>current_user</code> owns the resolved active vault, has BKC capability</td>
+<td>Edit content, issue QR codes, monitor audit logs, send greetings, manage viewers</td>
 </tr>
 <tr>
-<td><strong>Received Vault</strong></td>
-<td>Current user has a permission relationship with another vault</td>
+<td><strong>Received Vault (active)</strong></td>
+<td><code>current_user</code> has an active permission relationship with the resolved vault</td>
 <td>Browse permitted content, submit questions, receive notifications</td>
 </tr>
 <tr>
 <td><strong>Operator</strong></td>
-<td>Platform-level operator grant</td>
+<td>Platform-level operator grant with an explicit override token</td>
 <td>Support, compliance, abuse response, and system administration</td>
 </tr>
 </tbody>

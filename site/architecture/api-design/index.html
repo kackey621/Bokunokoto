@@ -556,6 +556,90 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-tenant-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../context-switching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Switching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparative-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis (FB / LinkedIn / IG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../users-role-audit/" class="md-nav__link">
         
   
@@ -805,13 +889,52 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#account-context" class="md-nav__link">
+  <a href="#account-context-multi-tenant" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Account Context
+        Account Context (multi-tenant)
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Account Context (multi-tenant)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-aliases-one-release-cycle-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated aliases (one-release-cycle compatibility)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-request-headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required request headers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#409-active_vault_required-response-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        409 active_vault_required response body
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1039,6 +1162,34 @@
     
   
     NTP Time Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/multi-tenant-pentest-20260515/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Pentest (2026-05-15)
   
 
     
@@ -1723,6 +1874,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/multi-tenant-rollout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Tenant Rollout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/super-admin-tailadmin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Super Admin TailAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../roadmap/beta/" class="md-nav__link">
         
   
@@ -2104,7 +2311,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="account-context">Account Context</h3>
+<h3 id="account-context-multi-tenant">Account Context (multi-tenant)</h3>
 <table>
 <thead>
 <tr>
@@ -2118,22 +2325,112 @@
 <tr>
 <td><code>GET</code></td>
 <td><code>/account/context</code></td>
-<td>Return current user's capabilities, owned vault summary, and received vault list</td>
+<td>Return current user, capabilities, <strong>owned vault list</strong>, <strong>received vault list</strong>, <code>default_vault_id</code></td>
+<td>Required</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/my/vaults</code></td>
+<td>List the current user's owned vaults</td>
 <td>Required</td>
 </tr>
 <tr>
 <td><code>POST</code></td>
-<td><code>/my/vault</code></td>
-<td>Create the current user's first vault when <code>create_vault</code> capability is active</td>
+<td><code>/my/vaults</code></td>
+<td>Create a new owned vault (subject to <code>account.vault_quota</code>)</td>
+<td>Required</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/my/vaults/:id</code></td>
+<td>Update an owned vault</td>
+<td>Owner</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/my/vaults/:id/archive</code></td>
+<td>Soft-archive an owned vault</td>
+<td>Owner</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/my/vaults/:id/restore</code></td>
+<td>Restore an archived vault</td>
+<td>Owner</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/my/default_vault</code></td>
+<td>Set or change the default vault seed</td>
 <td>Required</td>
 </tr>
 </tbody>
 </table>
-<p><code>/my/*</code> endpoints always refer to resources owned by the current user. <code>/vaults/:vault_id/*</code> endpoints refer to a target vault viewed through a permission relationship.</p>
+<p><code>/my/*</code> endpoints always refer to resources owned by the current user <strong>within the active vault context</strong> resolved from <code>X-BK-Active-Vault</code> (or <code>default_vault_id</code>). <code>/vaults/:vault_id/*</code> endpoints refer to a specific target vault.</p>
+<h4 id="deprecated-aliases-one-release-cycle-compatibility">Deprecated aliases (one-release-cycle compatibility)</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/my/vault</code></td>
+<td>Returns the default vault; emits <code>Deprecation: true</code> and <code>Link: &lt;…multi-tenant-model&gt;; rel="successor-version"</code></td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/my/vault</code></td>
+<td>Creates the first vault for users with zero vaults; returns <code>409 vault_quota_required_endpoint</code> otherwise with the canonical <code>POST /my/vaults</code> endpoint in the body</td>
+</tr>
+</tbody>
+</table>
+<h4 id="required-request-headers">Required request headers</h4>
+<table>
+<thead>
+<tr>
+<th>Header</th>
+<th>Required for</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>X-BK-Active-Vault</code></td>
+<td>All <code>/my/*</code> routes that don't carry <code>:vault_id</code></td>
+<td>Selects the vault context for the request</td>
+</tr>
+<tr>
+<td><code>X-BK-Platform</code></td>
+<td>All authenticated requests</td>
+<td>Enforces the L4 web cap</td>
+</tr>
+<tr>
+<td><code>X-BK-Time-Anchor</code></td>
+<td>All authenticated requests</td>
+<td>NTP anchor for time-locked content</td>
+</tr>
+</tbody>
+</table>
+<h4 id="409-active_vault_required-response-body"><code>409 active_vault_required</code> response body</h4>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;active_vault_required&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This request requires an active vault context. Send X-BK-Active-Vault, or set default_vault_id via PATCH /api/v1/my/default_vault.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;owned_vaults&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;slug&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;personal&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Personal&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;personal&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;slug&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;work&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Work&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;professional&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;default_vault_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</code></pre></div>
 <h2 id="content-filtering-logic">Content Filtering Logic</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># app/models/content.rb</span>
 <span class="n">scope</span><span class="w"> </span><span class="ss">:accessible_for</span><span class="p">,</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">vault</span><span class="p">,</span><span class="w"> </span><span class="ss">platform</span><span class="p">:</span><span class="w"> </span><span class="kp">nil</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">where</span><span class="p">(</span><span class="ss">vault</span><span class="p">:</span><span class="w"> </span><span class="n">vault</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">vault</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">vault</span><span class="w"> </span><span class="c1"># Owner sees everything in their vault</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">where</span><span class="p">(</span><span class="ss">vault</span><span class="p">:</span><span class="w"> </span><span class="n">vault</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">owns?</span><span class="p">(</span><span class="n">vault</span><span class="p">)</span><span class="w"> </span><span class="c1"># Owner sees everything in this vault</span>
 
 <span class="w">  </span><span class="n">user_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">trust_level_for</span><span class="p">(</span><span class="n">vault</span><span class="p">)</span>
 

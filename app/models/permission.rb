@@ -8,4 +8,6 @@ class Permission < ApplicationRecord
   validates :granted_level, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 9 }
   validates :status, inclusion: { in: STATUSES }
   validates :user_id, uniqueness: { scope: :vault_id, message: "already has a permission for this vault" }
+
+  scope :active, -> { where(status: "active") }
 end

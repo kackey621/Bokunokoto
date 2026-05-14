@@ -1,21 +1,102 @@
-<div class="container py-5 text-center">
-  <h1 class="display-4 mb-4">Welcome to Your BKC</h1>
-  <p class="lead mb-5">You haven't created your vault yet. Start disclosing your information securely.</p>
-  
-  <div class="card shadow-sm mx-auto" style="max-width: 500px;">
-    <div class="card-body p-4 text-start">
-      <h5 class="card-title mb-3">Create Your Vault</h5>
-      <%= form_with model: Vault.new, url: bkc_vault_path do |f| %>
-        <div class="mb-3">
-          <%= f.label :display_name, "Vault Name", class: "form-label" %>
-          <%= f.text_field :display_name, class: "form-control", placeholder: "e.g. Akira's Disclosure Space", required: true %>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 text-center mb-5">
+      <h1 class="display-5 fw-bold mb-3">Welcome to BK Command Center</h1>
+      <p class="lead text-body-secondary">
+        Your secure space for progressive self-disclosure.
+        Choose how you'd like to get started.
+      </p>
+    </div>
+  </div>
+
+  <div class="row justify-content-center g-4">
+    <%# ─── CTA 1: Create your first vault ─────────────────────────── %>
+    <div class="col-lg-5 col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="mb-3 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zm0-1h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2"/>
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+          </div>
+          <h5 class="card-title fw-semibold">Create Your Vault</h5>
+          <p class="card-text text-body-secondary small mb-4">
+            Set up your personal disclosure space. Choose a name, add a bio, and start
+            sharing your information securely with people you choose.
+          </p>
+
+          <%= form_with url: bkc_vault_path, method: :post do |f| %>
+            <div class="mb-3">
+              <%= f.label :display_name, "Vault Name", class: "form-label fw-medium" %>
+              <%= f.text_field :display_name,
+                    name: "vault[display_name]",
+                    class: "form-control",
+                    placeholder: "e.g. Akira's Disclosure Space",
+                    required: true %>
+            </div>
+            <div class="mb-4">
+              <%= f.label :bio, "Bio", class: "form-label fw-medium" %>
+              <%= f.text_area :bio,
+                    name: "vault[bio]",
+                    class: "form-control",
+                    rows: 2,
+                    placeholder: "A short introduction (optional)" %>
+            </div>
+            <%= f.submit "Initialize My Vault", class: "btn btn-primary w-100" %>
+          <% end %>
         </div>
-        <div class="mb-3">
-          <%= f.label :bio, "Bio (Optional)", class: "form-label" %>
-          <%= f.text_area :bio, class: "form-control", rows: 3 %>
+      </div>
+    </div>
+
+    <%# ─── CTA 2: Use an invitation link ──────────────────────────── %>
+    <div class="col-lg-5 col-md-6">
+      <div class="card shadow-sm h-100 border-dashed">
+        <div class="card-body p-4 d-flex flex-column">
+          <div class="mb-3 text-success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+              <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+            </svg>
+          </div>
+          <h5 class="card-title fw-semibold">I Have an Invitation Link</h5>
+          <p class="card-text text-body-secondary small mb-4">
+            Someone has already created a vault and shared an access link with you.
+            Paste the link or the access code below to connect.
+          </p>
+          <div class="mb-3">
+            <label class="form-label fw-medium">Access Link or Code</label>
+            <div class="input-group">
+              <input type="url"
+                     id="invitation_link_input"
+                     class="form-control"
+                     placeholder="https://bk.example.com/a/xxxxxxxxx"
+                     aria-label="Invitation link or access code">
+              <button class="btn btn-success"
+                      type="button"
+                      onclick="followInviteLink()">
+                Open
+              </button>
+            </div>
+            <div class="form-text">Paste the full URL or just the code at the end.</div>
+          </div>
+          <div class="mt-auto pt-2">
+            <p class="text-body-secondary" style="font-size:0.8rem;">
+              You'll be taken to the vault owner's disclosure page. No account required for viewing.
+            </p>
+          </div>
         </div>
-        <%= f.submit "Initialize My Vault", class: "btn btn-primary w-100" %>
-      <% end %>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+function followInviteLink() {
+  var input = document.getElementById("invitation_link_input").value.trim();
+  if (!input) return;
+  // If it looks like a bare code (no slash), build the full URL
+  var url = input.includes("/") ? input : "/a/" + input;
+  window.location.href = url;
+}
+</script>

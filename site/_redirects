@@ -1,0 +1,5 @@
+# Redirect root to home
+/ /index.html 200
+
+# SPA fallback - redirect all non-matched requests to index.html for client-side routing
+/* /index.html 200

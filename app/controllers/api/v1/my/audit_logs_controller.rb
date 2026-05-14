@@ -2,11 +2,11 @@ module Api
   module V1
     module My
       class AuditLogsController < BaseController
-        before_action :require_vault!
+        before_action :require_active_vault!
 
         def index
           logs = AuditLog
-            .for_vault(current_user.vault)
+            .for_vault(current_vault)
             .recent
             .includes(:user, :content)
             .limit(limit_param)
@@ -19,10 +19,8 @@ module Api
 
         private
 
-        def require_vault!
-          unless current_user.vault
-            render json: { status: "error", message: "no_vault" }, status: :not_found
-          end
+        def require_active_vault!
+          current_vault!
         end
 
         def limit_param

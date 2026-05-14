@@ -4,7 +4,7 @@ module Api
       class ContentsController < BaseController
         include AuditLoggable
 
-        before_action :require_vault!
+        before_action :require_active_vault!
 
         def index
           contents = current_vault.contents.order(created_at: :desc)
@@ -47,12 +47,8 @@ module Api
 
         private
 
-        def current_vault
-          @current_vault ||= current_user.vault
-        end
-
-        def require_vault!
-          render json: { status: "error", message: "no_vault" }, status: :forbidden unless current_vault
+        def require_active_vault!
+          current_vault!
         end
 
         def content_params

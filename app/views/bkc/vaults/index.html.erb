@@ -1,0 +1,59 @@
+<% content_for :bkc_title, "Vaults" %>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Your Vaults</span>
+    <%= button_to "New Vault", bkc_vaults_path,
+          method: :post,
+          params: { vault: { display_name: "New Vault" } },
+          class: "btn btn-sm btn-primary" %>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Kind</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @vaults.each do |vault| %>
+          <tr class="<%= vault.archived? ? 'text-muted' : '' %>">
+            <td>
+              <%= vault.display_name %>
+              <% if vault == @active_vault %>
+                <span class="badge bg-success ms-1">Active</span>
+              <% end %>
+            </td>
+            <td><span class="badge bg-secondary"><%= vault.kind %></span></td>
+            <td>
+              <% if vault.archived? %>
+                <span class="badge bg-warning text-dark">Archived</span>
+              <% else %>
+                <span class="badge bg-success">Active</span>
+              <% end %>
+            </td>
+            <td class="text-muted small"><%= vault.created_at.strftime("%Y-%m-%d") %></td>
+            <td class="text-end">
+              <% unless vault == @active_vault || vault.archived? %>
+                <%= button_to "Switch",
+                      bkc_active_vault_path,
+                      method: :patch,
+                      params: { vault_id: vault.id },
+                      class: "btn btn-sm btn-outline-primary me-1" %>
+              <% end %>
+              <%= button_to "Edit",
+                    bkc_vault_path,
+                    method: :patch,
+                    params: { id: vault.id, vault: { display_name: vault.display_name } },
+                    class: "btn btn-sm btn-outline-secondary" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

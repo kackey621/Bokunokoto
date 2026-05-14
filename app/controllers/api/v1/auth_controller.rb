@@ -34,7 +34,7 @@ module Api
                 display_name: user.display_name,
                 role: user.role,
                 trust_level: user.trust_level,
-                vault: user.vault ? { id: user.vault.id, display_name: user.vault.display_name } : nil,
+                vault: user.default_vault ? { id: user.default_vault.id, display_name: user.default_vault.display_name } : nil,
                 capabilities: {
                   can_create_vault: user.can_create_vault,
                   bkc_access: user.bkc_access,
