@@ -1,0 +1,47 @@
+<% content_for :bkc_title, "Operator Override" %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card border-danger">
+      <div class="card-header bg-danger text-white fw-semibold">
+        &#9888; Open Operator Override
+      </div>
+      <div class="card-body">
+        <p class="text-body-secondary small mb-4">
+          An operator override temporarily grants you access to any vault for support and audit purposes.
+          All actions during the override are logged with <code>actor_role: operator</code>.
+        </p>
+
+        <%= form_with url: bkc_operator_override_path, method: :post, data: { turbo: false } do |f| %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Target Vault</label>
+            <select name="operator_override[vault_id]" class="form-select" required>
+              <option value="">— select a vault —</option>
+              <% @vaults.each do |vault| %>
+                <option value="<%= vault.id %>">
+                  <%= vault.display_name %> (ID <%= vault.id %>, owner: <%= vault.user.display_name %>)
+                </option>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Reason</label>
+            <textarea name="operator_override[reason]" class="form-control" rows="3"
+                      placeholder="Describe why this override is necessary..." required></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Duration (minutes)</label>
+            <input type="number" name="operator_override[duration_minutes]" class="form-control"
+                   value="30" min="5" max="480">
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-danger">Open Override</button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

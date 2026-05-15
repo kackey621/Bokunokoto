@@ -1,8 +1,8 @@
 class CreateOperatorOverrides < ActiveRecord::Migration[7.2]
   def change
     create_table :operator_overrides do |t|
-      t.references :operator, null: false, foreign_key: { to_table: :users }
-      t.references :vault, null: false, foreign_key: true
+      t.references :operator, null: false, foreign_key: { to_table: :users }, type: :bigint
+      t.references :vault, null: false, foreign_key: true, type: :bigint
       t.text :reason, null: false
       t.datetime :expires_at, null: false
       t.datetime :closed_at

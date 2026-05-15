@@ -1,6 +1,6 @@
 module Bkc
   class SessionsController < BaseController
-    skip_before_action :ensure_vault_exists!
+    skip_before_action :ensure_vault_or_can_create!
     
     def destroy
       session[:user_id] = nil

@@ -5,7 +5,7 @@ module Bkc
       if vault
         set_active_vault!(vault)
       end
-      redirect_back(fallback_location: bkc_root_path)
+      redirect_back(fallback_location: bkc_dashboard_path)
     end
   end
 end
