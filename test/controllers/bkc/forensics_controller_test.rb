@@ -59,7 +59,7 @@ class Bkc::ForensicsControllerTest < ActionDispatch::IntegrationTest
     get bkc_forensics_user_timeline_path(user_id: 999_999), headers: { "X-Test-User-Id" => @owner.id }
 
     assert_redirected_to bkc_forensics_path
-    assert_equal "User not found", flash[:alert]
+    assert_equal "User not found.", flash[:alert]
   end
 
   test "GET timeline redirects when caller has no vault" do

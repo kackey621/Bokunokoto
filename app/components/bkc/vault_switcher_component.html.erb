@@ -1,0 +1,48 @@
+<div class="dropdown" data-controller="vault-switcher">
+  <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-2"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="Vault switcher">
+    <% if @current_vault %>
+      <span class="fw-semibold"><%= @current_vault.display_name %></span>
+      <% if operator_context? %>
+        <span class="badge bg-danger ms-1" title="Operator override active">OP</span>
+      <% end %>
+    <% else %>
+      <span class="text-muted">No vault selected</span>
+    <% end %>
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 240px;">
+    <li><h6 class="dropdown-header">Your Vaults</h6></li>
+    <% owned_vaults.each do |vault| %>
+      <li>
+        <%= button_to bkc_active_vault_path,
+              method: :post,
+              params: { vault_id: vault.id },
+              class: "dropdown-item d-flex justify-content-between align-items-center #{'active' if vault == @current_vault}",
+              form: { data: { turbo: false } } do %>
+          <span><%= vault.display_name %></span>
+          <% if vault == @current_vault %>
+            <span class="text-success ms-2">&#10003;</span>
+          <% end %>
+          <% if @current_user.default_vault_id == vault.id %>
+            <span class="badge bg-secondary ms-1" title="Default vault">&#11088;</span>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+
+    <% if owned_vaults.empty? %>
+      <li><span class="dropdown-item text-muted">No vaults yet</span></li>
+    <% end %>
+
+    <li><hr class="dropdown-divider"></li>
+    <li>
+      <%= link_to "Create new vault", new_bkc_vault_path,
+            class: "dropdown-item",
+            aria: { label: "Create a new vault" } %>
+    </li>
+  </ul>
+</div>
