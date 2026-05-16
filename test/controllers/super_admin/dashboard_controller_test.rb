@@ -10,9 +10,8 @@ class SuperAdmin::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should reject unauthorized users" do
-    # Without authentication, it should reject or redirect
+  test "should redirect unauthenticated users to login" do
     get super_admin_root_url
-    assert_response :unauthorized
+    assert_redirected_to new_super_admin_session_path
   end
 end

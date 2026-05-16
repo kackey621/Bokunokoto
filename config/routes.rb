@@ -47,7 +47,7 @@ Rails.application.routes.draw do
     resources :viewers, only: [ :index, :show, :update ]
     resources :contents, except: [ :show ]
     resources :access_links, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
-    resource :operator_override, only: [ :create, :destroy ]
+    resource :operator_override, only: [ :new, :create, :destroy ]
     get "forensics", to: "forensics#index"
     get "forensics/users/:user_id/timeline", to: "forensics#timeline", as: :forensics_user_timeline
     get "analytics", to: "analytics#show"

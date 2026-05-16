@@ -1,0 +1,54 @@
+<%
+  owned_vaults = current_user.owned_vaults.active.order(:display_name)
+  operator_context = current_user.platform_operator? && current_vault && !current_user.owns?(current_vault)
+%>
+<div class="dropdown" id="vault-switcher">
+  <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-2"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="Vault switcher">
+    <% if current_vault %>
+      <span class="fw-semibold text-truncate" style="max-width: 150px;"><%= current_vault.display_name %></span>
+      <% if operator_context %>
+        <span class="badge bg-danger" title="Operator override active">OP</span>
+      <% end %>
+    <% else %>
+      <span class="text-muted">Select vault</span>
+    <% end %>
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 240px;">
+    <li><h6 class="dropdown-header small">Your Vaults</h6></li>
+    <% owned_vaults.each do |vault| %>
+      <li>
+        <%= button_to bkc_active_vault_path,
+              method: :post,
+              params: { vault_id: vault.id },
+              class: "dropdown-item d-flex justify-content-between align-items-center #{'active fw-semibold' if vault == current_vault}",
+              form: { data: { turbo: false } } do %>
+          <span class="text-truncate" style="max-width: 140px;"><%= vault.display_name %></span>
+          <span class="d-flex align-items-center gap-1 ms-2 flex-shrink-0">
+            <% if current_user.default_vault_id == vault.id %>
+              <span class="badge bg-secondary" title="Default vault">&#11088;</span>
+            <% end %>
+            <% if vault == current_vault %>
+              <span class="text-success">&#10003;</span>
+            <% end %>
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+
+    <% if owned_vaults.empty? %>
+      <li><span class="dropdown-item text-muted small">No vaults yet</span></li>
+    <% end %>
+
+    <li><hr class="dropdown-divider"></li>
+    <li>
+      <%= link_to "Create new vault", new_bkc_vault_path,
+            class: "dropdown-item small",
+            aria: { label: "Create a new vault" } %>
+    </li>
+  </ul>
+</div>

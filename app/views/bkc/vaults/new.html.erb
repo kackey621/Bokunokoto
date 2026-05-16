@@ -1,0 +1,40 @@
+<% content_for :bkc_title, "New Vault" %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h5 class="mb-0">Create a New Vault</h5>
+      </div>
+      <div class="card-body">
+        <% vault_count = current_user.owned_vaults.count %>
+        <% if vault_count > 0 %>
+          <p class="text-muted small mb-3">
+            You currently have <%= vault_count %> vault(s).
+            Quota: <%= vault_count %>/<%= current_user.vault_quota %>
+          </p>
+        <% end %>
+
+        <%= form_with model: @vault, url: bkc_vault_path do |f| %>
+          <div class="mb-3">
+            <%= f.label :display_name, "Vault Name", class: "form-label" %>
+            <%= f.text_field :display_name, class: "form-control", placeholder: "e.g. My Work Disclosure", required: true %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :kind, "Type", class: "form-label" %>
+            <%= f.select :kind, [["Personal", "personal"], ["Professional", "professional"], ["Memorial", "memorial"]],
+                  {}, class: "form-select" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :bio, "Description (optional)", class: "form-label" %>
+            <%= f.text_area :bio, class: "form-control", rows: 3 %>
+          </div>
+          <div class="d-flex gap-2">
+            <%= f.submit "Create Vault", class: "btn btn-primary" %>
+            <%= link_to "Cancel", bkc_dashboard_path, class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

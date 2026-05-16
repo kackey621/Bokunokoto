@@ -48,6 +48,14 @@
             <% end %>
           </li>
         <% end %>
+        <% if current_user.platform_operator? %>
+          <li class="nav-title">Operator</li>
+          <li class="nav-item">
+            <%= link_to new_bkc_operator_override_path, class: "nav-link text-danger #{current_page?(new_bkc_operator_override_path) ? "active" : ""}" do %>
+              <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Open Override
+            <% end %>
+          </li>
+        <% end %>
       </ul>
     </div>
 

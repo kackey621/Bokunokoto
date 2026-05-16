@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2026_05_09_235840) do
-  create_table "managers", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "managers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.string "firebase_uid"
