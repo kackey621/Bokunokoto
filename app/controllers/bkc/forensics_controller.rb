@@ -39,7 +39,7 @@ module Bkc
 
     def require_user
       @user = User.find_by(id: params[:user_id])
-      redirect_to bkc_forensics_path, alert: "User not found" unless @user
+      redirect_to bkc_forensics_path, alert: "User not found." unless @user
     end
 
     def apply_filters

@@ -9,6 +9,11 @@ module Bkc
 
     def create
       p = override_params
+
+      if p[:reason].blank?
+        return redirect_to bkc_dashboard_path, alert: "reason is required to open an operator override."
+      end
+
       vault = Vault.active.find(p[:vault_id])
 
       # Close any currently active override before opening a new one
@@ -55,7 +60,7 @@ module Bkc
         redirect_to bkc_dashboard_path,
           notice: "Operator override closed for #{vault.display_name}."
       else
-        redirect_to bkc_dashboard_path, notice: "Operator override closed."
+        redirect_to bkc_dashboard_path, alert: "No active override to close."
       end
     end
 
@@ -63,12 +68,12 @@ module Bkc
 
     def require_operator!
       unless current_user.platform_operator?
-        redirect_to bkc_dashboard_path, alert: "Operator access required."
+        redirect_to bkc_dashboard_path, alert: "Only platform operators can open an override."
       end
     end
 
     def override_params
-      params.require(:operator_override).permit(:vault_id, :reason, :duration_minutes)
+      params.permit(:vault_id, :reason, :duration_minutes)
     end
   end
 end
