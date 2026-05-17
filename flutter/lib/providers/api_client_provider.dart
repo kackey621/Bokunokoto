@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 
@@ -8,13 +9,14 @@ const String apiBaseUrl = String.fromEnvironment(
 );
 const String platformHeader = 'X-BK-Platform';
 const String platformValue = 'flutter';
+const String activeVaultHeader = 'X-BK-Active-Vault';
 
 final apiClientProvider = Provider<Dio>((ref) {
   final auth = ref.watch(authNotifierProvider);
   return createDioClient(auth.firebaseUser);
 });
 
-Dio createDioClient(user) {
+Dio createDioClient(User? user) {
   final dio = Dio(
     BaseOptions(
       baseUrl: apiBaseUrl,
@@ -75,10 +77,11 @@ extension DioErrorHandler on DioException {
     if (response != null) {
       statusCode = response!.statusCode;
       if (response!.data is Map) {
-        message = response!.data['error'] ?? message;
+        final data = response!.data as Map;
+        message = data['message'] ?? data['error'] ?? data['code'] ?? message;
       }
     } else {
-      message = message.toString();
+      message = this.message ?? message;
     }
 
     return ApiException(
