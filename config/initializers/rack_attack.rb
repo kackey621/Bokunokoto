@@ -30,6 +30,18 @@ class Rack::Attack
     req.ip if req.path =~ %r{\A/api/v1/(?:vaults/\d+/)?contents} && req.get?
   end
 
+  # Super-admin sign-in: bcrypt-paced login is the only password surface in
+  # the app. Two complementary throttles defend it (HIGH-007).
+  throttle("super_admin login by IP", limit: 5, period: 60) do |req|
+    req.ip if req.path == "/super_admin/session" && req.post?
+  end
+
+  throttle("super_admin login by email", limit: 5, period: 600) do |req|
+    if req.path == "/super_admin/session" && req.post?
+      req.params["email"].to_s.downcase.strip.presence
+    end
+  end
+
   # Use 429 with Retry-After so clients can back off gracefully.
   self.throttled_responder = lambda do |req|
     match_data = req.env["rack.attack.match_data"] || {}

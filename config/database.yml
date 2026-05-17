@@ -1,12 +1,22 @@
+<%
+  # HIGH-011: in production, refuse to fall back to the literal string
+  # "password" — a missing DB_PASSWORD env var must crash boot loudly.
+  # Dev/test keep the convenient default so `docker compose up` and the
+  # test suite continue to work without env wiring.
+  production = Rails.env.production?
+  db_host_default     = production ? nil : "localhost"
+  db_username_default = production ? nil : "bokunokoto"
+  db_password_default = production ? nil : "password"
+%>
 default: &default
   adapter: mysql2
   encoding: utf8mb4
   collation: utf8mb4_unicode_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: <%= ENV.fetch("DB_HOST", "localhost") %>
-  port: <%= ENV.fetch("DB_PORT", 3306) %>
-  username: <%= ENV.fetch("DB_USERNAME", "bokunokoto") %>
-  password: <%= ENV.fetch("DB_PASSWORD", "password") %>
+  host:     <%= db_host_default     ? ENV.fetch("DB_HOST",     db_host_default)     : ENV.fetch("DB_HOST") %>
+  port:     <%= ENV.fetch("DB_PORT", 3306) %>
+  username: <%= db_username_default ? ENV.fetch("DB_USERNAME", db_username_default) : ENV.fetch("DB_USERNAME") %>
+  password: <%= db_password_default ? ENV.fetch("DB_PASSWORD", db_password_default) : ENV.fetch("DB_PASSWORD") %>
 
 development:
   primary:
