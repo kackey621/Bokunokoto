@@ -4,11 +4,38 @@ import 'package:go_router/go_router.dart';
 import '../../app/theme.dart';
 import '../../providers/auth_provider.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _submitEmailLogin() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter email and password')),
+      );
+      return;
+    }
+    ref.read(authNotifierProvider.notifier).signInWithEmail(email, password);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
@@ -38,8 +65,8 @@ class LoginScreen extends ConsumerWidget {
                 ),
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-              // Email login form (TODO)
               TextField(
+                controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   hintText: 'Email',
@@ -48,9 +75,11 @@ class LoginScreen extends ConsumerWidget {
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email, AutofillHints.username],
                 enabled: !authState.isLoading,
+                textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: Spacing.md),
               TextField(
+                controller: _passwordController,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   hintText: 'Password',
@@ -59,14 +88,14 @@ class LoginScreen extends ConsumerWidget {
                 obscureText: true,
                 autofillHints: const [AutofillHints.password],
                 enabled: !authState.isLoading,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _submitEmailLogin(),
               ),
               const SizedBox(height: Spacing.lg),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: authState.isLoading ? null : () {
-                    // TODO: Implement email login
-                  },
+                  onPressed: authState.isLoading ? null : _submitEmailLogin,
                   child: authState.isLoading
                       ? const SizedBox(
                           height: 20,
