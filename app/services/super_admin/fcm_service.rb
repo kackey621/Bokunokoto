@@ -3,7 +3,7 @@ require "google/apis/fcm_v1"
 module SuperAdmin
   class FcmService
     def initialize
-      @project_id = ENV.fetch("FIREBASE_PROJECT_ID", "bokuno-koto")
+      @project_id = SuperAdmin.firebase_project_id!
       @client = Google::Apis::FcmV1::FirebaseCloudMessagingService.new
       @client.authorization = Google::Auth.get_application_default([
         "https://www.googleapis.com/auth/firebase.messaging"

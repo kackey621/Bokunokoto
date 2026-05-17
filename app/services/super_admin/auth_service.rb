@@ -5,9 +5,9 @@ require "json"
 module SuperAdmin
   class AuthService
     def initialize
-      @project_id = ENV.fetch("FIREBASE_PROJECT_ID", "bokuno-koto")
-      
-      # Use Application Default Credentials, which automatically picks up 
+      @project_id = SuperAdmin.firebase_project_id!
+
+      # Use Application Default Credentials, which automatically picks up
       # the GOOGLE_APPLICATION_CREDENTIALS environment variable.
       @authorizer = Google::Auth.get_application_default([
         "https://www.googleapis.com/auth/identitytoolkit",
