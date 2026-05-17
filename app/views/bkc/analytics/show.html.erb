@@ -251,7 +251,10 @@
   // Accessibility format-views chart
   const accessibilityCtx = document.getElementById('accessibility-chart');
   if (accessibilityCtx) {
-    const formatViews = <%= raw @accessibility[:format_views].to_json %>;
+    // LOW-030: json_escape strips `</script>` and similar payloads so a
+    // future XSS sink in any metric value cannot break out of the
+    // <script> block.
+    const formatViews = <%= json_escape(@accessibility[:format_views].to_json).html_safe %>;
     new Chart(accessibilityCtx, {
       type: 'doughnut',
       data: {
@@ -268,7 +271,7 @@
   // Greetings time-to-open chart
   const greetingsCtx = document.getElementById('greetings-chart');
   if (greetingsCtx) {
-    const buckets = <%= raw @greetings[:time_to_open_buckets].to_json %>;
+    const buckets = <%= json_escape(@greetings[:time_to_open_buckets].to_json).html_safe %>;
     new Chart(greetingsCtx, {
       type: 'bar',
       data: {

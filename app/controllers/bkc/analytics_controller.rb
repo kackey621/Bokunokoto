@@ -20,8 +20,9 @@ module Bkc
     def locations
       return render json: { error: "No active vault" }, status: :not_found unless @vault
 
-      start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : 30.days.ago
-      end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Time.current
+      # MEDIUM-017: parse defensively; junk params fall back to defaults.
+      start_date = parse_date(params[:start_date]) || 30.days.ago
+      end_date   = parse_date(params[:end_date])   || Time.current
 
       logs = @vault.audit_logs.where(occurred_at: start_date..end_date)
                    .where.not(latitude: nil, longitude: nil)
@@ -64,6 +65,13 @@ module Bkc
             .where.not(latitude: nil, longitude: nil)
             .includes(:user)
             .limit(100)
+    end
+
+    def parse_date(value)
+      return nil if value.blank?
+      Date.parse(value)
+    rescue Date::Error, ArgumentError, TypeError
+      nil
     end
   end
 end
