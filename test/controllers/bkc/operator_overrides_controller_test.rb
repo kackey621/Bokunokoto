@@ -130,4 +130,27 @@ class Bkc::OperatorOverridesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     # current_vault should be the operator's own vault, not the expired override vault
   end
+
+  test "duration_minutes is clamped to MAX_DURATION when exceeded via POST" do
+    freeze = Time.current
+
+    travel_to(freeze) do
+      post bkc_operator_override_path,
+           params: { vault_id: @vault.id, reason: "Long shift", duration_minutes: 24 * 60 },
+           headers: { "X-Test-User-Id" => @operator.id }
+    end
+
+    override = OperatorOverride.last
+    expected_expiry = freeze + OperatorOverride::MAX_DURATION
+    assert_in_delta expected_expiry.to_i, override.expires_at.to_i, 1
+  end
+
+  test "new override form renders with flat field names that match controller params" do
+    get new_bkc_operator_override_path, headers: { "X-Test-User-Id" => @operator.id }
+
+    assert_response :success
+    assert_select "select[name=?]", "vault_id"
+    assert_select "textarea[name=?]", "reason"
+    assert_select "input[name=?]", "duration_minutes"
+  end
 end

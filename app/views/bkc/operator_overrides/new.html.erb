@@ -15,7 +15,7 @@
         <%= form_with url: bkc_operator_override_path, method: :post, data: { turbo: false } do |f| %>
           <div class="mb-3">
             <label class="form-label fw-semibold">Target Vault</label>
-            <select name="operator_override[vault_id]" class="form-select" required>
+            <select name="vault_id" class="form-select" required>
               <option value="">— select a vault —</option>
               <% @vaults.each do |vault| %>
                 <option value="<%= vault.id %>">
@@ -27,13 +27,13 @@
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Reason</label>
-            <textarea name="operator_override[reason]" class="form-control" rows="3"
+            <textarea name="reason" class="form-control" rows="3"
                       placeholder="Describe why this override is necessary..." required></textarea>
           </div>
 
           <div class="mb-4">
             <label class="form-label fw-semibold">Duration (minutes)</label>
-            <input type="number" name="operator_override[duration_minutes]" class="form-control"
+            <input type="number" name="duration_minutes" class="form-control"
                    value="30" min="5" max="480">
           </div>
 

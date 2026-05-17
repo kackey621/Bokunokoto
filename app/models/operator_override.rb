@@ -1,5 +1,6 @@
 class OperatorOverride < ApplicationRecord
   DEFAULT_DURATION = 30.minutes
+  MAX_DURATION = 8.hours
 
   belongs_to :operator, class_name: "User"
   belongs_to :vault
@@ -10,11 +11,12 @@ class OperatorOverride < ApplicationRecord
   scope :active, -> { where("expires_at > ?", Time.current) }
 
   def self.open!(operator:, vault:, reason:, duration: DEFAULT_DURATION)
+    clamped_duration = [ duration, MAX_DURATION ].min
     create!(
       operator: operator,
       vault: vault,
       reason: reason,
-      expires_at: Time.current + duration
+      expires_at: Time.current + clamped_duration
     )
   end
 
