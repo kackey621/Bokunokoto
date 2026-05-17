@@ -1,7 +1,7 @@
 module Bkc
   class SessionsController < BaseController
-    skip_before_action :ensure_vault_or_can_create!
-    
+    skip_before_action :ensure_vault_accessible!
+
     def destroy
       session[:user_id] = nil
       redirect_to root_path, notice: "Signed out from BKC successfully."
