@@ -156,7 +156,10 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
 
   # ─── Bank account ─────────────────────────────────────────────────────────
 
-  test "stores bank_account_info as JSON and returns masked + parsed view" do
+  # CRITICAL-001: the JSON response now exposes only the masked account
+  # digest. The plaintext stays encrypted in the DB and is no longer
+  # serialised on read/write.
+  test "stores bank_account_info as JSON but only returns masked view" do
     vault = @user.owned_vaults.create!(display_name: "V")
     @user.update!(default_vault_id: vault.id)
 
@@ -178,15 +181,15 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
 
     body = response.parsed_body
     assert_equal "012-****-6789", body["vault"]["masked_account_number"]
-    assert_equal "Mizuho", body["vault"]["bank_account_info"]["bank_name"]
-    assert_equal "001", body["vault"]["bank_account_info"]["routing_number"]
+    assert_nil body["vault"]["bank_account_info"],
+      "plaintext bank_account_info must not appear in API response (CRITICAL-001)"
 
     parsed = JSON.parse(vault.reload.bank_account_info)
     assert_equal "0123456789", parsed["account_number"]
     assert_equal "Mizuho", parsed["bank_name"]
   end
 
-  test "GET /my/vaults/:id returns parsed bank_account_info hash" do
+  test "GET /my/vaults/:id returns masked digest, never plaintext" do
     vault = @user.owned_vaults.create!(display_name: "V")
     vault.bank_account_data = { account_number: "9876543210", bank_name: "SMBC" }
     vault.save!
@@ -196,8 +199,9 @@ class Api::V1::My::VaultsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    info = response.parsed_body["vault"]["bank_account_info"]
-    assert_equal "SMBC", info["bank_name"]
-    assert_equal "987-****-3210", response.parsed_body["vault"]["masked_account_number"]
+    body = response.parsed_body
+    assert_equal "987-****-3210", body["vault"]["masked_account_number"]
+    assert_nil body["vault"]["bank_account_info"],
+      "plaintext bank_account_info must not appear in API response (CRITICAL-001)"
   end
 end

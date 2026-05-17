@@ -93,8 +93,9 @@ module Api
             kind: vault.kind,
             archived_at: vault.archived_at,
             default_vault: current_user.default_vault_id == vault.id,
-            masked_account_number: vault.masked_account_number,
-            bank_account_info: vault.bank_account_data
+            # CRITICAL-001: bank_account_info plaintext is no longer
+            # serialized. Only the masked account number is returned.
+            masked_account_number: vault.masked_account_number
           }
         end
       end
