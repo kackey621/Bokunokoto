@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../app/theme.dart';
 import '../../providers/auth_provider.dart';
 
@@ -66,19 +67,10 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: Spacing.md),
             ListTile(
-              leading: const Icon(Icons.security),
-              title: const Text('Change Password'),
-              onTap: () {
-                // TODO: Navigate to change password
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.account_balance),
               title: const Text('Bank Account'),
               subtitle: const Text('Add or update bank account details'),
-              onTap: () {
-                // TODO: Navigate to bank account screen
-              },
+              onTap: () => context.goNamed('profile-bank'),
             ),
             const SizedBox(height: Spacing.lg),
             SizedBox(

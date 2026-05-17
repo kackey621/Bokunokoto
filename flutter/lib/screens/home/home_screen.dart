@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../app/theme.dart';
+import '../../models/audit_log.dart';
+import '../../providers/audit_log_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final auditLogsAsync = ref.watch(auditLogProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bokunokoto'),
@@ -67,17 +71,46 @@ class HomeScreen extends ConsumerWidget {
               style: AppTypography.h3,
             ),
             const SizedBox(height: Spacing.md),
-            // TODO: Load recent activity from API
-            Center(
-              child: Text(
-                'No activity yet',
-                style: TextStyle(color: Colors.grey[400]),
+            auditLogsAsync.when(
+              data: (logs) => logs.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No activity yet',
+                        style: TextStyle(color: Colors.grey[400]),
+                      ),
+                    )
+                  : Column(
+                      children: logs
+                          .take(10)
+                          .map((log) => _ActivityRow(entry: log))
+                          .toList(),
+                    ),
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(Spacing.md),
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (err, _) => Text(
+                'Failed to load activity: $err',
+                style: TextStyle(color: Colors.red[700]),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  static String _formatAction(String action) {
+    switch (action) {
+      case 'view':
+        return 'Viewed';
+      case 'handshake':
+        return 'Connected';
+      default:
+        return action.replaceAll('_', ' ');
+    }
   }
 
   Future<void> _showSlugPrompt(BuildContext context) async {
@@ -109,5 +142,49 @@ class HomeScreen extends ConsumerWidget {
     if (slug == null || slug.isEmpty) return;
     if (!context.mounted) return;
     context.goNamed('qr-generate', pathParameters: {'slug': slug});
+  }
+}
+
+class _ActivityRow extends StatelessWidget {
+  final AuditLogEntry entry;
+
+  const _ActivityRow({required this.entry});
+
+  IconData get _icon {
+    switch (entry.action) {
+      case 'view':
+        return Icons.visibility_outlined;
+      case 'handshake':
+        return Icons.handshake_outlined;
+      default:
+        return Icons.circle_outlined;
+    }
+  }
+
+  String get _subtitle {
+    final parts = <String>[];
+    if (entry.contentTitle != null) parts.add(entry.contentTitle!);
+    if (entry.userDisplayName != null) parts.add('by ${entry.userDisplayName}');
+    return parts.join(' · ');
+  }
+
+  String get _trailing {
+    final when = entry.occurredAt;
+    if (when == null) return '';
+    return DateFormat('MMM d, h:mm a').format(when.toLocal());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(_icon),
+      title: Text(HomeScreen._formatAction(entry.action)),
+      subtitle: _subtitle.isEmpty ? null : Text(_subtitle),
+      trailing: Text(
+        _trailing,
+        style: AppTypography.bodySmall.copyWith(color: Colors.grey[600]),
+      ),
+    );
   }
 }

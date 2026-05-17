@@ -3,26 +3,28 @@ import '../models/content.dart';
 
 class HandshakeResponse {
   final Map<String, dynamic> permission;
-  final Map<String, dynamic> vault;
   final String? welcomeMessage;
   final int initialLevel;
   final Map<String, dynamic>? presetContext;
 
   HandshakeResponse({
     required this.permission,
-    required this.vault,
     this.welcomeMessage,
     required this.initialLevel,
     this.presetContext,
   });
 
+  String? get vaultId => permission['vault_id']?.toString();
+  int get grantedLevel => (permission['granted_level'] as num?)?.toInt() ?? 0;
+
   factory HandshakeResponse.fromJson(Map<String, dynamic> json) {
     return HandshakeResponse(
-      permission: json['permission'] ?? {},
-      vault: json['vault'] ?? {},
-      welcomeMessage: json['welcome_message'],
-      initialLevel: json['initial_level'] ?? 0,
-      presetContext: json['preset_context'],
+      permission: Map<String, dynamic>.from(json['permission'] ?? const {}),
+      welcomeMessage: json['welcome_message'] as String?,
+      initialLevel: (json['initial_level'] as num?)?.toInt() ?? 0,
+      presetContext: json['preset_context'] is Map
+          ? Map<String, dynamic>.from(json['preset_context'] as Map)
+          : null,
     );
   }
 }
@@ -39,26 +41,22 @@ class HandshakeService {
     try {
       final response = await dio.post(
         '/handshake',
-        data: {
-          'handshake': {
-            'slug': slug,
-            'firebase_uid': firebaseUid,
-          }
-        },
+        data: {'slug': slug, 'firebase_uid': firebaseUid},
       );
-
-      if (response.statusCode == 201) {
-        return HandshakeResponse.fromJson(response.data);
-      } else {
-        throw Exception('Handshake failed: ${response.data['error']}');
-      }
+      return HandshakeResponse.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        throw Exception('Invalid access link');
-      } else if (e.response?.statusCode == 403) {
-        throw Exception('Access link expired or max uses exceeded');
-      } else {
-        throw Exception('Handshake error: ${e.message}');
+      final code = e.response?.data is Map ? e.response!.data['code'] : null;
+      switch (e.response?.statusCode) {
+        case 404:
+          throw Exception('Invalid access link');
+        case 403:
+          throw Exception('Access link already bound to another account');
+        case 422:
+          if (code == 'expired') throw Exception('Access link expired');
+          if (code == 'exhausted') throw Exception('Access link max uses exceeded');
+          throw Exception('Handshake rejected: ${code ?? e.message}');
+        default:
+          throw Exception('Handshake error: ${e.message}');
       }
     }
   }

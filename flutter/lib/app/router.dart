@@ -7,8 +7,10 @@ import '../screens/auth/signup_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/vault/vault_contents_screen.dart';
 import '../screens/profile/profile_screen.dart';
+import '../screens/profile/bank_account_screen.dart';
 import '../screens/admin/qr_generator_screen.dart';
 import '../screens/onboarding/qr_scanner_screen.dart';
+import '../screens/onboarding/conversational_profile_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authNotifierProvider);
@@ -55,6 +57,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/profile',
             name: 'profile',
             builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/profile/bank',
+            name: 'profile-bank',
+            builder: (context, state) => const BankAccountScreen(),
+          ),
+          GoRoute(
+            path: '/onboarding/profile',
+            name: 'onboarding-profile',
+            builder: (context, state) => ConversationalProfileScreen(
+              presetContext: state.extra as Map<String, dynamic>?,
+            ),
           ),
           GoRoute(
             path: '/qr/scan',
