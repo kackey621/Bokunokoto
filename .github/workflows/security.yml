@@ -1,0 +1,45 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  brakeman:
+    name: Brakeman
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Brakeman (no warnings allowed)
+        run: bundle exec brakeman --no-pager --quiet -A -w2
+
+  bundler_audit:
+    name: bundler-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: bundle-audit check --update
+        run: bundle exec bundle-audit check --update
+
+  no_new_httparty:
+    name: No new HTTParty references
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Forbid direct HTTParty usage outside gem deps
+        run: |
+          set -e
+          matches=$(grep -RIn -E 'HTTParty|require[[:space:]]+["'"'"']httparty["'"'"']' \
+            app lib config 2>/dev/null || true)
+          if [ -n "$matches" ]; then
+            echo "::error::HTTParty references are not allowed in app/lib/config (HIGH-006):"
+            echo "$matches"
+            exit 1
+          fi
