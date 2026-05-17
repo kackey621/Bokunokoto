@@ -7,8 +7,33 @@ import 'app/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final options = DefaultFirebaseOptions.currentPlatform;
+  _assertNoTodoPlaceholders(options);
+
+  await Firebase.initializeApp(options: options);
   runApp(const ProviderScope(child: BokuApp()));
+}
+
+// LOW-029: refuse to boot if firebase_options.dart still ships with the
+// `TODO_*` placeholders. Without this guard a release build silently
+// authenticates against an empty Firebase project.
+void _assertNoTodoPlaceholders(FirebaseOptions options) {
+  final fields = <String, String?>{
+    'apiKey': options.apiKey,
+    'appId': options.appId,
+    'projectId': options.projectId,
+    'messagingSenderId': options.messagingSenderId,
+  };
+  for (final entry in fields.entries) {
+    final value = entry.value ?? '';
+    if (value.startsWith('TODO_')) {
+      throw StateError(
+        'firebase_options.dart still contains TODO placeholder for '
+        '${entry.key}. Run `flutterfire configure` before shipping.',
+      );
+    }
+  }
 }
 
 class BokuApp extends ConsumerWidget {
