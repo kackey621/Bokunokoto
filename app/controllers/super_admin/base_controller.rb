@@ -11,7 +11,10 @@ module SuperAdmin
 
       @current_manager = Manager.find_by(id: manager_id)
 
-      if Rails.env.development? && !@current_manager && Manager.exists?
+      # CRITICAL-002: dev auto-impersonation as `Manager.first` is now
+      # opt-in only. Without this, a misconfigured prod deploy
+      # (RAILS_ENV=development) would silently hand out manager access.
+      if Rails.env.development? && !@current_manager && ENV["ALLOW_DEV_AUTH_BYPASS"] == "1" && Manager.exists?
         @current_manager = Manager.first
         session[:manager_id] = @current_manager.id
       end
@@ -22,6 +25,16 @@ module SuperAdmin
         end
       else
         redirect_to new_super_admin_session_path, alert: "Please sign in to access the Super Admin console"
+      end
+    end
+
+    # HIGH-008 / HIGH-009: stricter gate that only admits `platform_admin`
+    # managers (Manager.role == "admin"). The default
+    # `authenticate_super_admin!` admits both roles for read access.
+    def require_platform_admin!
+      unless @current_manager&.platform_admin?
+        redirect_to super_admin_root_path,
+                    alert: "Platform admin access required for this action."
       end
     end
 
