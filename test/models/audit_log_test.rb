@@ -50,4 +50,26 @@ class AuditLogTest < ActiveSupport::TestCase
     assert_equal newer.id, ordered.first.id
     assert_equal older.id, ordered.last.id
   end
+
+  # MEDIUM-022
+  test "validates actor_role against ACTOR_ROLES" do
+    bad = AuditLog.new(vault: @vault, user: @owner, action: "view",
+                       occurred_at: Time.current, actor_role: "wizard")
+    assert_not bad.valid?
+    assert_includes bad.errors[:actor_role], "is not included in the list"
+  end
+
+  test "accepts any role in ACTOR_ROLES" do
+    AuditLog::ACTOR_ROLES.each do |role|
+      log = AuditLog.create!(vault: @vault, user: @owner, action: "view",
+                             occurred_at: Time.current, actor_role: role)
+      assert log.persisted?, "expected #{role.inspect} to pass actor_role validation"
+    end
+  end
+
+  test "allows nil actor_role for legacy rows" do
+    log = AuditLog.create!(vault: @vault, user: @owner, action: "view",
+                           occurred_at: Time.current, actor_role: nil)
+    assert log.persisted?
+  end
 end

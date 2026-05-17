@@ -100,15 +100,32 @@ class IncidentDetectorService
     end
   end
 
+  # MEDIUM-021: avoid writing a fresh row every time the detection job
+  # runs. We dedupe on (vault, user, incident_type) within the recent
+  # window so the unresolved-incidents list stays meaningful.
+  DEDUPE_WINDOW = 1.hour
+
   def create_incident(type, description, severity, context)
-    Incident.create!(
+    existing = Incident.where(
       vault: @vault,
       user: @user,
       incident_type: type,
-      description: description,
-      severity: severity,
-      context: context
-    )
+      resolved: false
+    ).where("created_at >= ?", DEDUPE_WINDOW.ago).order(created_at: :desc).first
+
+    if existing
+      existing.update!(description: description, severity: severity, context: context)
+      existing
+    else
+      Incident.create!(
+        vault: @vault,
+        user: @user,
+        incident_type: type,
+        description: description,
+        severity: severity,
+        context: context
+      )
+    end
   end
 
   def haversine_distance(lat1, lon1, lat2, lon2)
