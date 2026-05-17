@@ -100,8 +100,10 @@ module Api
             id: vault.id,
             display_name: vault.display_name,
             bio: vault.bio,
-            masked_account_number: vault.masked_account_number,
-            bank_account_info: vault.bank_account_data
+            # CRITICAL-001: plaintext bank_account_info no longer leaves
+            # the server. Only the masked digest is exposed; a dedicated
+            # re-authenticated reveal endpoint is tracked as follow-up.
+            masked_account_number: vault.masked_account_number
           }
         end
       end

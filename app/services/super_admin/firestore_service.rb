@@ -2,7 +2,7 @@ module SuperAdmin
   class FirestoreService
     def initialize
       # Configuration for google-cloud-firestore
-      @project_id = ENV.fetch("FIREBASE_PROJECT_ID", "bokuno-koto")
+      @project_id = SuperAdmin.firebase_project_id!
       @firestore = Google::Cloud::Firestore.new(project_id: @project_id)
     end
 

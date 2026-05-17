@@ -14,7 +14,8 @@ module Bkc
       cookies.signed[:bk_active_vault] = {
         value: vault.id,
         httponly: true,
-        same_site: :lax
+        same_site: :lax,
+        secure: Rails.env.production?
       }
 
       redirect_back fallback_location: bkc_dashboard_path, notice: "Switched to #{vault.display_name}."

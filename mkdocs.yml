@@ -62,6 +62,7 @@ nav:
       - Audit & Forensics: security/audit-forensics.md
       - NTP Time Sync: security/ntp-sync.md
       - Multi-Tenant Pentest (2026-05-15): security/multi-tenant-pentest-20260515.md
+      - Audit Remediations (2026-05-17): security/audit-2026-05-17-remediations.md
   - Features:
       - Smart Handshake (QR / NFC): features/smart-handshake.md
       - Greeting Engine: features/greeting-engine.md

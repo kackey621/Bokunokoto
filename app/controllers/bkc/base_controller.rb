@@ -12,7 +12,10 @@ module Bkc
 
       @current_user = User.find_by(id: user_id)
 
-      if Rails.env.development? && !@current_user
+      # CRITICAL-002: only auto-impersonate User.first when an explicit
+      # opt-in env var is set in development. The previous behaviour
+      # silently authenticated any request on a misconfigured prod box.
+      if Rails.env.development? && !@current_user && ENV["ALLOW_DEV_AUTH_BYPASS"] == "1"
         @current_user = User.first
       end
 

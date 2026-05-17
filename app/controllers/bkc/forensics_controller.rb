@@ -51,9 +51,17 @@ module Bkc
     end
 
     def date_range
-      start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : 30.days.ago
-      end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Time.current
+      # MEDIUM-017: tolerate malformed params instead of raising 500.
+      start_date = parse_date(params[:start_date]) || 30.days.ago
+      end_date   = parse_date(params[:end_date])   || Time.current
       start_date..end_date
+    end
+
+    def parse_date(value)
+      return nil if value.blank?
+      Date.parse(value)
+    rescue Date::Error, ArgumentError, TypeError
+      nil
     end
   end
 end

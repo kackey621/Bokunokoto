@@ -31,6 +31,10 @@
   
   <%= form_with url: super_admin_remote_config_index_path, method: :post, local: true do |form| %>
     <div class="p-6.5">
+      <%# HIGH-010: round-trip the ETag so publish uses optimistic locking
+          instead of forcing "*". The controller refuses to publish if
+          this hidden field is missing. %>
+      <%= form.hidden_field :etag, value: @template_etag %>
       <div class="mb-6">
         <%= form.label :template_json, "Template JSON", class: "mb-2.5 block text-black dark:text-white font-medium" %>
         <%= form.text_area :template_json, class: "w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-mono outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary", rows: 15, required: true, value: (@template.present? ? JSON.pretty_generate(@template) : "") %>

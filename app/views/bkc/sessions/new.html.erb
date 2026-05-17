@@ -1,0 +1,22 @@
+<%# MEDIUM-024 placeholder: until a real BKC login flow lands, this page
+    just explains how to reach BKC. It deliberately does not collect
+    credentials. %>
+<div class="bkc-sessions-new" style="max-width: 480px; margin: 60px auto; padding: 24px; font-family: sans-serif;">
+  <h1>BKC Console Sign-In</h1>
+  <p>
+    The BKC console authenticates via Firebase. There is no email/password
+    form on this page yet.
+  </p>
+  <p>
+    Sign in to the Bokunokoto mobile/web client first, then return to
+    <a href="<%= bkc_dashboard_path %>">/bkc</a>. The application will
+    forward your Firebase ID token to the server and create a BKC session.
+  </p>
+  <p>
+    If you have lost access, contact a platform admin to re-issue your
+    Firebase user record.
+  </p>
+  <p style="margin-top: 24px;">
+    <a href="/" class="btn btn-secondary">Back to Home</a>
+  </p>
+</div>

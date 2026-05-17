@@ -38,13 +38,13 @@ class _BankAccountScreenState extends ConsumerState<BankAccountScreen> {
       if (response.statusCode == 200) {
         final vault = response.data['vault'] as Map<String, dynamic>?;
         if (!mounted || vault == null) return;
-        final info = vault['bank_account_info'] as Map<String, dynamic>?;
+        // CRITICAL-001: the API now returns only the masked digest. The
+        // plaintext account/routing/bank fields are not in the response
+        // and the form is left empty for the user to re-enter when they
+        // want to update.
         setState(() {
           _maskedAccountNumber = vault['masked_account_number'] as String?;
-          _bankName = info?['bank_name'] as String?;
-          if (info?['routing_number'] is String) {
-            _routingNumberController.text = info!['routing_number'] as String;
-          }
+          _bankName = null;
         });
       }
     } catch (e) {
@@ -89,7 +89,10 @@ class _BankAccountScreenState extends ConsumerState<BankAccountScreen> {
         final vaultData = response.data['vault'];
         setState(() {
           _maskedAccountNumber = vaultData['masked_account_number'];
-          _bankName = vaultData['bank_account_info']?['bank_name'];
+          // CRITICAL-001: the server no longer echoes plaintext.
+          // Reflect what the user just typed for immediate UX, but never
+          // read the bank name back from the API response.
+          _bankName = _bankNameController.text;
         });
       }
     } catch (e) {
@@ -180,8 +183,16 @@ class _BankAccountScreenState extends ConsumerState<BankAccountScreen> {
                               ),
                               IconButton(
                                 icon: const Icon(Icons.content_copy),
+                                // LOW-027: only the masked digest is
+                                // ever copied to the clipboard unless
+                                // the user has explicitly toggled
+                                // "show full" — and even then we only
+                                // copy what they just typed locally,
+                                // never plaintext the server returned.
                                 onPressed: () => _copyToClipboard(
-                                  _accountNumberController.text,
+                                  _showFullNumber && _accountNumberController.text.isNotEmpty
+                                      ? _accountNumberController.text
+                                      : (_maskedAccountNumber ?? ''),
                                 ),
                               ),
                             ],

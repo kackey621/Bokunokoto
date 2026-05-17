@@ -22,9 +22,13 @@ module Console
       @current_console_user ||= begin
         user_id = session[:user_id]
         user_id ||= request.headers["X-Test-User-Id"] if Rails.env.test?
-        # TODO: wire to Firebase auth or add a development-only console login flow
-        # For now, development can use X-Dev-User-Id header (set by Rails.env.development? check)
-        user_id ||= request.headers["X-Dev-User-Id"] if Rails.env.development?
+        # CRITICAL-002: only honour the X-Dev-User-Id header in development
+        # when an explicit opt-in env var is set. Without this gate, a
+        # misconfigured production deploy with RAILS_ENV=development would
+        # accept the header as authentication.
+        if Rails.env.development? && ENV["ALLOW_DEV_AUTH_BYPASS"] == "1"
+          user_id ||= request.headers["X-Dev-User-Id"]
+        end
         User.find_by(id: user_id) if user_id
       end
     end
