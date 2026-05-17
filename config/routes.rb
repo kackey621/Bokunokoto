@@ -40,7 +40,10 @@ Rails.application.routes.draw do
 
   namespace :bkc do
     root to: "dashboard#show", as: :dashboard
-    resource :session, only: [ :destroy ]
+    # MEDIUM-024: BKC has no real login flow yet (CRITICAL-002 gates dev
+    # auto-impersonation). `new` renders an explanatory placeholder
+    # pointing users at Firebase auth; `destroy` clears the session.
+    resource :session, only: [ :new, :destroy ]
     resource :active_vault, only: [ :update ]
     resource :vault, only: [ :create, :update ]
     resources :vaults, only: [ :index ]
