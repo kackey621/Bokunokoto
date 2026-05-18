@@ -489,6 +489,10 @@ GEM
     unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
+    view_component (4.11.0)
+      actionview (>= 7.1.0)
+      activesupport (>= 7.1.0)
+      concurrent-ruby (~> 1)
     web-console (4.3.0)
       actionview (>= 8.0.0)
       bindex (>= 0.4.0)
@@ -520,6 +524,7 @@ DEPENDENCIES
   flipper-active_record
   google-apis-fcm_v1
   google-cloud-firestore
+  googleauth
   image_processing (~> 1.2)
   importmap-rails
   jbuilder
@@ -545,6 +550,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   tzinfo-data
+  view_component
   web-console
 
 BUNDLED WITH

@@ -27,6 +27,9 @@ gem "tailwindcss-rails"
 # Pagination for BKC list views (forensics, audit logs)
 gem "kaminari"
 
+# ViewComponent base class used by app/components/bkc/vault_switcher_component.rb
+gem "view_component"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
 
@@ -46,6 +49,10 @@ gem "firebase_id_token"
 # Firebase Operational Gems (Firestore, FCM, Remote Config)
 gem "google-cloud-firestore"
 gem "google-apis-fcm_v1"
+
+# Required directly by SuperAdmin::RemoteConfigService (`require "googleauth"`);
+# previously pulled in transitively by google-cloud-firestore.
+gem "googleauth"
 
 # Feature Flags (Flipt or Flipper)
 gem "flipper"
